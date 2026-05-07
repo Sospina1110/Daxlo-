@@ -1,0 +1,84 @@
+PALETA DE COLORES DAXLO
+========================
+
+COLORES PRINCIPALES
+-------------------
+
+Oscuros Elegantes (Fondos y Autoridad):
+• Dark Elegant:     #1a1a2e
+• Dark Secondary:   #16213e
+
+Colores de Acción (CTAs y Energía):
+• Action Warm:      #ff6b35  (Naranja cálido - botones principales)
+• Action Hover:     #e85a2a  (Naranja más oscuro - hover state)
+
+Acentos (Highlights y Detalles):
+• Accent Blue:      #64CEFB  (Azul brillante - acentos y gradientes)
+
+
+COLORES DE TEXTO
+----------------
+
+• Text Dark:        #2d3748  (Texto oscuro en fondos claros)
+• Text Light:       #ffffff  (Texto blanco en fondos oscuros)
+• Text Muted:       #718096  (Texto secundario/subtítulos)
+• Text Dim:         rgba(255, 255, 255, 0.5)  (Texto muy sutil)
+
+
+FONDOS
+------
+
+• Background Light: #f8f9fa  (Fondo claro para secciones alternas)
+• Black:            #000000  (Fondo del hero y base)
+
+
+ESTADOS Y FEEDBACK
+------------------
+
+• Success Green:    #48bb78  (Checkmarks y confirmaciones)
+• Border Subtle:    #e2e8f0  (Bordes de inputs y divisores)
+
+
+APLICACIÓN
+----------
+
+Hero:               Background negro (#000000) con video overlay
+Secciones oscuras:  #1a1a2e o #16213e
+Secciones claras:   #f8f9fa
+Botones primarios:  #ff6b35 → #e85a2a (hover)
+Botones oscuros:    #1a1a2e
+Acentos vibrantes:  #64CEFB (gradientes, iconos, highlights)
+Checkmarks:         #48bb78
+Texto principal:    #ffffff (fondos oscuros), #2d3748 (fondos claros)
+
+
+GRADIENTES USADOS
+-----------------
+
+Gradient Text (títulos especiales):
+linear-gradient(135deg, #64CEFB 0%, #ffffff 50%, #64CEFB 100%)
+
+Banner Paquete Completo:
+linear-gradient(135deg, #ff6b35, #e85a2a)
+
+Fondo Formulario:
+linear-gradient(135deg, #1a1a2e, #16213e)
+
+
+TIPOGRAFÍA
+----------
+
+Font Family:        Inter (sans-serif)
+Pesos disponibles:  400, 500, 600, 700, 800
+Tamaño mínimo:      18px (body text)
+Tamaños títulos:    2.25rem - 3.5rem (responsive)
+
+
+NOTAS DE USO
+------------
+
+• Contraste alto para legibilidad (audiencia 45+)
+• Espaciado generoso entre elementos
+• Bordes redondeados en cards y botones
+• Shadows sutiles para profundidad
+• Overlay oscuro (0.4-0.5 opacity) sobre video de fondo
