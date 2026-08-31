@@ -3,21 +3,29 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Daxlo · Aprende IA con coaching 1 a 1</title>
+<title>Daxlo · Implementamos la IA. Transferimos la capacidad.</title>
+<meta name="description" content="Coaching 1 a 1 para resolver tu propio trabajo con IA, y consultoría de implementación para automatizar un proceso de tu empresa. En los dos casos quedas sabiendo cómo funciona." />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="es_CO" />
+<meta property="og:title" content="Daxlo · Implementamos la IA. Transferimos la capacidad." />
+<meta property="og:description" content="Dos formas de trabajar con nosotros: coaching 1 a 1 para tu propio trabajo, o consultoría de implementación para un proceso de tu empresa." />
+<meta property="og:image" content="https://daxlo.co/daxlo-logo.png" />
+<meta name="twitter:card" content="summary_large_image" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet" />
 <style>
   :root {
     --bg: #f5f5f7;
     --bg-soft: #ffffff;
     --bg-tint: rgba(255,255,255,0.78);
     --border: #e5e5ea;
-    --action: #64CEFB;
-    --action-hover: #3FB8E8;
+    --action: #29C4F5;
+    --action-hover: #12A8DA;
     --accent: #1a1a2e;
-    --brand-blue: #1c3fb0;
-    --brand-blue-deep: #142c87;
+    --brand-blue: #1B35D0;
+    --brand-blue-deep: #142796;
+    --mint: #E2F3EE;
     --accent-soft: rgba(26,26,46,0.06);
     --text: #0a0a14;
     --text-muted: #4a4a5a;
@@ -64,7 +72,7 @@
     z-index: 2;
   }
   @media (min-width: 1024px) { .section { padding: 9rem 0; } }
-  h1, h2, h3 { letter-spacing: -0.02em; line-height: 1.1; }
+  h1, h2, h3 { font-family: 'Outfit', 'Inter', sans-serif; letter-spacing: -0.02em; line-height: 1.1; }
   h2 {
     font-size: clamp(2.25rem, 5vw, 3.5rem);
     font-weight: 900;
@@ -97,13 +105,13 @@
     font-family: inherit;
   }
   .btn-primary {
-    background: linear-gradient(135deg, var(--action), #8FDDFD);
+    background: linear-gradient(135deg, var(--brand-blue), var(--brand-blue-deep));
     color: #fff;
-    box-shadow: 0 10px 30px rgba(100,206,251,0.35);
+    box-shadow: 0 10px 30px rgba(27,53,208,0.30);
   }
   .btn-primary:hover {
     transform: translateY(-3px);
-    box-shadow: 0 15px 40px rgba(100,206,251,0.55);
+    box-shadow: 0 15px 40px rgba(27,53,208,0.45);
   }
   .btn-ghost {
     background: rgba(255,255,255,0.7);
@@ -207,7 +215,7 @@
     font-size: 0.95rem;
     transition: all .25s ease;
   }
-  .nav-cta:hover { background: var(--action); transform: translateY(-2px); }
+  .nav-cta:hover { background: var(--brand-blue); transform: translateY(-2px); }
 
   /* Social proof bar */
   .proof-bar {
@@ -249,7 +257,7 @@
   .step-num {
     width: 64px; height: 64px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--action), #8FDDFD);
+    background: linear-gradient(135deg, var(--brand-blue), var(--brand-blue-deep));
     color: #fff;
     font-size: 1.75rem;
     font-weight: 900;
@@ -257,7 +265,7 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 1.5rem;
-    box-shadow: 0 10px 24px rgba(100,206,251,0.35);
+    box-shadow: 0 10px 24px rgba(27,53,208,0.30);
   }
 
   /* Pills (topics) */
@@ -697,432 +705,1166 @@
     margin-top: 3rem;
     line-height: 1.3;
   }
+
+  /* ---------- Añadidos: dos líneas de servicio ---------- */
+
+  .eyebrow {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--brand-blue);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 1.1rem;
+  }
+  .section-lead {
+    text-align: center;
+    font-size: 1.15rem;
+    max-width: 720px;
+    margin: 0 auto 3.5rem;
+  }
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  /* Bifurcación: empresa / persona */
+  .line-card {
+    background: var(--bg-tint);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 1.5rem;
+    padding: 2.75rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+  }
+  .line-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(27,53,208,0.35);
+    box-shadow: 0 16px 48px rgba(27,53,208,0.14);
+  }
+  .line-tag {
+    display: inline-block;
+    align-self: flex-start;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.9rem;
+    border-radius: 9999px;
+    margin-bottom: 1.4rem;
+  }
+  .line-card.primary-coach {
+    border-color: rgba(15,143,186,0.40);
+    box-shadow: 0 12px 40px rgba(15,143,186,0.14);
+  }
+  .line-tag.empresa { background: var(--brand-blue); color: #fff; }
+  .line-tag.persona { background: var(--mint); color: #14503f; }
+  .line-card h3 { font-size: 1.65rem; margin-bottom: 0.9rem; }
+  .line-card p { font-size: 1.05rem; margin-bottom: 1.5rem; }
+  .line-card .line-list {
+    list-style: none;
+    margin: 0 0 2rem;
+    padding: 0;
+  }
+  .line-card .line-list li {
+    position: relative;
+    padding-left: 1.6rem;
+    margin-bottom: 0.7rem;
+    color: var(--text-muted);
+    font-size: 1rem;
+  }
+  .line-card .line-list li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0.6em;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--action);
+  }
+  .line-card .line-foot { margin-top: auto; }
+
+  /* Bloque de calificación */
+  .qual-box {
+    max-width: 820px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, var(--brand-blue), var(--brand-blue-deep));
+    border-radius: 1.75rem;
+    padding: 3.25rem 2.75rem;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(27,53,208,0.28);
+  }
+  .qual-box .qual-q {
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: clamp(1.35rem, 3vw, 1.85rem);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.35;
+    margin-bottom: 1.5rem;
+    text-wrap: balance;
+  }
+  .qual-box .qual-a { color: rgba(255,255,255,0.82); font-size: 1.05rem; margin-bottom: 0; }
+  .qual-box .qual-a strong { color: #fff; }
+  @media (max-width: 640px) { .qual-box { padding: 2.25rem 1.5rem; } }
+
+  /* Panel de coaching (línea secundaria) */
+  .coach-panel {
+    max-width: 980px;
+    margin: 0 auto;
+    background: var(--bg-tint);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 1.75rem;
+    padding: 3.25rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+  }
+  @media (max-width: 640px) { .coach-panel { padding: 2rem 1.5rem; } }
+  .coach-panel h2 { text-align: center; font-size: clamp(1.9rem, 4vw, 2.6rem); }
+
+  /* Selector de línea en el formulario */
+  select.form-input {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1.1rem center;
+    background-size: 18px;
+    padding-right: 3rem;
+    cursor: pointer;
+  }
+  select.form-input option { background: #101a3d; color: #fff; }
+
+  /* Agrupador de FAQ */
+  .faq-group-title.coach { color: #0A6C8E; }
+  .faq-group-title {
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--brand-blue);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 3rem 0 1.25rem;
+  }
+  .faq-group-title:first-child { margin-top: 0; }
+
+  /* ---------- Añadidos: paridad de coaching y comparación ---------- */
+
+  /* Cada línea lleva su propio acento: azul consultoría, menta/cian coaching.
+     La diferencia se ve antes de leerse. */
+
+  .icon-box.coach {
+    background: linear-gradient(135deg, rgba(41,196,245,0.20), rgba(226,243,238,0.9));
+  }
+  .eyebrow.coach { color: #0A6C8E; }
+
+  .qual-box.coach {
+    background: linear-gradient(135deg, #0F8FBA, #14607d);
+    box-shadow: 0 20px 60px rgba(15,143,186,0.28);
+  }
+
+  /* Tabla comparativa */
+  .compare-wrap {
+    max-width: 1000px;
+    margin: 0 auto;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 1.5rem;
+    border: 1px solid var(--border);
+    background: var(--bg-soft);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+  }
+  .compare-table {
+    width: 100%;
+    min-width: 680px;
+    border-collapse: collapse;
+    font-size: 1rem;
+  }
+  .compare-table th,
+  .compare-table td {
+    padding: 1.15rem 1.4rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border);
+  }
+  .compare-table tr:last-child th,
+  .compare-table tr:last-child td { border-bottom: none; }
+
+  .compare-table thead th {
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.01em;
+    border-bottom: none;
+    padding-top: 1.4rem;
+    padding-bottom: 1.4rem;
+  }
+  .compare-table thead th.col-criterio {
+    background: var(--text);
+    color: rgba(255,255,255,0.7);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .compare-table thead th.col-consultoria { background: linear-gradient(135deg, var(--brand-blue), var(--brand-blue-deep)); }
+  .compare-table thead th.col-coaching    { background: linear-gradient(135deg, #0B7EA6, #0A5A75); }
+
+  .compare-table tbody th {
+    font-weight: 700;
+    color: var(--text);
+    font-size: 0.95rem;
+    width: 22%;
+    background: rgba(0,0,0,0.025);
+  }
+  .compare-table tbody td { color: var(--text-muted); width: 39%; }
+  .compare-table tbody td.c-consultoria { background: rgba(27,53,208,0.035); }
+  .compare-table tbody td.c-coaching    { background: rgba(41,196,245,0.05); }
+  .compare-table tbody tr:hover th { background-color: rgba(0,0,0,0.05); }
+
+  .compare-hint {
+    display: none;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-top: 0.9rem;
+  }
+  @media (max-width: 720px) {
+    .compare-hint { display: block; }
+    .compare-table th, .compare-table td { padding: 0.95rem 1rem; font-size: 0.95rem; }
+  }
+
+  /* Cierre: las dos rutas al final de la comparación */
+  .route-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2.5rem;
+  }
+  .btn-coach {
+    background: linear-gradient(135deg, #0B7EA6, #0A5A75);
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(15,143,186,0.28);
+  }
+  .btn-coach:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(15,143,186,0.42);
+  }
+
+  /* En movil los dos botones del hero llevan el mismo ancho y no parten la flecha. */
+  @media (max-width: 520px) {
+    .hero-actions { width: 100%; flex-direction: column; }
+    .hero-actions .btn {
+      width: 100%;
+      justify-content: center;
+      white-space: nowrap;
+      font-size: 1.02rem !important;
+      padding: 1.15rem 1.2rem !important;
+    }
+  }
+
+  /* ================= DOS TERRITORIOS =================
+     El acento de color no bastaba: todas las secciones tenian la misma
+     forma y se leian como una sola masa. Cada linea vive ahora en una
+     superficie opuesta — coaching en claro sobre menta, consultoria en
+     oscuro institucional — y la frontera entre las dos es visible. */
+
+  .zona { position: relative; z-index: 2; }
+  .zona > .section { padding: 5rem 0; }
+  @media (min-width: 1024px) { .zona > .section { padding: 6.5rem 0; } }
+  /* Dentro de una zona la superficie es constante: la unica ruptura
+     que vale es la frontera entre zonas. */
+  .zona > .section { background: none !important; backdrop-filter: none !important; border: none !important; }
+
+  /* ---- Zona coaching: clara, aireada ---- */
+  .zona-coach {
+    background:
+      radial-gradient(1200px 520px at 15% 0%, rgba(41,196,245,0.16), transparent 60%),
+      linear-gradient(180deg, #F4FBFD 0%, #E9F6F1 55%, #F4FBFD 100%);
+  }
+  .zona-coach .tl-num { background: linear-gradient(135deg, #0B7EA6, #0A5A75); }
+  .zona-coach .card { background: rgba(255,255,255,0.92); border-color: rgba(15,143,186,0.14); }
+  .zona-coach .card:hover { border-color: rgba(15,143,186,0.45); box-shadow: 0 16px 48px rgba(15,143,186,0.16); }
+  .zona-coach .pill { background: rgba(255,255,255,0.92); border-color: rgba(15,143,186,0.28); }
+  .zona-coach .pill.featured { background: linear-gradient(135deg, #0B7EA6, #0A5A75); color: #fff; }
+
+  /* ---- Zona consultoria: oscura, institucional ---- */
+  .zona-cons {
+    background:
+      radial-gradient(1100px 500px at 85% 0%, rgba(27,53,208,0.38), transparent 62%),
+      linear-gradient(180deg, #0D0E14 0%, #10152E 50%, #0D0E14 100%);
+  }
+  .zona-cons h2,
+  .zona-cons h3 { color: #fff; }
+  .zona-cons p,
+  .zona-cons .section-lead { color: rgba(255,255,255,0.72); }
+  .zona-cons .eyebrow { color: var(--action); }
+  .zona-cons .card {
+    background: rgba(255,255,255,0.055);
+    border-color: rgba(255,255,255,0.12);
+    box-shadow: none;
+  }
+  .zona-cons .card:hover {
+    background: rgba(255,255,255,0.085);
+    border-color: rgba(41,196,245,0.45);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.35);
+  }
+  .zona-cons .icon-box { background: rgba(41,196,245,0.14); }
+  .zona-cons .pill {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.16);
+    color: rgba(255,255,255,0.9);
+  }
+  .zona-cons .pill:hover { background: rgba(255,255,255,0.13); border-color: var(--action); }
+  .zona-cons .pill.featured {
+    background: linear-gradient(135deg, var(--brand-blue), var(--action));
+    color: #fff; border-color: transparent;
+  }
+  .zona-cons .why-item { border-bottom-color: rgba(255,255,255,0.12); }
+  .zona-cons .why-num {
+    background: linear-gradient(135deg, var(--action), #fff);
+    -webkit-background-clip: text; background-clip: text;
+  }
+  /* Sobre negro el circulo se invierte: cian brillante con el numero oscuro.
+     Contrasta mejor que blanco sobre cian y separa las fases de consultoria
+     de los pasos de coaching. */
+  .zona-cons .step-num {
+    background: linear-gradient(135deg, #4FD3FA, var(--action));
+    color: #06263a;
+    box-shadow: 0 10px 24px rgba(41,196,245,0.28);
+  }
+  .zona-cons .qual-box {
+    background: linear-gradient(135deg, var(--brand-blue), #2E1B8C);
+    box-shadow: 0 24px 70px rgba(0,0,0,0.45);
+  }
+  .zona-cons .btn-ghost {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border-color: rgba(255,255,255,0.22);
+  }
+  .zona-cons .btn-ghost:hover { background: rgba(255,255,255,0.18); border-color: var(--action); }
+  /* El logo inline es oscuro: sobre fondo negro hay que invertirlo. */
+  .zona-cons .brand-inline { filter: brightness(0) invert(1); }
+
+  /* El remate de cada linea: hereda el color de su territorio. */
+  .kicker-linea { font-size: 1.2rem; font-weight: 700; color: var(--text); }
+  .zona-cons .kicker-linea { color: #fff; }
+
+  /* ---- Portada de zona ---- */
+  .zona > .zona-portada {
+    position: relative;
+    padding: 4.5rem 0 3.5rem;
+    scroll-margin-top: 1rem;
+    overflow: hidden;
+  }
+  .zona-portada .container { display: flex; align-items: flex-start; gap: 2rem; }
+  .zona-ord {
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: clamp(4rem, 12vw, 8.5rem);
+    font-weight: 900;
+    line-height: 0.82;
+    letter-spacing: -0.05em;
+    flex-shrink: 0;
+  }
+  .zona-coach .zona-ord { color: rgba(10,108,142,0.30); }
+  .zona-cons .zona-ord { color: rgba(255,255,255,0.16); }
+  .zona-portada-txt { padding-top: 0.4rem; }
+  .zona-para {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.9rem;
+    border-radius: 9999px;
+    margin-bottom: 1.1rem;
+  }
+  .zona-coach .zona-para { background: #0B6B8C; color: #fff; }
+  .zona-cons .zona-para { background: var(--action); color: #06263a; }
+  .zona-portada h2 {
+    text-align: left;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    margin-bottom: 1rem;
+  }
+  .zona-portada .zona-sub {
+    font-size: 1.15rem;
+    line-height: 1.65;
+    max-width: 620px;
+    margin: 0;
+  }
+  .zona-coach .zona-portada h2 { color: var(--text); }
+  @media (max-width: 640px) {
+    .zona-portada .container { flex-direction: column; gap: 0.5rem; }
+    .zona > .zona-portada { padding: 3rem 0 2.25rem; }
+  }
+
+  /* Frontera entre territorios */
+  .zona-corte { height: 2px; border: none; margin: 0; position: relative; z-index: 3; }
+  .zona-corte-coach { background: linear-gradient(90deg, transparent, #0F8FBA, transparent); }
+  .zona-corte-cons { background: linear-gradient(90deg, transparent, var(--brand-blue), transparent); }
+
+  /* ---- Linea de tiempo: la forma propia de coaching ----
+     Consultoria muestra sus fases en tres tarjetas horizontales.
+     Coaching las muestra apiladas y encadenadas: distinta forma,
+     no solo distinto color. */
+  .timeline { max-width: 760px; margin: 0 auto; position: relative; }
+  .tl-item { position: relative; display: flex; gap: 1.75rem; padding-bottom: 2.75rem; }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-rail { position: relative; flex-shrink: 0; width: 64px; display: flex; justify-content: center; }
+  .tl-item:not(:last-child) .tl-rail::after {
+    content: '';
+    position: absolute;
+    top: 68px; bottom: -2.75rem;
+    width: 2px;
+    background: linear-gradient(180deg, rgba(15,143,186,0.45), rgba(15,143,186,0.10));
+  }
+  .tl-num {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    color: #fff;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 1.75rem; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 24px rgba(15,143,186,0.30);
+    position: relative; z-index: 1;
+  }
+  .tl-body { padding-top: 0.5rem; }
+  .tl-body h3 { font-size: 1.4rem; margin-bottom: 0.7rem; }
+  .tl-body p { font-size: 1.06rem; line-height: 1.7; }
+  @media (max-width: 640px) {
+    .tl-item { gap: 1.1rem; padding-bottom: 2.25rem; }
+    .tl-rail { width: 52px; }
+    .tl-num { width: 52px; height: 52px; font-size: 1.4rem; }
+    .tl-item:not(:last-child) .tl-rail::after { top: 56px; bottom: -2.25rem; }
+  }
 </style>
 </head>
 <body>
 
-  <!-- Fixed background video for entire page -->
-  <div class="bg-video">
-    <video autoplay loop muted playsinline>
-      <source src="hero-bg.mp4" type="video/mp4" />
-    </video>
-  </div>
+<!-- Video de fondo fijo para toda la página -->
+<div class="bg-video">
+<video autoplay loop muted playsinline>
+<source src="hero-bg.mp4" type="video/mp4" />
+</video>
+</div>
 
-  <!-- HERO -->
-  <section class="hero" data-screen-label="01 Hero">
-    <nav class="top">
-      <img src="daxlo-logo.png" alt="Daxlo" />
-      <a href="#agendar" class="nav-cta">Agendar llamada</a>
-    </nav>
-    <div class="hero-content">
-      <h1>Aprende <span class="hero-highlight">inteligencia artificial</span> con alguien que te guíe paso a paso.</h1>
-      <p class="hero-sub">
-        Coaching 1 a 1. Tú eliges qué aprender. Nosotros te enseñamos.
-        Sin importar tu edad, tu nivel o tu profesión.
-      </p>
-      <a href="#agendar" class="btn btn-primary" style="font-size: 1.2rem; padding: 1.3rem 2.7rem;">
-        Agenda tu llamada gratis →
-      </a>
-      <p class="hero-cta-meta">15 minutos · Sin costo · Sin compromiso</p>
-    </div>
-  </section>
+<!-- HERO -->
+<section class="hero" data-screen-label="01 Hero">
+<nav class="top">
+<img src="daxlo-logo.png" alt="Daxlo" />
+<a href="#agendar" class="nav-cta">Hablemos</a>
+</nav>
+<div class="hero-content">
+<h1 style="max-width: 24ch;">Implementamos la IA. <span class="hero-highlight">Transferimos la capacidad.</span></h1>
+<p class="hero-sub">
+Te enseñamos a resolver tu propio trabajo con IA, o construimos el sistema que lo resuelve
+dentro de tu empresa. En los dos casos quedas sabiendo cómo funciona.
+</p>
+<div class="hero-actions">
+<a href="#agendar" class="btn btn-primary" style="font-size: 1.15rem; padding: 1.3rem 2.8rem;">
+Agendar una conversaci&oacute;n &rarr;
+</a>
+</div>
+<p class="hero-cta-meta">Coaching 1 a 1 para personas · Consultoría de implementación para empresas</p>
+</div>
+</section>
 
-  <!-- SOCIAL PROOF -->
-  <section class="proof-bar" data-screen-label="02 Proof">
-    <div class="container">
-      <div class="proof-row">
-        <div class="proof-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>Coaching 100% personalizado</span>
-        </div>
-        <div class="proof-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>Para cualquier nivel</span>
-        </div>
-        <div class="proof-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>Sesiones virtuales</span>
-        </div>
-        <div class="proof-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>Primera llamada gratis</span>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- DOS LÍNEAS -->
+<section class="section" data-screen-label="02 Dos líneas">
+<div class="container">
+<div class="eyebrow">Dos formas de trabajar con nosotros</div>
+<h2>Empieza por donde estás.</h2>
+<p class="section-lead">
+Una persona que quiere resolver su propio trabajo necesita algo distinto de una empresa
+con un proceso que consume horas. Hacemos las dos, y no son la misma conversación.
+</p>
+<div class="grid grid-2">
 
-  <!-- PROBLEM -->
-  <section class="section" data-screen-label="03 Problema">
-    <div class="container">
-      <h2>¿Te suena familiar?</h2>
-      <p style="text-align:center; font-size:1.15rem; max-width:700px; margin:0 auto 3.5rem;">
-        Tres razones por las que la mayoría no termina aprendiendo IA.
-      </p>
-      <div class="grid grid-3">
-        <div class="card">
-          <div class="icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-          </div>
-          <h3>Te estás quedando atrás</h3>
-          <p>Todos hablan de IA y tú sientes que el mundo avanza sin ti.</p>
-        </div>
-        <div class="card">
-          <div class="icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--action)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-              <line x1="9" y1="9" x2="15" y2="15"></line>
-              <line x1="15" y1="9" x2="9" y2="15"></line>
-            </svg>
-          </div>
-          <h3>Cursos genéricos</h3>
-          <p>Largos, costosos y no resuelven lo que tú necesitas aprender.</p>
-        </div>
-        <div class="card">
-          <div class="icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-              <circle cx="12" cy="12" r="10"></circle>
-            </svg>
-          </div>
-          <h3>No sabes por dónde empezar</h3>
-          <p>Quieres aprender pero no sabes a quién preguntarle ni qué tema tomar primero.</p>
-        </div>
-      </div>
-      <p class="closing-line">
-        <img src="daxlo-logo.png" alt="Daxlo" class="brand-inline" /> existe para eso. <span class="gradient-text">Hazlo.</span>
-      </p>
-    </div>
-  </section>
+<div class="line-card primary-coach">
+<span class="line-tag persona">Para ti</span>
+<h3>Coaching 1 a 1</h3>
+<p>
+Construyes tú, con nosotros en la llamada. Sales con el trabajo hecho.
+</p>
+<ul class="line-list">
+<li>Trabajas sobre tu propio archivo, no un ejemplo</li>
+<li>Sales de cada sesión con algo hecho</li>
+<li>Pagas por sesión, sin matrícula</li>
+<li>Desde cero o desde donde ya estés</li>
+</ul>
+<div class="line-foot">
+<a href="#coaching" class="btn btn-coach">Ver coaching &rarr;</a>
+</div>
+</div>
 
-  <!-- WHAT IS DAXLO -->
-  <section class="section" data-screen-label="04 Qué es" style="background: rgba(255,255,255,0.6); backdrop-filter: blur(20px); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
-    <div class="container" style="max-width: 900px; text-align: center;">
-      <h2>Te enseñamos IA. Lo que tú quieras. A tu ritmo.</h2>
-      <p style="font-size: 1.2rem; line-height: 1.75; margin: 2rem 0;">
-        No es un curso pregrabado. No es un diplomado de meses.
-        Es alguien que sabe de IA sentándose contigo, entendiendo qué necesitas
-        y enseñándotelo en sesiones prácticas 1 a 1.
-      </p>
-      <p style="font-size: 1.2rem; font-weight: 600; color: var(--text); margin-bottom: 3rem;">
-        Tú pones el tema. Nosotros ponemos el conocimiento.
-      </p>
-      <p style="font-size: clamp(2rem, 4.5vw, 3rem); font-weight: 900; line-height: 1.2;">
-        <span class="gradient-text">Aprende.</span>
-        <span class="gradient-text">Aplica.</span>
-        <span class="gradient-text">Avanza.</span>
-      </p>
-    </div>
-  </section>
+<div class="line-card">
+<span class="line-tag empresa">Para tu empresa</span>
+<h3>Consultoría de implementación</h3>
+<p>
+Construimos el sistema con tu equipo al lado. Ellos quedan operándolo.
+</p>
+<ul class="line-list">
+<li>Procesos documentales de alto volumen</li>
+<li>Discovery pagado antes de escribir código</li>
+<li>Precio cerrado por el sistema, no por horas</li>
+<li>Tu equipo queda operándolo</li>
+</ul>
+<div class="line-foot">
+<a href="#consultoria" class="btn btn-primary">Ver cómo funciona &rarr;</a>
+</div>
+</div>
 
-  <!-- HOW IT WORKS -->
-  <section class="section" data-screen-label="05 Cómo funciona">
-    <div class="container">
-      <h2>Así de fácil es empezar</h2>
-      <p style="text-align:center; font-size:1.15rem; max-width:600px; margin:0 auto 3.5rem;">
-        Tres pasos para arrancar a aprender IA con un coach.
-      </p>
-      <div class="grid grid-3">
-        <div class="card">
-          <div class="step-num">1</div>
-          <h3>Agenda tu llamada</h3>
-          <p>15 minutos gratis. Nos cuentas qué quieres aprender, cuál es tu nivel y para qué lo necesitas.</p>
-        </div>
-        <div class="card">
-          <div class="step-num">2</div>
-          <h3>Recibe tu plan</h3>
-          <p>Diseñamos una ruta personalizada solo para ti. Sin relleno, solo lo que necesitas.</p>
-        </div>
-        <div class="card">
-          <div class="step-num">3</div>
-          <h3>Aprende haciendo</h3>
-          <p>Sesiones 1 a 1 virtuales donde practicas en tiempo real con tu coach. Tú avanzas, nosotros te guiamos.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+</div>
+</div>
+</section>
 
-  <!-- WHAT YOU CAN LEARN -->
-  <section class="section" data-screen-label="06 Qué aprender" style="background: rgba(255,255,255,0.6); backdrop-filter: blur(20px); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
-    <div class="container">
-      <h2>Dime qué quieres aprender. Yo te enseño.</h2>
-      <p style="text-align:center; font-size:1.15rem; max-width:780px; margin:0 auto 3rem;">
-        Estos son algunos temas que nuestros alumnos eligen.
-        Pero si el tuyo no está aquí, también te lo enseñamos.
-      </p>
-      <div class="pills-wrap">
-        <span class="pill">Claude desde cero</span>
-        <span class="pill">Prompting avanzado</span>
-        <span class="pill">IA para tu negocio</span>
-        <span class="pill">Automatizaciones con Make y n8n</span>
-        <span class="pill">Excel y análisis de datos con IA</span>
-        <span class="pill">Crear páginas web sin programar</span>
-        <span class="pill">Generar imágenes con IA</span>
-        <span class="pill">Marketing digital con IA</span>
-        <span class="pill">Crear videos y avatares</span>
-        <span class="pill">IA para presentaciones</span>
-        <span class="pill">IA para redes sociales</span>
-        <span class="pill">Productividad personal con IA</span>
-        <span class="pill">IA para buscar empleo</span>
-        <span class="pill">IA para escribir mejor</span>
-        <span class="pill">Investigación con IA</span>
-        <span class="pill featured">Lo que tú necesites ✦</span>
-      </div>
-      <div class="center-cta">
-        <a href="#agendar" class="btn btn-primary">Agenda tu llamada gratis →</a>
-      </div>
-    </div>
-  </section>
+<!-- CÓMO TRABAJAMOS -->
+<section class="proof-bar" data-screen-label="03 Cómo trabajamos">
+<div class="container">
+<div class="proof-row">
+<div class="proof-item">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+<span>Trabajas sobre tu propio caso</span>
+</div>
+<div class="proof-item">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+<span>Te decimos si no te servimos</span>
+</div>
+<div class="proof-item">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+<span>Quedas sabiendo cómo funciona</span>
+</div>
+<div class="proof-item">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+<span>Los dos socios, en todo</span>
+</div>
+</div>
+</div>
+</section>
 
-  <!-- WHO IS IT FOR -->
-  <section class="section" data-screen-label="07 Para quién">
-    <div class="container">
-      <h2>Esto es para ti</h2>
-      <p style="text-align:center; font-size:1.15rem; max-width:680px; margin:0 auto 3.5rem;">
-        No importa quién seas. Si quieres aprender IA, <img src="daxlo-logo.png" alt="Daxlo" class="brand-inline" /> es para ti.
-      </p>
-      <div class="grid grid-3" style="gap: 1.5rem;">
-        <div class="audience-tile">
-          <h3>Emprendedores</h3>
-          <p>Quieres hacer crecer tu negocio con IA.</p>
-        </div>
-        <div class="audience-tile">
-          <h3>Profesionales</h3>
-          <p>Quieres destacar en tu trabajo.</p>
-        </div>
-        <div class="audience-tile">
-          <h3>Jubilados y pensionados</h3>
-          <p>Quieres mantenerte vigente y activo.</p>
-        </div>
-        <div class="audience-tile">
-          <h3>Estudiantes</h3>
-          <p>Quieres una ventaja antes de salir al mercado.</p>
-        </div>
-        <div class="audience-tile">
-          <h3>Freelancers</h3>
-          <p>Quieres producir más en menos tiempo.</p>
-        </div>
-        <div class="audience-tile">
-          <h3>Curiosos</h3>
-          <p>Simplemente quieres entender de qué se trata.</p>
-        </div>
-      </div>
-      <p class="closing-line">
-        Si tienes las ganas, <span class="gradient-text">nosotros ponemos el conocimiento.</span>
-      </p>
-    </div>
-  </section>
+<!-- COMPARACIÓN -->
+<section class="section" data-screen-label="04 Comparación" style="background: rgba(255,255,255,0.6); backdrop-filter: blur(20px); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+<div class="container">
+<h2>Quién construye y sobre qué.</h2>
+<p class="section-lead">
+Desde afuera las dos suenan parecido. Se separan por quién construye y sobre qué trabaja. El resto sale de ahí.
+</p>
+<div class="compare-wrap">
+<table class="compare-table">
+<thead>
+<tr>
+<th class="col-criterio" scope="col">&nbsp;</th>
+<th class="col-coaching" scope="col">Coaching 1 a 1</th>
+<th class="col-consultoria" scope="col">Consultor&iacute;a de implementaci&oacute;n</th>
+</tr>
+</thead>
+<tbody>
 
-  <!-- WHY DAXLO -->
-  <section class="section" data-screen-label="08 Por qué" style="background: rgba(255,255,255,0.6); backdrop-filter: blur(20px); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
-    <div class="container" style="max-width: 900px;">
-      <h2>¿Por qué aprender con <img src="daxlo-logo.png" alt="Daxlo" class="brand-inline" />?</h2>
-      <div style="margin-top: 3rem;">
-        <div class="why-item">
-          <div class="why-num">01</div>
-          <div>
-            <h3>100% personalizado</h3>
-            <p>No sigues el ritmo de nadie. Tú marcas el paso.</p>
-          </div>
-        </div>
-        <div class="why-item">
-          <div class="why-num">02</div>
-          <div>
-            <h3>Práctico desde el minuto uno</h3>
-            <p>Nada de teoría eterna. Aprendes haciendo.</p>
-          </div>
-        </div>
-        <div class="why-item">
-          <div class="why-num">03</div>
-          <div>
-            <h3>Para cualquier nivel</h3>
-            <p>Desde "nunca toqué Claude" hasta "quiero automatizar mi empresa".</p>
-          </div>
-        </div>
-        <div class="why-item">
-          <div class="why-num">04</div>
-          <div>
-            <h3>Humano, no un video</h3>
-            <p>Tienes un coach real que te escucha, te corrige y te guía.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+<tr>
+<th scope="row">Quién construye</th>
+<td class="c-coaching">Tú, con nosotros en la llamada</td>
+<td class="c-consultoria">Nosotros, con tu equipo al lado</td>
+</tr>
+<tr>
+<th scope="row">Sobre qué se trabaja</th>
+<td class="c-coaching">Un trabajo que hoy haces tú solo</td>
+<td class="c-consultoria">Un proceso de tu empresa que repiten varias personas</td>
+</tr>
+<tr>
+<th scope="row">Qué queda al final</th>
+<td class="c-coaching">Tu trabajo hecho y tú sabiendo repetirlo</td>
+<td class="c-consultoria">Un sistema corriendo y tu equipo operándolo</td>
+</tr>
+<tr>
+<th scope="row">Quién paga y cómo</th>
+<td class="c-coaching">Tú: por sesión, sin matrícula ni mensualidad</td>
+<td class="c-consultoria">La empresa: discovery pagado y precio cerrado por el sistema</td>
+</tr>
+<tr>
+<th scope="row">Cuánto toma</th>
+<td class="c-coaching">Una sesión puede bastar. Si el objetivo pide más, seguimos</td>
+<td class="c-consultoria">Semanas, repartidas en tres fases</td>
+</tr>
+<tr>
+<th scope="row">Cuándo tiene sentido</th>
+<td class="c-coaching">El trabajo cabe en tu semana y lo puedes cambiar tú</td>
+<td class="c-consultoria">Entre todos los que lo tocan se van más de 40 horas semanales</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="compare-hint">Desliza la tabla para ver las dos columnas.</p>
+<div class="route-row">
+<a href="#coaching" class="btn btn-coach">Lo m&iacute;o es aprender &rarr;</a>
+<a href="#consultoria" class="btn btn-primary">Lo m&iacute;o es un proceso &rarr;</a>
+</div>
+</div>
+</section>
+<hr class="zona-corte zona-corte-coach" />
+<div class="zona zona-coach">
 
-  <!-- ABOUT / QUIÉNES SOMOS -->
-  <section class="section about-section" data-screen-label="09 Quiénes somos">
-    <div class="container">
-      <div class="about-grid">
-        <div>
-          <div class="about-photo-wrap">
-            <img src="martin-santiago.png" alt="Martín Zárate y Santiago Ospina" class="about-photo" />
-          </div>
-          <p class="about-caption">Somos <strong>Martín Zárate</strong> y <strong>Santiago Ospina</strong></p>
-        </div>
-        <div class="about-text">
-          <div class="about-eyebrow">Quiénes somos</div>
-          <h2>Dos estudiantes obsesionados con la IA.</h2>
-          <p>
-            Somos dos estudiantes de Administración del CESA que viven y respiran inteligencia artificial. La usamos para todo: para analizar datos, crear contenido, automatizar procesos, construir páginas web, diseñar campañas y resolver problemas que antes tomaban días en minutos.
-          </p>
-          <p>
-            Pero lo que más nos mueve no es lo que <strong>nosotros</strong> hacemos con ella. Es lo que <strong>cualquier persona</strong> podría hacer si alguien se sentara a explicársela bien.
-          </p>
-          <p>
-            Creemos que la IA hace que todo sea posible. Literalmente. Y que no debería ser un privilegio de ingenieros o de quienes tienen tiempo para aprender solos. Cualquier persona, sin importar su edad, su profesión o su nivel, merece tener a alguien que le diga: <em>esto es lo que puedes hacer, y así se hace.</em>
-          </p>
-          <p>
-            Por eso creamos <img src="daxlo-logo.png" alt="Daxlo" class="brand-inline" />. Para enseñar, para contagiar, para que aprender inteligencia artificial sea tan simple como tener una conversación. Uno a uno. A tu ritmo. Sin humo, sin relleno, sin complicaciones.
-          </p>
-          <p>
-            Queremos construir una cultura donde la tecnología no dé miedo sino curiosidad. Donde la gente no se quede atrás sino que vaya adelante. Donde la respuesta a <em>"¿puedo aprender IA?"</em> sea siempre la misma:
-          </p>
-          <p class="about-kicker"><span class="gradient-text">Hazlo.</span></p>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- PORTADA 01 -->
+<div id="coaching" class="section zona-portada" data-screen-label="05 Portada 01">
+<div class="container">
+<div class="zona-ord" aria-hidden="true">01</div>
+<div class="zona-portada-txt">
+<span class="zona-para">Para ti</span>
+<h2>Coaching 1 a 1</h2>
+<p class="zona-sub">Traes un trabajo tuyo que hoy te toma horas y lo dejas funcionando antes de colgar. T&uacute; escribes, nosotros corregimos en el momento.</p>
+</div>
+</div>
+</div>
+<section class="section" data-screen-label="06 Problema persona">
+<div class="container">
+<div class="eyebrow coach">Coaching 1 a 1</div>
+<h2>Abriste ChatGPT, te funcionó una vez y ahí quedó.</h2>
+<p class="section-lead">
+Lo que te falta no es información. Está toda en internet, y gratis.
+</p>
+<div class="grid grid-3">
 
-  <!-- FORM / SCHEDULE -->
-  <section id="agendar" class="section" data-screen-label="10 Agendar">
-    <div class="container">
-      <div class="form-section">
-        <div id="formContainer">
-          <h2>Tu primer paso es una conversación.</h2>
-          <p class="form-sub">
-            Agenda una llamada de diagnóstico gratuita de 15 minutos.
-            Nos cuentas qué quieres aprender y te decimos cómo te podemos ayudar.
-          </p>
-          <form id="leadForm" class="form-grid" novalidate>
-            <div class="form-row">
-              <label class="form-label" for="nombre">Nombre completo *</label>
-              <input type="text" class="form-input" id="nombre" name="nombre" required placeholder="Tu nombre" aria-describedby="err-nombre" />
-              <span class="field-error" id="err-nombre" role="alert"></span>
-            </div>
-            <div class="grid grid-2" style="gap: 1.25rem;">
-              <div class="form-row">
-                <label class="form-label" for="whatsapp">WhatsApp *</label>
-                <input type="tel" class="form-input" id="whatsapp" name="whatsapp" required placeholder="+57 300 123 4567" aria-describedby="err-whatsapp" />
-                <span class="field-error" id="err-whatsapp" role="alert"></span>
-              </div>
-              <div class="form-row">
-                <label class="form-label" for="email">Correo electrónico *</label>
-                <input type="email" class="form-input" id="email" name="email" required placeholder="tu@correo.com" aria-describedby="err-email" />
-                <span class="field-error" id="err-email" role="alert"></span>
-              </div>
-            </div>
-            <div class="form-row">
-              <label class="form-label" for="interes">¿Qué te gustaría aprender de IA? <span style="color: rgba(255,255,255,0.5); font-weight: 400;">(opcional)</span></label>
-              <textarea class="form-input" id="interes" name="interes" placeholder="Cuéntanos un poco para preparar la llamada..."></textarea>
-            </div>
+<div class="card">
+<div class="icon-box coach">
+<svg viewBox="0 0 24 24" fill="none" stroke="#0F8FBA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+</div>
+<h3>El tutorial se rompe en tu excepción</h3>
+<p>Miras a alguien resolver un ejemplo limpio en diez minutos. Tu archivo real tiene excepciones, y ahí el video se acaba.</p>
+</div>
+<div class="card">
+<div class="icon-box coach">
+<svg viewBox="0 0 24 24" fill="none" stroke="#0F8FBA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line>
+</svg>
+</div>
+<h3>Nadie te corrige mientras lo haces</h3>
+<p>Escribes una instrucción, sale algo aceptable y lo dejas ahí. Dos horas después tienes un resultado y ninguna explicación de por qué sirvió.</p>
+</div>
+<div class="card">
+<div class="icon-box coach">
+<svg viewBox="0 0 24 24" fill="none" stroke="#0F8FBA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line><circle cx="12" cy="12" r="10"></circle>
+</svg>
+</div>
+<h3>Y el viernes vuelve</h3>
+<p>Usas la herramienta para redactar correos más rápido. El informe que te ocupa el viernes lo sigues escribiendo desde cero.</p>
+</div>
+</div>
+</div>
+</section>
 
-            <!-- Honeypot: humans don't see it, bots fill it. If it comes back non-empty, we know it's spam. -->
-            <div class="hp-field" aria-hidden="true">
-              <label for="website">No llenes este campo</label>
-              <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
-            </div>
+<!-- QUÉ ES COACHING -->
+<section class="section" data-screen-label="07 Qué es coaching">
+<div class="container" style="max-width: 900px; text-align: center;">
+<h2>Aquí construyes tú. Nosotros estamos en la llamada mientras lo haces.</h2>
+<p style="font-size: 1.2rem; line-height: 1.75; margin: 2rem 0;">
+Traes un trabajo tuyo que hoy te toma horas. El informe del viernes, la propuesta que no has escrito, el archivo que no cuadra. Lo dejas funcionando antes de colgar. Sales con eso hecho, no con apuntes.
+</p>
+<p class="kicker-linea">
+Si nadie toca el teclado de tu lado, la sesión no sirve.
+</p>
+</div>
+</section>
 
-            <button type="submit" id="submitBtn" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 1.2rem; padding: 1.4rem; margin-top: 0.5rem;">
-              ¡Hazlo! Agenda tu llamada →
-            </button>
-            <div id="formStatus" class="form-status" role="status" aria-live="polite"></div>
-            <p class="form-meta">Gratis · 15 minutos · Te contactamos por WhatsApp</p>
-          </form>
-        </div>
-        <div id="successContainer" class="hidden success-state">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-          </svg>
-          <h2>¡Listo! Nos pondremos en contacto.</h2>
-          <p style="font-size: 1.1rem; max-width: 500px; margin: 0 auto 0.5rem;">
-            Te escribiremos por WhatsApp para coordinar tu llamada de diagnóstico.
-          </p>
-          <a href="https://wa.me/573203848586" class="btn btn-whatsapp">
-            <svg viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px;">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path>
-            </svg>
-            Escríbenos directo por WhatsApp
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- PASOS COACHING -->
+<section class="section" data-screen-label="08 Pasos coaching">
+<div class="container">
+<h2>Quince minutos, un plan, y a construir.</h2>
+<p class="section-lead">
+Pagas por sesión. No hay matrícula ni mensualidad.
+</p>
+<div class="timeline">
 
-  <!-- FAQ -->
-  <section class="section" data-screen-label="11 FAQ" style="background: rgba(255,255,255,0.6); backdrop-filter: blur(20px); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
-    <div class="container" style="max-width: 800px;">
-      <h2>Preguntas frecuentes</h2>
-      <div style="margin-top: 3rem;">
-        <div class="faq-item">
-          <div class="faq-q"><span>¿Necesito saber algo de tecnología?</span><span class="faq-icon">▼</span></div>
-          <div class="faq-a"><p>No. Empezamos desde tu nivel, sea cual sea.</p></div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q"><span>¿Cómo son las sesiones?</span><span class="faq-icon">▼</span></div>
-          <div class="faq-a"><p>Virtuales, 1 a 1 con tu coach, por videollamada. Prácticas y a tu ritmo.</p></div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q"><span>¿Cuánto cuesta?</span><span class="faq-icon">▼</span></div>
-          <div class="faq-a"><p>La llamada de diagnóstico es gratis. Las sesiones de coaching tienen precios accesibles que te compartimos en la llamada según tu plan.</p></div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q"><span>¿Cuántas sesiones necesito?</span><span class="faq-icon">▼</span></div>
-          <div class="faq-a"><p>Depende de lo que quieras aprender. Puede ser desde 1 sesión hasta un plan de varias semanas. Lo definimos juntos.</p></div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q"><span>¿Puedo elegir cualquier tema?</span><span class="faq-icon">▼</span></div>
-          <div class="faq-a"><p>Sí. Claude, ChatGPT, automatizaciones, Excel, marketing, crear webs, videos, lo que necesites.</p></div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q"><span>¿Funciona para mi negocio?</span><span class="faq-icon">▼</span></div>
-          <div class="faq-a"><p>Absolutamente. Muchos de nuestros alumnos aprenden IA aplicada directamente a su negocio o trabajo.</p></div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q"><span>¿Cómo pago?</span><span class="faq-icon">▼</span></div>
-          <div class="faq-a"><p>Nequi, Daviplata, transferencia o tarjeta.</p></div>
-        </div>
-      </div>
-      <div class="center-cta">
-        <a href="#agendar" class="btn btn-primary">Agenda tu llamada gratis →</a>
-      </div>
-    </div>
-  </section>
+<div class="tl-item">
+<div class="tl-rail"><div class="tl-num">1</div></div>
+<div class="tl-body">
+<h3>Llamada de quince minutos</h3>
+<p>Nos cuentas en qué se te va la semana y qué trabajo quieres quitarte de encima. Miramos si eso se resuelve con IA hoy y con qué herramienta. Si no se resuelve, te lo decimos ahí mismo y no te vendemos nada. Si lo hacen varias personas de una empresa, la conversación pasa a consultoría.</p>
+</div>
+</div>
+<div class="tl-item">
+<div class="tl-rail"><div class="tl-num">2</div></div>
+<div class="tl-body">
+<h3>Definimos con qué arrancas</h3>
+<p>Antes de la primera sesión acordamos el caso con el que trabajas y el orden de las sesiones. Si nunca has usado IA en tu trabajo, la primera es de fundamentos. Aprendes a darle contexto a la herramienta y a corregirla cuando se inventa cosas. Si ya la usas todos los días, empezamos directo en tu caso.</p>
+</div>
+</div>
+<div class="tl-item">
+<div class="tl-rail"><div class="tl-num">3</div></div>
+<div class="tl-body">
+<h3>Sesiones donde construyes</h3>
+<p>Trabajas en pantalla compartida sobre tu propio archivo. Escribes tú, pruebas tú, y corregimos en el momento en que algo no sale. Cada sesión cierra con una parte de tu trabajo funcionando y con el siguiente paso escrito. Sales con las instrucciones para repetirlo el lunes. La siguiente arranca desde ahí, no desde cero.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="container" style="text-align: center;">
-      <img src="daxlo-logo.png" alt="Daxlo" style="height: 4rem; margin: 0 auto 1rem;" />
-      <p class="gradient-text" style="font-size: 1.5rem; font-weight: 900;">Aprende. Aplica. Avanza.</p>
-      <div class="social-row">
-        <a href="https://www.instagram.com/daxlo.co/?hl=es" target="_blank" rel="noopener" class="social-link" aria-label="Instagram">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg>
-        </a>
-        <a href="#" class="social-link" aria-label="TikTok">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
-        </a>
-        <a href="#" class="social-link" aria-label="YouTube">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-        </a>
-        <a href="https://wa.me/573203848586" target="_blank" rel="noopener" class="social-link" aria-label="WhatsApp">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        </a>
-      </div>
-      <p style="margin-bottom: 0.6rem; color: var(--text-muted);"><a href="/cdn-cgi/l/email-protection#ff8b9a9e92bf9b9e879390d19c90" style="color: inherit; text-decoration: none;"><span class="__cf_email__" data-cfemail="15617074785571746d797a3b767a">[email&#160;protected]</span></a></p>
-      <p style="color: var(--text-dim); font-size: 0.85rem;">© 2026 Daxlo. Todos los derechos reservados.</p>
-    </div>
-  </footer>
+<!-- QUÉ APRENDER -->
+<section class="section" data-screen-label="09 Qué aprender">
+<div class="container">
+<h2>T&uacute; pones el tema.</h2>
+<p class="section-lead">
+Estos son los que m&aacute;s nos piden. Si el tuyo no est&aacute; ac&aacute;, tambi&eacute;n lo trabajamos.
+</p>
+<div class="pills-wrap">
+<span class="pill">Claude y ChatGPT desde cero</span><span class="pill">Prompting avanzado</span><span class="pill">IA para tu negocio</span><span class="pill">Automatizaciones con Make y n8n</span><span class="pill">Excel y an&aacute;lisis de datos con IA</span><span class="pill">Crear p&aacute;ginas web sin programar</span><span class="pill">Marketing y contenido con IA</span><span class="pill">Productividad personal</span><span class="pill">Investigaci&oacute;n y escritura</span>
+<span class="pill featured">Lo que necesites</span>
+</div>
+</div>
+</section>
 
-  <!-- Mobile sticky CTA -->
-  <div class="mobile-cta">
-    <a href="#agendar" class="btn btn-primary">Agenda tu llamada gratis →</a>
-  </div>
+<!-- CUÁNDO SIRVE -->
+<section class="section" data-screen-label="10 Cuándo sirve">
+<div class="container">
+<h2>¿Esto es para ti?</h2>
+<p class="section-lead">
+El coaching se justifica cuando el trabajo lo haces tú y lo vas a repetir. Si entre sesión y sesión no vuelves a abrir la herramienta, no avanzas. Preferimos decirlo antes de cobrarte.
+</p>
+<div class="qual-box coach">
+<p class="qual-q">
+Piensa en el trabajo que más tiempo te quitó esta semana. ¿Lo haces tú de principio a fin, o pasa por otras personas antes de quedar listo?
+</p>
+<p class="qual-a">
+Si lo haces tú de principio a fin, arrancas con una sesión y decides después si sigues. Si pasa por varias manos y entre todas se van más de <strong>40 horas semanales</strong>, eso es un proyecto de consultoría. Te lo decimos en la misma llamada y no te vendemos sesiones.
+</p>
+</div>
+<div class="center-cta">
+<a href="#agendar" class="btn btn-coach">Agendar mi llamada &rarr;</a>
+</div>
+</div>
+</section>
+</div>
+<hr class="zona-corte zona-corte-cons" />
+<div class="zona zona-cons">
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<!-- PORTADA 02 -->
+<div id="consultoria" class="section zona-portada" data-screen-label="11 Portada 02">
+<div class="container">
+<div class="zona-ord" aria-hidden="true">02</div>
+<div class="zona-portada-txt">
+<span class="zona-para">Para tu empresa</span>
+<h2>Consultor&iacute;a de implementaci&oacute;n</h2>
+<p class="zona-sub">Un proceso que repiten varias personas y se lleva m&aacute;s de cuarenta horas a la semana. Lo construimos con tu equipo al lado y ellos quedan oper&aacute;ndolo.</p>
+</div>
+</div>
+</div>
+<section class="section" data-screen-label="12 Problema empresa">
+<div class="container">
+<div class="eyebrow">Consultoría de implementación</div>
+<h2>El mercado te deja a mitad de camino.</h2>
+<p class="section-lead">
+Hay dos formas de comprar IA hoy, y las dos terminan igual.
+</p>
+<div class="grid grid-3">
+
+<div class="card">
+<div class="icon-box">
+<svg viewBox="0 0 24 24" fill="none" stroke="var(--action)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+<polyline points="16 17 21 12 16 7"></polyline>
+<line x1="21" y1="12" x2="9" y2="12"></line>
+</svg>
+</div>
+<h3>Las agencias construyen y se van</h3>
+<p>El sistema funciona hasta que algo cambia. Entonces nadie adentro sabe tocarlo y quedas dependiendo del proveedor para siempre.</p>
+</div>
+
+<div class="card">
+<div class="icon-box">
+<svg viewBox="0 0 24 24" fill="none" stroke="var(--action)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+<path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+</svg>
+</div>
+<h3>Los cursos explican y desaparecen</h3>
+<p>Tu equipo entiende el concepto pero nunca construyó nada con tus datos, tus procesos y tus casos raros. El lunes siguiente todo sigue igual.</p>
+</div>
+
+<div class="card">
+<div class="icon-box">
+<svg viewBox="0 0 24 24" fill="none" stroke="var(--action)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="10"></circle>
+<polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+</div>
+<h3>Y el proceso sigue ahí</h3>
+<p>Mientras tanto alguien en tu empresa abre correos, copia datos a una hoja de cálculo y lo repite mañana. Todos los días.</p>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- QUÉ HACEMOS -->
+<section class="section" data-screen-label="13 Qué hacemos">
+<div class="container" style="max-width: 900px; text-align: center;">
+<h2>Construimos al lado de tu equipo. Y les transferimos la operación antes de salir.</h2>
+<p style="font-size: 1.2rem; line-height: 1.75; margin: 2rem 0;">
+Hacemos las dos cosas al tiempo: levantamos el proceso real, construimos el sistema
+con tus datos y entrenamos a las personas que lo van a operar todos los días.
+</p>
+<p class="kicker-linea">
+Salir es parte del contrato, no un accidente.
+</p>
+</div>
+</section>
+
+<!-- CÓMO FUNCIONA -->
+<section class="section" data-screen-label="14 Cómo funciona">
+<div class="container">
+<h2>Tres fases. Sabes qué pasa en cada una.</h2>
+<p class="section-lead">
+Cobramos por lo entregado, no por horas trabajadas.
+</p>
+<div class="grid grid-3">
+
+<div class="card">
+<div class="step-num">1</div>
+<h3>Discovery pagado</h3>
+<p>
+Levantamos el proceso como funciona de verdad, no como está en el manual.
+Contrastamos las reglas que nos cuentan contra los datos reales y sacamos a la luz
+las contradicciones. Sin esto no escribimos una línea de código.
+</p>
+</div>
+
+<div class="card">
+<div class="step-num">2</div>
+<h3>Construcción</h3>
+<p>
+Precio cerrado, definido en el discovery. El alcance se diseña para entregar en semanas.
+Tu equipo participa en la construcción: cuando el sistema esté listo, ya lo conocen.
+</p>
+</div>
+
+<div class="card">
+<div class="step-num">3</div>
+<h3>Traspaso y operación</h3>
+<p>
+Tu equipo opera el sistema. Nosotros acompañamos mientras haga falta y ajustamos
+lo que el uso real vaya pidiendo. El objetivo es que no nos necesites.
+</p>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- QUÉ AUTOMATIZAMOS -->
+<section class="section" data-screen-label="15 Qué automatizamos">
+<div class="container">
+<h2>Procesos documentales de alto volumen.</h2>
+<p class="section-lead">
+Datos que viajan por correo y alguien copia a mano. Si tu proceso se parece a
+alguno de estos, hay algo que automatizar.
+</p>
+<div class="pills-wrap">
+<span class="pill">Facturas de proveedor que llegan por correo</span>
+<span class="pill">Cotizaciones que se arman a mano</span>
+<span class="pill">Datos que se copian de un correo a una hoja</span>
+<span class="pill">Extracción de datos de PDF</span>
+<span class="pill">Conciliación de documentos</span>
+<span class="pill">Radicación y seguimiento</span>
+<span class="pill">Reportes que alguien arma cada semana</span>
+<span class="pill">Solicitudes repetidas que alguien responde</span>
+<span class="pill">Consulta de portales y captura de datos</span>
+<span class="pill">Validación de reglas de negocio</span>
+</div>
+<p class="section-lead" style="margin-bottom: 0; font-size: 1.05rem;">
+El sistema produce borradores que una persona revisa. Si un flujo no debe salir solo,
+lo diseñamos para que no salga solo.
+</p>
+</div>
+</section>
+
+<!-- CALIFICA -->
+<section class="section" data-screen-label="16 Califica">
+<div class="container">
+<h2>¿Esto es para tu empresa?</h2>
+<p class="section-lead">
+Un proyecto de implementación se justifica cuando el proceso consume cerca de
+una persona de tiempo completo. Por debajo de eso te sirve más el coaching, y te lo decimos.
+</p>
+<div class="qual-box">
+<p class="qual-q">
+Sumando a todas las personas que hoy tocan el proceso, ¿cuántas horas a la semana
+se van en hacerlo, y qué perfil las hace?
+</p>
+<p class="qual-a">
+Si la respuesta pasa de <strong>40 horas semanales</strong>, hay un proyecto.
+Si no llegas, te lo decimos en la primera conversación y no te cotizamos nada.
+</p>
+</div>
+<div class="center-cta">
+<a href="#agendar" class="btn btn-primary">Cu&eacute;ntanos tu proceso &rarr;</a>
+</div>
+</div>
+</section>
+
+<!-- POR QUÉ -->
+<section class="section" data-screen-label="17 Por qué">
+<div class="container" style="max-width: 900px;">
+<h2>¿Por qué nosotros y no una agencia?</h2>
+<div style="margin-top: 3rem;">
+
+<div class="why-item">
+<div class="why-num">01</div>
+<div>
+<h3>Te transferimos la operación</h3>
+<p>Tu equipo queda capaz de mantener y ajustar el sistema. No vendemos dependencia.</p>
+</div>
+</div>
+
+<div class="why-item">
+<div class="why-num">02</div>
+<div>
+<h3>Discovery pagado, no diagnóstico gratis</h3>
+<p>Cobramos desde la primera hora porque el levantamiento es el trabajo, no la venta. Y si en el discovery el proyecto no se justifica, te lo decimos.</p>
+</div>
+</div>
+
+<div class="why-item">
+<div class="why-num">03</div>
+<div>
+<h3>Precio cerrado por el sistema</h3>
+<p>Sabes cuánto cuesta antes de arrancar. Sin reloj corriendo ni sorpresas a mitad del proyecto.</p>
+</div>
+</div>
+
+<div class="why-item">
+<div class="why-num">04</div>
+<div>
+<h3>Los dos socios, en cada proyecto</h3>
+<p>Martín y Santiago trabajan juntos en todo lo que sale de Daxlo. No hay un junior aprendiendo con tu operación.</p>
+</div>
+</div>
+
+</div>
+</div>
+</section>
+</div>
+<hr class="zona-corte zona-corte-cons" />
+
+<!-- QUIÉNES SOMOS -->
+<section class="section about-section" data-screen-label="18 Quiénes somos">
+<div class="container">
+<div class="about-grid">
+<div>
+<div class="about-photo-wrap">
+<img src="martin-santiago.png" alt="Martín Zárate y Santiago Ospina" class="about-photo" />
+</div>
+<p class="about-caption">Somos <strong>Martín Zárate</strong> y <strong>Santiago Ospina</strong></p>
+</div>
+<div class="about-text">
+<div class="about-eyebrow">Quiénes somos</div>
+<h2>Dos socios que construyen.</h2>
+<p>
+Somos egresados de Administración del CESA y llevamos la IA metida en el trabajo diario:
+leer datos, automatizar procesos, armar sistemas que hacen solos lo que antes tomaba horas.
+</p>
+<p>
+Fundamos <img src="daxlo-logo.png" alt="Daxlo" class="brand-inline" /> por algo que vimos
+repetido: las empresas compran IA y quedan con un sistema que no entienden, o con un
+equipo que entendió la teoría y no cambió nada. Las dos salidas dejan el proceso igual.
+</p>
+<p>
+Por eso trabajamos al revés. Construimos adentro, con tu gente al lado, y no cerramos
+un proyecto hasta que alguien de tu equipo pueda sostenerlo sin nosotros.
+</p>
+<p>
+En todo lo que sale de Daxlo estamos <strong>los dos</strong>. En el discovery, en la
+construcción y en el traspaso.
+</p>
+<p class="about-kicker">Implementamos la IA. <span class="gradient-text">Transferimos la capacidad.</span></p>
+</div>
+</div>
+</div>
+</section>
+<section id="agendar" class="section" data-screen-label="19 Agendar">
+<div class="container">
+<div class="form-section">
+<div id="formContainer">
+<h2>Cuéntanos qué te está consumiendo horas.</h2>
+<p class="form-sub">
+Una primera conversación sin costo. Te decimos cuál de las dos te sirve.
+Y si no te sirve ninguna, también te lo decimos.
+</p>
+<form id="leadForm" class="form-grid" novalidate>
+
+<div class="form-row">
+<label class="form-label" for="linea">¿Qué te interesa? *</label>
+<select class="form-input" id="linea" name="linea" required aria-describedby="err-linea">
+<option value="">Selecciona una opción</option>
+<option value="coaching">Coaching 1 a 1 para mí</option>
+<option value="consultoria">Consultoría para mi empresa</option>
+<option value="no_se">Todavía no sé cuál me sirve</option>
+</select>
+<span class="field-error" id="err-linea" role="alert"></span>
+</div>
+
+<div class="form-row">
+<label class="form-label" for="nombre">Nombre completo *</label>
+<input type="text" class="form-input" id="nombre" name="nombre" required placeholder="Tu nombre" aria-describedby="err-nombre" />
+<span class="field-error" id="err-nombre" role="alert"></span>
+</div>
+
+<div class="grid grid-2" style="gap: 1.25rem;">
+<div class="form-row">
+<label class="form-label" for="whatsapp">WhatsApp *</label>
+<input type="tel" class="form-input" id="whatsapp" name="whatsapp" required placeholder="+57 300 123 4567" aria-describedby="err-whatsapp" />
+<span class="field-error" id="err-whatsapp" role="alert"></span>
+</div>
+<div class="form-row">
+<label class="form-label" for="email">Correo electrónico *</label>
+<input type="email" class="form-input" id="email" name="email" required placeholder="tu@correo.com" aria-describedby="err-email" />
+<span class="field-error" id="err-email" role="alert"></span>
+</div>
+</div>
+
+<div class="form-row">
+<label class="form-label" for="empresa">Empresa <span style="color: rgba(255,255,255,0.5); font-weight: 400;">(opcional)</span></label>
+<input type="text" class="form-input" id="empresa" name="empresa" placeholder="Nombre de tu empresa" />
+</div>
+
+<div class="form-row">
+<label class="form-label" for="interes">¿Qué proceso o tema tienes en mente? <span style="color: rgba(255,255,255,0.5); font-weight: 400;">(opcional)</span></label>
+<textarea class="form-input" id="interes" name="interes" placeholder="Por ejemplo: recibimos unas 400 facturas al mes por correo y alguien las pasa a mano a una hoja de cálculo."></textarea>
+</div>
+
+<!-- Honeypot: los humanos no lo ven, los bots lo llenan. Si vuelve con contenido, es spam. -->
+<div class="hp-field" aria-hidden="true">
+<label for="website">No llenes este campo</label>
+<input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+</div>
+
+<button type="submit" id="submitBtn" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 1.15rem; padding: 1.4rem; margin-top: 0.5rem;">
+Agendar la conversación &rarr;
+</button>
+<div id="formStatus" class="form-status" role="status" aria-live="polite"></div>
+<p class="form-meta">Sin costo · Te contactamos por WhatsApp</p>
+</form>
+</div>
+
+<div id="successContainer" class="hidden success-state">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+<polyline points="22 4 12 14.01 9 11.01"></polyline>
+</svg>
+<h2>Listo. Nos pondremos en contacto.</h2>
+<p style="font-size: 1.1rem; max-width: 500px; margin: 0 auto 0.5rem;">
+Te escribimos por WhatsApp para coordinar la conversación.
+</p>
+<a href="https://wa.me/573203848586" class="btn btn-whatsapp">
+<svg viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px;">
+<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path>
+</svg>
+Escríbenos directo por WhatsApp
+</a>
+</div>
+</div>
+</div>
+</section>
+
+<!-- FAQ -->
+<section class="section" data-screen-label="20 FAQ" style="background: rgba(255,255,255,0.6); backdrop-filter: blur(20px); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+<div class="container" style="max-width: 800px;">
+<h2>Preguntas frecuentes</h2>
+
+<p class="faq-group-title coach">Coaching 1 a 1</p>
+
+<div class="faq-item">
+<div class="faq-q"><span>¿Necesito saber de tecnología?</span><span class="faq-icon">&#9660;</span></div>
+<div class="faq-a"><p>No. Arrancamos desde tu nivel, sea cual sea, y con tus propios casos.</p></div>
+</div>
+
+<div class="faq-item">
+<div class="faq-q"><span>¿Cómo son las sesiones?</span><span class="faq-icon">&#9660;</span></div>
+<div class="faq-a"><p>Por videollamada, uno a uno. Prácticas: trabajas sobre algo tuyo y sales de la sesión con eso avanzado.</p></div>
+</div>
+
+<div class="faq-item">
+<div class="faq-q"><span>¿Cuántas sesiones necesito?</span><span class="faq-icon">&#9660;</span></div>
+<div class="faq-a"><p>Depende de lo que quieras lograr. Puede ser una sola o un plan de varias semanas. Lo definimos en la primera llamada.</p></div>
+</div>
+
+<div class="faq-item">
+<div class="faq-q"><span>¿Puedo elegir cualquier tema?</span><span class="faq-icon">&#9660;</span></div>
+<div class="faq-a"><p>Sí. Claude, ChatGPT, automatizaciones, análisis de datos, contenido, páginas web. Si tu tema no está en la lista, también lo trabajamos.</p></div>
+</div>
+
+<div class="faq-item">
+<div class="faq-q"><span>¿Cómo se paga?</span><span class="faq-icon">&#9660;</span></div>
+<div class="faq-a"><p>Nequi, Daviplata, transferencia o tarjeta.</p></div>
+</div>
+
+<p class="faq-group-title">Consultoría para empresas</p>
+
+<div class="faq-item">
+<div class="faq-q"><span>¿Cuánto cuesta un proyecto?</span><span class="faq-icon">&#9660;</span></div>
+<div class="faq-a"><p>Depende del proceso. El precio se cierra en el discovery, cuando ya sabemos qué hay que construir, y no se mueve después. Lo conversamos en la primera llamada.</p></div>
+</div>
+
+<div class="faq-item">
+<div class="faq-q"><span>¿Por qué el discovery se paga?</span><span class="faq-icon">&#9660;</span></div>
+<div class="faq-a"><p>Porque es trabajo, no una visita comercial. Levantamos el proceso real, revisamos tus datos y encontramos las contradicciones entre lo que dice el manual y lo que pasa de verdad. De ahí sale el alcance y el precio cerrado del sistema. Sin discovery no escribimos código.</p></div>
+</div>
+
+<div class="faq-item">
+<div class="faq-q"><span>¿Cuánto se demora un proyecto?</span><span class="faq-icon">&#9660;</span></div>
+<div class="faq-a"><p>Semanas, no trimestres. El alcance se diseña para que quepa en ese tiempo: preferimos entregar un proceso funcionando y después ampliar, que prometer todo y entregar en seis meses.</p></div>
+</div>
+
+<div class="faq-item">
+<div class="faq-q"><span>¿Qué pasa cuando ustedes se van?</span><span class="faq-icon">&#9660;</span></div>
+<div class="faq-a"><p>Tu equipo opera el sistema. Esa es la idea desde el primer día: construimos con ellos al lado justamente para que no queden dependiendo de nosotros. Después acompañamos la operación mientras haga falta.</p></div>
+</div>
+
+<div class="faq-item">
+<div class="faq-q"><span>¿El sistema toma decisiones solo?</span><span class="faq-icon">&#9660;</span></div>
+<div class="faq-a"><p>Solo si tiene sentido que las tome. Por defecto diseñamos sistemas que producen borradores y una persona revisa antes de que algo salga. Dónde va ese control lo definimos contigo en el discovery.</p></div>
+</div>
+
+<div class="faq-item">
+<div class="faq-q"><span>¿Y si mi proceso no da para un proyecto?</span><span class="faq-icon">&#9660;</span></div>
+<div class="faq-a"><p>Te lo decimos en la primera conversación y no te cotizamos nada. Si el proceso no consume horas suficientes, el proyecto no se paga solo. En ese caso el coaching 1 a 1 suele resolver más por menos.</p></div>
+</div>
+
+<div class="center-cta">
+<a href="#agendar" class="btn btn-primary">Agendar una conversación &rarr;</a>
+</div>
+</div>
+</section>
+<!-- FOOTER -->
+<footer>
+<div class="container" style="text-align: center;">
+<img src="daxlo-logo.png" alt="Daxlo" style="height: 4rem; margin: 0 auto 1rem;" />
+<p class="gradient-text" style="font-size: 1.35rem; font-weight: 800;">Implementamos la IA. Transferimos la capacidad.</p>
+<div class="social-row">
+<a href="https://www.instagram.com/daxlo.co/?hl=es" target="_blank" rel="noopener" class="social-link" aria-label="Instagram">
+<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg>
+</a>
+<a href="https://wa.me/573203848586" target="_blank" rel="noopener" class="social-link" aria-label="WhatsApp">
+<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+</div>
+<p style="margin-bottom: 0.6rem; color: var(--text-muted);"><a href="mailto:hola@daxlo.co" style="color: inherit; text-decoration: none;">hola@daxlo.co</a></p>
+<p style="color: var(--text-dim); font-size: 0.85rem;">&copy; 2026 Daxlo. Todos los derechos reservados.</p>
+</div>
+</footer>
+
+<!-- CTA fijo en móvil -->
+<div class="mobile-cta">
+<a href="#agendar" class="btn btn-primary">Agendar una conversación &rarr;</a>
+</div>
+<script>
     // FAQ accordion
     document.querySelectorAll('.faq-q').forEach(q => {
       q.addEventListener('click', () => {
@@ -1163,7 +1905,7 @@
       }
 
       function clearAllFieldErrors() {
-        ['nombre', 'whatsapp', 'email'].forEach(id => setFieldError(id, ''));
+        ['linea', 'nombre', 'whatsapp', 'email'].forEach(id => setFieldError(id, ''));
       }
 
       function setFormStatus(message, isError) {
@@ -1172,9 +1914,11 @@
       }
 
       // Clear a field's error as soon as the user starts fixing it.
+      // The <select> reports through 'change', the text inputs through 'input'.
       ['nombre', 'whatsapp', 'email'].forEach(id => {
         document.getElementById(id).addEventListener('input', () => setFieldError(id, ''));
       });
+      document.getElementById('linea').addEventListener('change', () => setFieldError('linea', ''));
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -1182,13 +1926,16 @@
         clearAllFieldErrors();
         setFormStatus('', false);
 
+        const linea = document.getElementById('linea').value;
         const nombre = document.getElementById('nombre').value.trim();
         const whatsapp = document.getElementById('whatsapp').value.trim();
         const correo = document.getElementById('email').value.trim();
+        const empresa = document.getElementById('empresa').value.trim();
         const interes = document.getElementById('interes').value.trim();
         const website = document.getElementById('website').value;
 
         let hasError = false;
+        if (!linea) { setFieldError('linea', 'Dinos qué te interesa.'); hasError = true; }
         if (!nombre) { setFieldError('nombre', 'Cuéntanos tu nombre.'); hasError = true; }
         if (!whatsapp) { setFieldError('whatsapp', 'Necesitamos tu WhatsApp para contactarte.'); hasError = true; }
         if (!correo) {
@@ -1211,16 +1958,18 @@
         // so the browser skips the OPTIONS preflight that Apps Script can't answer.
         // Don't set Content-Type manually — the browser sets the multipart boundary.
         const formData = new FormData();
+        formData.append('linea', linea);
         formData.append('nombre', nombre);
         formData.append('whatsapp', whatsapp);
         formData.append('correo', correo);
+        formData.append('empresa', empresa || '');
         formData.append('interes', interes || '');
         formData.append('website', website);
         formData.append('tiempo_llenado_segundos', String(tiempo_llenado_segundos));
         formData.append('origen', window.location.origin);
 
         submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Enviando...';
+        submitBtn.innerHTML = 'Enviando…';
         setFormStatus('Enviando tus datos…', false);
 
         function showSuccess() {
