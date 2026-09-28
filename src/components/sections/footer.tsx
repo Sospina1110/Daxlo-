@@ -1,4 +1,5 @@
-import { Mail, MessageCircle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
+import { CorreoContacto } from "@/components/ui/correo-contacto";
 import { contacto, footer, herramientas } from "@/content/copy";
 
 // Glifo de Instagram de simple-icons: lucide ya no trae iconos de marcas.
@@ -45,9 +46,7 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href={`mailto:${contacto.correo}`} className="inline-flex items-center gap-2 text-white/60 hover:text-white">
-                  <Mail size={16} /> {contacto.correo}
-                </a>
+                <CorreoContacto className="inline-flex items-center gap-2 text-white/60 hover:text-white" />
               </li>
               <li>
                 <a href={contacto.instagram} target="_blank" rel="noopener" className="inline-flex items-center gap-2 text-white/60 hover:text-white">
