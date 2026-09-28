@@ -131,6 +131,22 @@ export function IconTile({ children, tono = "dual", className }: { children: Rea
   );
 }
 
+// La X de Daxlo (blanca, cuña cian) en un círculo casi negro: el avatar de
+// Daxlo en las maquetas de chat.
+export function MarcaX({ tamano = 32, className }: { tamano?: number; className?: string }) {
+  const ancho = Math.round(tamano * 0.56);
+  return (
+    <span
+      aria-hidden
+      className={cn("inline-flex shrink-0 items-center justify-center rounded-full border border-line-2 bg-ink", className)}
+      style={{ width: tamano, height: tamano }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/img/daxlo-x.png" alt="" width={ancho} height={Math.round((ancho * 162) / 219)} />
+    </span>
+  );
+}
+
 // Resplandor difuso de fondo.
 export function Glow({ className, color }: { className?: string; color: string }) {
   return <span aria-hidden className={cn("pointer-events-none absolute rounded-full blur-[110px]", className)} style={{ background: color }} />;

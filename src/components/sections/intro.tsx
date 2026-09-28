@@ -3,7 +3,7 @@
 import { motion } from "motion/react";
 import { ArrowRight, Bell, FileText, Mail, Sheet } from "lucide-react";
 import { comparacion, dosFormas, franjaHerramientas, herramientas } from "@/content/copy";
-import { Badge, GlowButton, WindowDots } from "@/components/ui/primitives";
+import { Badge, GlowButton, MarcaX, WindowDots } from "@/components/ui/primitives";
 import { Marquee, Puntos, SectionHeading, ToolLogo } from "@/components/ui/blocks";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { cn, EASE, type Tono } from "@/lib/utils";
@@ -121,9 +121,7 @@ function VisualCoaching() {
           transition={{ duration: 0.6, delay: 0.5, ease: EASE }}
           className="absolute bottom-4 right-4 flex max-w-[230px] items-start gap-2 rounded-xl border border-line-2 bg-ink-2/95 p-3 shadow-xl"
         >
-          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan to-blue text-[11px] font-bold">
-            D
-          </span>
+          <MarcaX tamano={24} className="mt-0.5" />
           <span className="text-[12.5px] leading-snug text-white/85">Ahí se traba. Dile qué hacer con las filas vacías.</span>
         </motion.div>
       </div>
@@ -161,7 +159,7 @@ function VisualConsultoria() {
       <Nodo x={17} y={50} icono={<Mail size={14} />}>Correo nuevo</Nodo>
       <span className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-2xl border border-blue-bright/40 bg-ink shadow-[0_0_40px_rgba(61,90,255,0.55)]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/favicon-32.png" alt="" width={26} height={26} className="rounded-md" />
+        <img src="/img/daxlo-x.png" alt="" width={30} height={22} />
       </span>
       {salidas.map((s) => (
         <Nodo key={s.y} x={82} y={s.y} icono={s.i}>

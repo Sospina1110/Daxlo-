@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { motion, useInView } from "motion/react";
 import { CalendarClock, Check, CircleX, Clapperboard, Circle, MonitorUp, Video } from "lucide-react";
 import { coaching } from "@/content/copy";
-import { WindowDots } from "@/components/ui/primitives";
+import { MarcaX, WindowDots } from "@/components/ui/primitives";
 import { SectionHeading } from "@/components/ui/blocks";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { TextoQueSeEscribe } from "./hero";
@@ -118,9 +118,7 @@ function VentanaSesion() {
                 className={cn("flex items-end gap-3", m.de === "tu" ? "justify-end" : "justify-start")}
               >
                 {m.de === "daxlo" && (
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan to-blue text-[13px] font-bold text-white">
-                    D
-                  </span>
+                  <MarcaX tamano={32} />
                 )}
                 <p
                   className={cn(
