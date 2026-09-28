@@ -1,12 +1,9 @@
-"use client";
-
-import { motion } from "motion/react";
 import { ArrowRight, Bell, FileText, Mail, Sheet } from "lucide-react";
 import { comparacion, dosFormas, franjaHerramientas, herramientas } from "@/content/copy";
 import { Badge, GlowButton, MarcaX, WindowDots } from "@/components/ui/primitives";
 import { Marquee, Puntos, SectionHeading, ToolLogo } from "@/components/ui/blocks";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
-import { cn, EASE, type Tono, glow } from "@/lib/utils";
+import { cn, type Tono, glow } from "@/lib/utils";
 
 // ------------------------------------------------ Franja bajo el hero
 
@@ -104,26 +101,20 @@ function VisualCoaching() {
             </div>
           ))}
         </div>
-        <motion.div
-          className="absolute left-[46%] top-[118px] flex items-start gap-1"
-          animate={{ x: [0, 14, 4, 0], y: [0, -6, 4, 0] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        >
+        <div className="animate-paseo absolute left-[46%] top-[118px] flex items-start gap-1">
           <svg width="16" height="18" viewBox="0 0 16 18">
             <path d="M1 1l13 7-6 1.6L5 16z" fill="#29c4f5" stroke="#0d0e14" strokeWidth="1.2" />
           </svg>
           <span className="mt-3 rounded-md bg-cyan px-1.5 py-0.5 text-[11px] font-semibold text-ink">Tú</span>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.5, ease: EASE }}
+        </div>
+        <div
+          data-revelar=""
+          style={{ ["--retraso" as string]: "0.5s", ["--y" as string]: "10px" } as React.CSSProperties}
           className="absolute bottom-4 right-4 flex max-w-[230px] items-start gap-2 rounded-xl border border-line-2 bg-ink-2/95 p-3 shadow-xl"
         >
           <MarcaX tamano={24} className="mt-0.5" />
           <span className="text-[12.5px] leading-snug text-white/85">Ahí se traba. Dile qué hacer con las filas vacías.</span>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

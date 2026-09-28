@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { MotionConfig } from "motion/react";
+import { LazyMotion, MotionConfig, domAnimation } from "motion/react";
 
 // Quien tiene activado "reducir movimiento" en su sistema ve la página sin
 // desplazamientos: las apariciones quedan solo en opacidad.
@@ -15,5 +15,12 @@ export function MotionProvider({ children }: { children: React.ReactNode }) {
     // transformaciones de Motion, como el apilado de fases.
     d.classList.remove("forzar-visible");
   }, []);
-  return <MotionConfig reducedMotion="user">{children}</MotionConfig>;
+  // LazyMotion carga solo las funciones de animación que se usan (sin layout
+  // ni arrastre). strict hace fallar cualquier <motion.x> que se cuele: todas
+  // las islas usan <m.x>.
+  return (
+    <LazyMotion features={domAnimation} strict>
+      <MotionConfig reducedMotion="user">{children}</MotionConfig>
+    </LazyMotion>
+  );
 }

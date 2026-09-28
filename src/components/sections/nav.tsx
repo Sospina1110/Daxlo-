@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
+import { AnimatePresence, m, useMotionValueEvent, useScroll } from "motion/react";
 import { Menu, X } from "lucide-react";
 import { nav } from "@/content/copy";
 import { GlowButton } from "@/components/ui/primitives";
@@ -67,7 +67,7 @@ export function Nav() {
 
       <AnimatePresence>
         {abierta && (
-          <motion.div
+          <m.div
             id="menu-movil"
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -89,7 +89,7 @@ export function Nav() {
                 Agendar una conversación
               </GlowButton>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </header>

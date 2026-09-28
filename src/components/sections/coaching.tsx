@@ -1,15 +1,12 @@
-"use client";
-
-import { useRef } from "react";
-import { motion, useInView } from "motion/react";
 import { CalendarClock, Check, CircleX, Clapperboard, Circle, MonitorUp, Video } from "lucide-react";
 import { coaching } from "@/content/copy";
 import { MarcaX, WindowDots } from "@/components/ui/primitives";
 import { SectionHeading } from "@/components/ui/blocks";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
-import { TextoQueSeEscribe } from "./hero";
-import { TarjetaCalifica, TarjetasProblema, Zona, ZonaPortada } from "./zona";
-import { cn, EASE, glow } from "@/lib/utils";
+import { TextoQueSeEscribe } from "@/components/ui/escritura";
+import { TarjetaCalifica, TarjetasProblema, Zona } from "./zona";
+import { ZonaPortada } from "./zona-portada";
+import { cn, glow } from "@/lib/utils";
 
 export function ZonaCoaching() {
   const c = coaching;
@@ -55,12 +52,9 @@ function Sesion() {
 // conversación de ningún cliente.
 function VentanaSesion() {
   const s = coaching.sesion;
-  const ref = useRef<HTMLDivElement>(null);
-  const visible = useInView(ref, { once: true, margin: "0px 0px -120px 0px" });
 
   return (
     <div
-      ref={ref}
       aria-hidden
       className="relative overflow-hidden rounded-[26px] border border-line-2 bg-ink-2/90 shadow-[0_40px_100px_rgba(0,0,0,0.5)]"
     >
@@ -110,11 +104,10 @@ function VentanaSesion() {
           </div>
           <div className="flex flex-1 flex-col justify-end gap-4 py-6">
             {s.mensajes.map((m, i) => (
-              <motion.div
+              <div
                 key={i}
-                initial={{ opacity: 0, y: 14 }}
-                animate={visible ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.55, delay: 0.3 + i * 0.75, ease: EASE }}
+                data-revelar=""
+                style={{ ["--retraso" as string]: `${0.3 + i * 0.75}s`, ["--y" as string]: "14px" } as React.CSSProperties}
                 className={cn("flex items-end gap-3", m.de === "tu" ? "justify-end" : "justify-start")}
               >
                 {m.de === "daxlo" && (
@@ -133,11 +126,11 @@ function VentanaSesion() {
                     Tú
                   </span>
                 )}
-              </motion.div>
+              </div>
             ))}
           </div>
           <div className="rounded-2xl border border-line-2 bg-ink/70 px-4 py-3.5 text-[15px] text-white/50">
-            {visible ? <TextoQueSeEscribe frases={[s.placeholder]} /> : s.placeholder}
+            <TextoQueSeEscribe frases={[s.placeholder]} />
           </div>
         </div>
       </div>
@@ -195,24 +188,21 @@ function VisualLlamada() {
 function VisualPlan() {
   // Mismo orden que el plan de la maqueta de sesión.
   const items = coaching.sesion.plan.map((p) => p.tema);
-  const ref = useRef<HTMLDivElement>(null);
-  const visible = useInView(ref, { once: true, margin: "0px 0px -60px 0px" });
   return (
-    <div ref={ref} aria-hidden className="absolute inset-0 flex items-center justify-center">
+    <div aria-hidden className="absolute inset-0 flex items-center justify-center">
       <span className="absolute -right-10 -top-12 h-48 w-48 resplandor" style={glow("41 196 245", 0.2, 1.73)} />
       <div className="relative w-[70%] rounded-2xl border border-line-2 bg-ink/85 p-4 shadow-xl">
         <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-dim">Tu plan</p>
         <ul className="mt-3 space-y-2">
           {items.map((t, i) => (
             <li key={t} className="flex items-center gap-2.5 text-[14px] text-white/85">
-              <motion.span
-                initial={{ scale: 0.4, opacity: 0 }}
-                animate={visible ? { scale: 1, opacity: 1 } : {}}
-                transition={{ duration: 0.35, delay: 0.3 + i * 0.3 }}
+              <span
+                data-revelar=""
+                style={{ ["--retraso" as string]: `${0.3 + i * 0.3}s`, ["--y" as string]: "6px" } as React.CSSProperties}
                 className="flex h-5 w-5 items-center justify-center rounded-md bg-cyan/15 text-cyan"
               >
                 <Check size={13} />
-              </motion.span>
+              </span>
               {t}
             </li>
           ))}

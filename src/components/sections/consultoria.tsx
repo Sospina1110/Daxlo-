@@ -1,30 +1,12 @@
-"use client";
-
-import { useRef } from "react";
-import { motion, useInView, useScroll, useTransform, type MotionValue } from "motion/react";
-import {
-  AlertTriangle,
-  BookOpen,
-  Check,
-  Clock,
-  FilePen,
-  FileSearch,
-  FolderOpen,
-  LogOut,
-  Mail,
-  ScanText,
-  Sheet,
-  ShieldCheck,
-  Timer,
-  Users,
-} from "lucide-react";
+import { AlertTriangle, BookOpen, Check, Clock, LogOut, Mail, ScanText, ShieldCheck, Timer, Users } from "lucide-react";
 import { consultoria } from "@/content/copy";
-import { WindowDots } from "@/components/ui/primitives";
-import { Puntos, SectionHeading } from "@/components/ui/blocks";
+import { SectionHeading } from "@/components/ui/blocks";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
-import { useMediaQuery } from "@/lib/use-media-query";
-import { cn, EASE, glow } from "@/lib/utils";
-import { TarjetaCalifica, TarjetasProblema, Zona, ZonaPortada } from "./zona";
+import { cn, glow } from "@/lib/utils";
+import { TarjetaCalifica, TarjetasProblema, Zona } from "./zona";
+import { ZonaPortada } from "./zona-portada";
+import { Apilado } from "./apilado";
+import { Lienzo } from "./lienzo";
 
 const AZUL_CLARO = "#8ea0ff";
 
@@ -50,84 +32,7 @@ export function ZonaConsultoria() {
 
 // ------------------------------------------------ Fases: tarjetas apiladas
 
-function Fases() {
-  const f = consultoria.fases;
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
-  const escritorio = useMediaQuery("(min-width: 1024px)");
-  const visuales = [<VisualDiscovery key="a" />, <VisualConstruccion key="b" />, <VisualTraspaso key="c" />];
 
-  return (
-    <section id="consultoria-fases" className="relative py-20 md:py-28">
-      <div className="container-page">
-        <SectionHeading badge={f.badge} titulo={f.titulo} sub={f.sub} tono="blue" />
-        <div ref={ref} className="relative mt-14 lg:mt-20">
-          {f.items.map((it, i) => (
-            <TarjetaApilada
-              key={it.numero}
-              indice={i}
-              total={f.items.length}
-              progreso={scrollYProgress}
-              escritorio={escritorio}
-              item={it}
-              visual={visuales[i]}
-            />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// Cada tarjeta queda fija arriba y la siguiente sube por encima, mientras las
-// anteriores se encogen un poco hacia atrás. En móvil se muestran en columna:
-// una tarjeta más alta que la pantalla no puede quedar fija sin cortarse.
-function TarjetaApilada({
-  indice,
-  total,
-  progreso,
-  escritorio,
-  item,
-  visual,
-}: {
-  indice: number;
-  total: number;
-  progreso: MotionValue<number>;
-  escritorio: boolean;
-  item: (typeof consultoria.fases.items)[number];
-  visual: React.ReactNode;
-}) {
-  const escalaFinal = 1 - (total - 1 - indice) * 0.05;
-  const escala = useTransform(progreso, [indice / total, 1], [1, escalaFinal]);
-  const alterna = indice % 2 === 1;
-
-  return (
-    <div className="lg:sticky lg:h-[88vh]" style={escritorio ? { top: 104 + indice * 28 } : undefined}>
-      <motion.article
-        style={escritorio ? { scale: escala } : undefined}
-        className="relative mb-5 w-full origin-top overflow-hidden rounded-[28px] border border-line-2 bg-[#0e1019] shadow-[0_-24px_70px_rgba(0,0,0,0.55)] lg:mb-0 lg:grid lg:min-h-[500px] lg:grid-cols-2"
-      >
-        <div className={cn("flex flex-col justify-center p-8 md:p-12", alterna && "lg:order-2")}>
-          <span className="font-display text-[15px] font-medium tracking-[0.1em]" style={{ color: AZUL_CLARO }}>
-            FASE {item.numero}
-          </span>
-          <h3 className="mt-4 text-[clamp(1.9rem,3.2vw,2.6rem)] leading-tight text-white">{item.titulo}</h3>
-          <p className="mt-4 text-[18px] leading-relaxed text-muted">{item.texto}</p>
-          <Puntos items={item.puntos} tono="blue" className="mt-7" />
-        </div>
-        <div
-          className={cn(
-            "relative min-h-[480px] overflow-hidden border-t border-line bg-gradient-to-br from-blue/25 via-ink-2 to-ink-2 sm:min-h-[340px]",
-            "lg:min-h-0 lg:border-t-0",
-            alterna ? "lg:order-1 lg:border-r" : "lg:border-l",
-          )}
-        >
-          {visual}
-        </div>
-      </motion.article>
-    </div>
-  );
-}
 
 function PanelVisual({ children, className }: { children: React.ReactNode; className?: string }) {
   return <div className={cn("relative rounded-2xl border border-line-2 bg-ink/95 p-5 shadow-2xl", className)}>{children}</div>;
@@ -210,35 +115,31 @@ function VisualConstruccion() {
 }
 
 function VisualTraspaso() {
-  const ref = useRef<HTMLDivElement>(null);
-  const visible = useInView(ref, { once: true, margin: "0px 0px -80px 0px" });
   const items = ["Entrenamiento con el equipo", "Operación acompañada", "Tu equipo hace los ajustes"];
   return (
-    <div ref={ref} aria-hidden className="absolute inset-0 flex items-center justify-center p-6">
+    <div aria-hidden className="absolute inset-0 flex items-center justify-center p-6">
       <span className="absolute -right-10 -top-10 h-64 w-64 resplandor" style={glow("61 90 255", 0.4, 1.70)} />
       <PanelVisual className="w-full max-w-[340px]">
         <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-dim">Traspaso</p>
         <ul className="mt-4 space-y-3">
           {items.map((t, i) => (
             <li key={t} className="flex items-center gap-3 text-[14px] text-white/85">
-              <motion.span
-                initial={{ scale: 0.3, opacity: 0 }}
-                animate={visible ? { scale: 1, opacity: 1 } : {}}
-                transition={{ duration: 0.35, delay: 0.4 + i * 0.35 }}
+              <span
+                data-revelar=""
+                style={{ ["--retraso" as string]: `${0.4 + i * 0.35}s`, ["--y" as string]: "6px" } as React.CSSProperties}
                 className="flex h-6 w-6 items-center justify-center rounded-md bg-mint/15 text-mint"
               >
                 <Check size={14} />
-              </motion.span>
+              </span>
               {t}
             </li>
           ))}
         </ul>
         <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-white/10">
-          <motion.div
-            className="h-full rounded-full bg-gradient-to-r from-blue-bright to-cyan"
-            initial={{ width: "0%" }}
-            animate={visible ? { width: "100%" } : {}}
-            transition={{ duration: 1.4, delay: 0.4, ease: EASE }}
+          <div
+            data-revelar=""
+            style={{ ["--retraso" as string]: "0.4s" } as React.CSSProperties}
+            className="crecer h-full rounded-full bg-gradient-to-r from-blue-bright to-cyan"
           />
         </div>
         <p className="mt-4 text-center text-[13px] text-white/70">Lo opera tu equipo</p>
@@ -249,32 +150,20 @@ function VisualTraspaso() {
 
 // ------------------------------------------------ Qué automatizamos: el lienzo
 
-const iconosNodo: Record<string, React.ReactNode> = {
-  correo: <Mail size={15} />,
-  leer: <FileSearch size={15} />,
-  extraer: <ScanText size={15} />,
-  validar: <ShieldCheck size={15} />,
-  hoja: <Sheet size={15} />,
-  borrador: <FilePen size={15} />,
-};
 
-// Posición del centro de cada nodo, en % del lienzo.
-const posiciones: Record<string, { x: number; y: number }> = {
-  correo: { x: 13, y: 20 },
-  leer: { x: 38, y: 20 },
-  extraer: { x: 63, y: 20 },
-  validar: { x: 63, y: 55 },
-  borrador: { x: 38, y: 84 },
-  hoja: { x: 86, y: 84 },
-};
 
-const conexiones = [
-  "M13 20 L38 20",
-  "M38 20 L63 20",
-  "M63 20 L63 55",
-  "M63 55 C 63 72, 38 66, 38 84",
-  "M63 55 C 63 72, 86 66, 86 84",
-];
+
+function Fases() {
+  const f = consultoria.fases;
+  return (
+    <section id="consultoria-fases" className="relative py-20 md:py-28">
+      <div className="container-page">
+        <SectionHeading badge={f.badge} titulo={f.titulo} sub={f.sub} tono="blue" />
+        <Apilado items={f.items} visuales={[<VisualDiscovery key="a" />, <VisualConstruccion key="b" />, <VisualTraspaso key="c" />]} />
+      </div>
+    </section>
+  );
+}
 
 function Automatizamos() {
   const a = consultoria.automatizamos;
@@ -300,132 +189,7 @@ function Automatizamos() {
   );
 }
 
-function Lienzo() {
-  const a = consultoria.automatizamos;
-  const ref = useRef<HTMLDivElement>(null);
-  const visible = useInView(ref, { once: true, margin: "0px 0px -120px 0px" });
 
-  const barra = [
-    { g: "Disparadores", i: [["Correo nuevo", <Mail key="1" size={14} />], ["Archivo en carpeta", <FolderOpen key="2" size={14} />], ["Horario fijo", <Clock key="3" size={14} />]] },
-    { g: "Acciones", i: [["Leer documento", <FileSearch key="4" size={14} />], ["Extraer datos", <ScanText key="5" size={14} />], ["Validar reglas", <ShieldCheck key="6" size={14} />], ["Escribir en hoja", <Sheet key="7" size={14} />], ["Crear borrador", <FilePen key="8" size={14} />]] },
-  ] as const;
-
-  return (
-    <div ref={ref} aria-hidden className="relative overflow-hidden rounded-[26px] border border-line-2 bg-ink-2/90 shadow-[0_40px_100px_rgba(0,0,0,0.5)]">
-      <span className="absolute -bottom-40 -right-24 h-96 w-96 resplandor" style={glow("27 53 208", 0.45, 1.57)} />
-      <div className="relative grid lg:grid-cols-[230px_1fr]">
-        <aside className="hidden border-r border-line p-5 lg:block">
-          <WindowDots />
-          {barra.map((b) => (
-            <div key={b.g} className="mt-6">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-dim">{b.g}</p>
-              <ul className="mt-2 space-y-0.5">
-                {b.i.map(([t, icono]) => (
-                  <li key={t} className="flex items-center gap-2.5 rounded-lg px-2 py-2 text-[13px] text-white/70">
-                    <span style={{ color: AZUL_CLARO }}>{icono}</span>
-                    {t}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </aside>
-
-        <div className="p-5 md:p-7">
-          <p className="font-display text-[17px] text-white">{a.lienzo}</p>
-          <p className="text-[13px] text-dim">Así se ve un proceso documental automatizado</p>
-
-          {/* Escritorio: lienzo con nodos y conexiones que se dibujan. */}
-          <div className="bg-grid relative mt-5 hidden aspect-[1000/470] rounded-2xl border border-line md:block">
-            <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
-              {conexiones.map((d, i) => (
-                <g key={d}>
-                  <motion.path
-                    d={d}
-                    fill="none"
-                    stroke="rgba(142,160,255,0.35)"
-                    strokeWidth="1.2"
-                    vectorEffect="non-scaling-stroke"
-                    initial={{ pathLength: 0 }}
-                    animate={visible ? { pathLength: 1 } : {}}
-                    transition={{ duration: 0.7, delay: 0.35 + i * 0.3, ease: "easeInOut" }}
-                  />
-                  <motion.path
-                    d={d}
-                    fill="none"
-                    stroke="#8ea0ff"
-                    strokeWidth="1.8"
-                    strokeDasharray="4 6"
-                    vectorEffect="non-scaling-stroke"
-                    className="animate-flow"
-                    initial={{ opacity: 0 }}
-                    animate={visible ? { opacity: 1 } : {}}
-                    transition={{ duration: 0.4, delay: 2 }}
-                  />
-                </g>
-              ))}
-            </svg>
-            {a.nodos.map((n, i) => (
-              <motion.div
-                key={n.id}
-                className="absolute w-[22%] -translate-x-1/2 -translate-y-1/2"
-                style={{ left: `${posiciones[n.id].x}%`, top: `${posiciones[n.id].y}%` }}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={visible ? { opacity: 1, scale: 1 } : {}}
-                transition={{ duration: 0.5, delay: 0.2 + i * 0.28, ease: EASE }}
-              >
-                <NodoFlujo id={n.id} titulo={n.titulo} detalle={n.detalle} />
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Móvil: el mismo flujo en columna. */}
-          <ol className="mt-5 space-y-2.5 md:hidden">
-            {a.nodos.slice(0, 4).map((n) => (
-              <li key={n.id}>
-                <NodoFlujo id={n.id} titulo={n.titulo} detalle={n.detalle} />
-              </li>
-            ))}
-            <li className="grid grid-cols-2 gap-2.5">
-              {a.nodos.slice(4).map((n) => (
-                <NodoFlujo key={n.id} id={n.id} titulo={n.titulo} detalle={n.detalle} />
-              ))}
-            </li>
-          </ol>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function NodoFlujo({ id, titulo, detalle }: { id: string; titulo: string; detalle: string }) {
-  const esHoja = id === "hoja";
-  const esBorrador = id === "borrador";
-  return (
-    <div
-      className={cn(
-        "rounded-xl border bg-ink/95 px-3.5 py-3 shadow-lg",
-        esHoja ? "border-mint/30" : esBorrador ? "border-cyan/35" : "border-line-2",
-      )}
-    >
-      <div className="flex items-center gap-2 text-[14px] text-white">
-        <span style={{ color: esHoja ? "#e2f3ee" : esBorrador ? "#29c4f5" : AZUL_CLARO }}>{iconosNodo[id]}</span>
-        <span className="leading-tight">{titulo}</span>
-      </div>
-      <p className="mt-1 text-[12px] leading-snug text-white/55">{detalle}</p>
-      {(esHoja || esBorrador) && (
-        <span
-          className={cn(
-            "mt-2 inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium",
-            esHoja ? "bg-mint/15 text-mint" : "bg-cyan/15 text-cyan",
-          )}
-        >
-          {esHoja ? "Listo" : "Revisa una persona"}
-        </span>
-      )}
-    </div>
-  );
-}
 
 // ------------------------------------------------ Por qué nosotros
 

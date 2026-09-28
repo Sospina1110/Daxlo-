@@ -32,6 +32,7 @@
   --animate-flow: flow 2.4s linear infinite;
   --animate-spin-slow: spin 18s linear infinite;
   --animate-breathe: breathe 7s ease-in-out infinite;
+  --animate-paseo: paseo 6s ease-in-out infinite;
 
   @keyframes marquee {
     from { transform: translateX(0); }
@@ -51,6 +52,11 @@
   }
   @keyframes flow {
     to { stroke-dashoffset: -40; }
+  }
+  @keyframes paseo {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    33% { transform: translate3d(14px, -6px, 0); }
+    66% { transform: translate3d(4px, 4px, 0); }
   }
   @keyframes breathe {
     0%, 100% { opacity: 0.75; }
@@ -191,6 +197,16 @@
     transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--retraso, 0s);
 }
 
+/* Barra que crece de izquierda a derecha al entrar en pantalla. */
+.crecer {
+  transform-origin: left;
+  transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1) var(--retraso, 0s);
+}
+.js .crecer[data-revelar]:not([data-visible]) {
+  opacity: 1;
+  transform: scaleX(0);
+}
+
 /* Resplandor sin filtro: el fondo lo pone glow() en src/lib/utils.ts. */
 .resplandor {
   pointer-events: none;
@@ -212,6 +228,7 @@
   .animate-flow,
   .animate-spin-slow,
   .animate-breathe,
+  .animate-paseo,
   .entrada,
   .subir,
   .fundir { animation: none !important; }
