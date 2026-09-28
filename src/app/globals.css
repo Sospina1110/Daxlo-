@@ -1,0 +1,176 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Sistema de diseño
+   Lenguaje visual de Fusion AI (fondo casi negro, resplandores de dos
+   tonos, vidrio, bordes degradados) con la paleta de marca de Daxlo:
+   el naranja de la plantilla pasa a cian, el azul queda en #1B35D0.
+   ------------------------------------------------------------------ */
+
+@theme {
+  --color-ink: #0d0e14;
+  --color-ink-2: #12141c;
+  --color-ink-3: #1a1d28;
+  --color-blue: #1b35d0;
+  --color-blue-bright: #3d5aff;
+  --color-cyan: #29c4f5;
+  --color-cyan-deep: #0b7ea6;
+  --color-mint: #e2f3ee;
+  --color-fg: #ffffff;
+  --color-muted: rgb(255 255 255 / 0.66);
+  --color-dim: rgb(255 255 255 / 0.5);
+  --color-line: rgb(255 255 255 / 0.08);
+  --color-line-2: rgb(255 255 255 / 0.14);
+
+  --font-display: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --animate-marquee: marquee var(--marquee-duration, 40s) linear infinite;
+  --animate-marquee-reverse: marquee-reverse var(--marquee-duration, 40s) linear infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-caret: caret 1s steps(1) infinite;
+  --animate-flow: flow 2.4s linear infinite;
+  --animate-spin-slow: spin 18s linear infinite;
+  --animate-breathe: breathe 7s ease-in-out infinite;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes marquee-reverse {
+    from { transform: translateX(-50%); }
+    to { transform: translateX(0); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-14px); }
+  }
+  @keyframes caret {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+  @keyframes flow {
+    to { stroke-dashoffset: -40; }
+  }
+  @keyframes breathe {
+    0%, 100% { opacity: 0.75; }
+    50% { opacity: 1; }
+  }
+}
+
+@layer base {
+  html {
+    background: var(--color-ink);
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    /* La barra de navegación es fija: las anclas no deben quedar debajo. */
+    scroll-padding-top: 96px;
+  }
+  body {
+    background: var(--color-ink);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-size: 18px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  ::selection {
+    background: rgb(41 196 245 / 0.35);
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-cyan);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+@layer components {
+  .container-page {
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+  @media (min-width: 768px) {
+    .container-page { padding-inline: 32px; }
+  }
+
+  /* Borde degradado en píldoras y botones: capa de relleno + capa de borde. */
+  .border-gradient {
+    border: 1px solid transparent;
+    background:
+      linear-gradient(var(--fill, var(--color-ink)), var(--fill, var(--color-ink))) padding-box,
+      linear-gradient(var(--angle, 90deg), var(--from, var(--color-cyan)), var(--via, rgb(255 255 255 / 0.12)), var(--to, var(--color-blue-bright))) border-box;
+  }
+
+  /* Tarjeta de vidrio: la superficie base de casi todo. */
+  .glass {
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.045), rgb(255 255 255 / 0.015));
+    border: 1px solid var(--color-line);
+  }
+
+  .text-gradient-cyan {
+    background: linear-gradient(100deg, #7fe0ff 0%, var(--color-cyan) 45%, #1591c4 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .text-gradient-blue {
+    background: linear-gradient(100deg, #8ea0ff 0%, var(--color-blue-bright) 50%, var(--color-blue) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .text-gradient-dual {
+    background: linear-gradient(100deg, var(--color-cyan) 0%, #7ad7ff 35%, var(--color-blue-bright) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Bordes difuminados en las marquesinas. */
+  .mask-x {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  }
+  .mask-b {
+    -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent);
+    mask-image: linear-gradient(to bottom, #000 60%, transparent);
+  }
+
+  .marquee-track:hover { animation-play-state: paused; }
+
+  /* Rejilla sutil de fondo, como la de la plantilla. */
+  .bg-grid {
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+}
+
+/* Activada por la red de seguridad del layout si JavaScript no hidrató. */
+.forzar-visible [style*="opacity"] {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .animate-marquee,
+  .animate-marquee-reverse,
+  .animate-float,
+  .animate-flow,
+  .animate-spin-slow,
+  .animate-breathe { animation: none !important; }
+}
