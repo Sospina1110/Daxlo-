@@ -21,10 +21,12 @@ export function Badge({ children, tono = "dual", className }: { children: React.
   );
 }
 
+// Foco de luz del borde superior del botón. Degradado radial en vez de
+// filter: blur, que en un celular se paga en cada botón de la página.
 const brilloPorTono: Record<Tono, string> = {
-  dual: "from-cyan/80 to-blue-bright/80",
-  cyan: "from-cyan to-cyan-deep",
-  blue: "from-blue-bright to-blue",
+  dual: "radial-gradient(closest-side at 35% 50%, rgba(41,196,245,0.75), transparent), radial-gradient(closest-side at 65% 50%, rgba(61,90,255,0.75), transparent)",
+  cyan: "radial-gradient(closest-side, rgba(41,196,245,0.85), rgba(11,126,166,0.3) 60%, transparent)",
+  blue: "radial-gradient(closest-side, rgba(61,90,255,0.9), rgba(27,53,208,0.3) 60%, transparent)",
 };
 
 type GlowButtonProps = {
@@ -53,10 +55,8 @@ export function GlowButton({ children, href, tono = "dual", tamano = "md", class
     <>
       <span
         aria-hidden
-        className={cn(
-          "pointer-events-none absolute -top-4 left-1/2 h-8 w-3/4 -translate-x-1/2 rounded-full bg-gradient-to-r opacity-60 blur-xl transition-opacity duration-300 group-hover:opacity-100",
-          brilloPorTono[tono],
-        )}
+        className="pointer-events-none absolute -top-5 left-1/2 h-10 w-[90%] -translate-x-1/2 opacity-60 transition-opacity duration-300 group-hover:opacity-100"
+        style={{ background: brilloPorTono[tono] }}
       />
       <span aria-hidden className="pointer-events-none absolute inset-x-3 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
       <span className="relative inline-flex items-center gap-2">{children}</span>
@@ -147,7 +147,3 @@ export function MarcaX({ tamano = 32, className }: { tamano?: number; className?
   );
 }
 
-// Resplandor difuso de fondo.
-export function Glow({ className, color }: { className?: string; color: string }) {
-  return <span aria-hidden className={cn("pointer-events-none absolute rounded-full blur-[110px]", className)} style={{ background: color }} />;
-}

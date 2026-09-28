@@ -1,50 +1,34 @@
-"use client";
-
-import { motion, type Variants } from "motion/react";
-import { EASE } from "@/lib/utils";
+// Apariciones en CSS, como las de Framer: no esperan a que cargue React.
+//
+// El HTML trae el contenido marcado con data-revelar. Un script en línea del
+// layout (ver src/app/layout.tsx) lo oculta apenas arranca la página y le pone
+// data-visible cuando entra en pantalla; la transición la hace el CSS
+// (globals.css). Sin JavaScript no se oculta nada y todo queda visible.
+//
+// Antes estas apariciones eran de Motion: el contenido salía del HTML con
+// opacity:0 y esperaba a que React hidratara. En un celular de gama media eso
+// dejaba la pantalla vacía más de 5 segundos.
 
 type RevealProps = {
   children: React.ReactNode;
   className?: string;
   delay?: number;
   y?: number;
-  /** Al cargar en vez de al entrar en pantalla: para lo que está arriba del pliegue. */
-  alCargar?: boolean;
 };
 
-// Aparición con desenfoque, subida y opacidad: el efecto de entrada de la plantilla.
-export function Reveal({ children, className, delay = 0, y = 24, alCargar = false }: RevealProps) {
-  const inicial = { opacity: 0, y, filter: "blur(8px)" };
-  const final = { opacity: 1, y: 0, filter: "blur(0px)" };
-  const transition = { duration: 0.8, delay, ease: EASE };
-  return alCargar ? (
-    <motion.div className={className} initial={inicial} animate={final} transition={transition}>
+export function Reveal({ children, className, delay = 0, y }: RevealProps) {
+  const estilo: Record<string, string> = {};
+  if (delay) estilo["--retraso"] = `${delay}s`;
+  if (y !== undefined) estilo["--y"] = `${y}px`;
+  return (
+    <div data-revelar="" className={className} style={Object.keys(estilo).length ? (estilo as React.CSSProperties) : undefined}>
       {children}
-    </motion.div>
-  ) : (
-    <motion.div
-      className={className}
-      initial={inicial}
-      whileInView={final}
-      viewport={{ once: true, margin: "0px 0px -80px 0px" }}
-      transition={transition}
-    >
-      {children}
-    </motion.div>
+    </div>
   );
 }
 
-const contenedor: Variants = {
-  oculto: {},
-  visible: (escalon: number) => ({ transition: { staggerChildren: escalon } }),
-};
-
-const elemento: Variants = {
-  oculto: { opacity: 0, y: 24, filter: "blur(8px)" },
-  visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.7, ease: EASE } },
-};
-
-// Grupo cuyos hijos aparecen escalonados, uno detrás de otro.
+// Grupo cuyos hijos aparecen escalonados: el script le da a cada hijo un
+// retraso según su posición.
 export function Stagger({
   children,
   className,
@@ -56,33 +40,18 @@ export function Stagger({
   escalon?: number;
   as?: "div" | "ul";
 }) {
-  const Comp = as === "ul" ? motion.ul : motion.div;
+  const Comp = as;
   return (
-    <Comp
-      className={className}
-      variants={contenedor}
-      custom={escalon}
-      initial="oculto"
-      whileInView="visible"
-      viewport={{ once: true, margin: "0px 0px -80px 0px" }}
-    >
+    <Comp data-escalonar={escalon} className={className}>
       {children}
     </Comp>
   );
 }
 
-export function StaggerItem({
-  children,
-  className,
-  as = "div",
-}: {
-  children: React.ReactNode;
-  className?: string;
-  as?: "div" | "li";
-}) {
-  const Comp = as === "li" ? motion.li : motion.div;
+export function StaggerItem({ children, className, as = "div" }: { children: React.ReactNode; className?: string; as?: "div" | "li" }) {
+  const Comp = as;
   return (
-    <Comp className={className} variants={elemento}>
+    <Comp data-revelar="" className={className}>
       {children}
     </Comp>
   );

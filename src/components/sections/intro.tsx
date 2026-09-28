@@ -6,7 +6,7 @@ import { comparacion, dosFormas, franjaHerramientas, herramientas } from "@/cont
 import { Badge, GlowButton, MarcaX, WindowDots } from "@/components/ui/primitives";
 import { Marquee, Puntos, SectionHeading, ToolLogo } from "@/components/ui/blocks";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
-import { cn, EASE, type Tono } from "@/lib/utils";
+import { cn, EASE, type Tono, glow } from "@/lib/utils";
 
 // ------------------------------------------------ Franja bajo el hero
 
@@ -83,7 +83,7 @@ function VisualCoaching() {
   const filas = [0.9, 0.7, 0.85, 0.6, 0.75];
   return (
     <div aria-hidden className="absolute inset-0">
-      <div className="absolute -left-16 -top-20 h-72 w-72 rounded-full bg-cyan/30 blur-[90px]" />
+      <div className="absolute -left-16 -top-20 h-72 w-72 resplandor" style={glow("41 196 245", 0.3, 1.62)} />
       <div className="absolute inset-x-7 bottom-0 top-9 rounded-t-xl border border-b-0 border-line-2 bg-ink/95">
         <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
           <WindowDots />
@@ -138,7 +138,7 @@ function VisualConsultoria() {
   ];
   return (
     <div aria-hidden className="absolute inset-0">
-      <div className="absolute -right-16 -top-20 h-72 w-72 rounded-full bg-blue/50 blur-[90px]" />
+      <div className="absolute -right-16 -top-20 h-72 w-72 resplandor" style={glow("27 53 208", 0.5, 1.62)} />
       <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
         <path d="M18 50 L48 50" stroke="rgba(142,160,255,0.55)" strokeWidth="0.5" vectorEffect="non-scaling-stroke" fill="none" />
         {salidas.map((s) => (

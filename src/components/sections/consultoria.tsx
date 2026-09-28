@@ -23,7 +23,7 @@ import { WindowDots } from "@/components/ui/primitives";
 import { Puntos, SectionHeading } from "@/components/ui/blocks";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { useMediaQuery } from "@/lib/use-media-query";
-import { cn, EASE } from "@/lib/utils";
+import { cn, EASE, glow } from "@/lib/utils";
 import { TarjetaCalifica, TarjetasProblema, Zona, ZonaPortada } from "./zona";
 
 const AZUL_CLARO = "#8ea0ff";
@@ -138,7 +138,7 @@ function VisualDiscovery() {
   const real = ["Algunas llegan sin orden", "A veces manda tres archivos", "El total no siempre cuadra"];
   return (
     <div aria-hidden className="absolute inset-0 flex items-center justify-center p-6">
-      <span className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-blue-bright/40 blur-[90px]" />
+      <span className="absolute -right-16 -top-16 h-64 w-64 resplandor" style={glow("61 90 255", 0.4, 1.70)} />
       <div className="relative grid w-full max-w-[460px] gap-3 sm:grid-cols-2">
         <PanelVisual className="p-4">
           <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-dim">Lo que dice el manual</p>
@@ -180,7 +180,7 @@ function VisualConstruccion() {
   ];
   return (
     <div aria-hidden className="absolute inset-0 flex items-center justify-center p-6">
-      <span className="absolute -bottom-16 -left-10 h-64 w-64 rounded-full bg-blue/50 blur-[90px]" />
+      <span className="absolute -bottom-16 -left-10 h-64 w-64 resplandor" style={glow("27 53 208", 0.5, 1.70)} />
       <PanelVisual className="w-full max-w-[340px]">
         <div className="flex items-center justify-between">
           <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-dim">Construcción</p>
@@ -215,7 +215,7 @@ function VisualTraspaso() {
   const items = ["Entrenamiento con el equipo", "Operación acompañada", "Tu equipo hace los ajustes"];
   return (
     <div ref={ref} aria-hidden className="absolute inset-0 flex items-center justify-center p-6">
-      <span className="absolute -right-10 -top-10 h-64 w-64 rounded-full bg-blue-bright/40 blur-[90px]" />
+      <span className="absolute -right-10 -top-10 h-64 w-64 resplandor" style={glow("61 90 255", 0.4, 1.70)} />
       <PanelVisual className="w-full max-w-[340px]">
         <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-dim">Traspaso</p>
         <ul className="mt-4 space-y-3">
@@ -312,7 +312,7 @@ function Lienzo() {
 
   return (
     <div ref={ref} aria-hidden className="relative overflow-hidden rounded-[26px] border border-line-2 bg-ink-2/90 shadow-[0_40px_100px_rgba(0,0,0,0.5)]">
-      <span className="absolute -bottom-40 -right-24 h-96 w-96 rounded-full bg-blue/45 blur-[110px]" />
+      <span className="absolute -bottom-40 -right-24 h-96 w-96 resplandor" style={glow("27 53 208", 0.45, 1.57)} />
       <div className="relative grid lg:grid-cols-[230px_1fr]">
         <aside className="hidden border-r border-line p-5 lg:block">
           <WindowDots />

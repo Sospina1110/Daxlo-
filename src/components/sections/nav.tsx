@@ -24,15 +24,12 @@ export function Nav() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3">
-      <motion.nav
+      <nav
         aria-label="Principal"
-        initial={{ y: -16, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.7, ease: EASE }}
         className={cn(
-          "mx-auto flex items-center justify-between rounded-2xl border transition-[max-width,background-color,border-color,padding,box-shadow] duration-500",
+          "entrada mx-auto flex items-center justify-between rounded-2xl border transition-[max-width,background-color,border-color,padding,box-shadow] duration-500",
           compacta || abierta
-            ? "max-w-[1000px] border-line-2 bg-ink/75 px-4 py-2.5 shadow-[0_10px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl"
+            ? "max-w-[1000px] border-line-2 bg-ink/92 px-4 py-2.5 shadow-[0_10px_40px_rgba(0,0,0,0.45)] md:bg-ink/75 md:backdrop-blur-xl"
             : "max-w-[1200px] border-transparent px-4 py-3.5 md:px-6",
         )}
       >
@@ -66,7 +63,7 @@ export function Nav() {
             {abierta ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
-      </motion.nav>
+      </nav>
 
       <AnimatePresence>
         {abierta && (
@@ -76,7 +73,7 @@ export function Nav() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.25, ease: EASE }}
-            className="mx-auto mt-2 max-w-[1000px] rounded-2xl border border-line-2 bg-ink/90 p-3 backdrop-blur-xl md:hidden"
+            className="mx-auto mt-2 max-w-[1000px] rounded-2xl border border-line-2 bg-ink/95 p-3 md:hidden"
           >
             <ul className="flex flex-col">
               {nav.links.map((l) => (

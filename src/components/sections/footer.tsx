@@ -1,6 +1,7 @@
 import { MessageCircle } from "lucide-react";
 import { CorreoContacto } from "@/components/ui/correo-contacto";
 import { contacto, footer, herramientas } from "@/content/copy";
+import { glow } from "@/lib/utils";
 
 // Glifo de Instagram de simple-icons: lucide ya no trae iconos de marcas.
 function Instagram({ size = 16 }: { size?: number }) {
@@ -16,7 +17,7 @@ export function Footer() {
   return (
     <footer className="container-page pb-8 pt-4">
       <div className="glass relative overflow-hidden rounded-[28px] p-8 md:p-12">
-        <span aria-hidden className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-blue/35 blur-[100px]" />
+        <span aria-hidden className="absolute -right-24 -top-24 h-72 w-72 resplandor" style={glow("27 53 208", 0.35, 1.69)} />
         <div className="relative grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
             {/* eslint-disable-next-line @next/next/no-img-element */}

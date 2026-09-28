@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { Badge, GlowButton, IconTile, Orb } from "@/components/ui/primitives";
 import { SectionHeading } from "@/components/ui/blocks";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
-import { cn } from "@/lib/utils";
+import { cn, glow } from "@/lib/utils";
 
 type TonoZona = "cyan" | "blue";
 
@@ -19,22 +19,16 @@ export function Zona({ tono, children }: { tono: TonoZona; children: React.React
     <div className={cn("relative isolate", !cyan && "bg-[#08090e]")}>
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <span
-          className={cn(
-            "absolute h-[760px] w-[760px] rounded-full blur-[150px]",
-            cyan ? "-left-[22%] top-0 bg-cyan/[0.14]" : "-right-[22%] top-0 bg-blue/[0.35]",
-          )}
+          className={cn("resplandor absolute top-0 h-[760px] w-[760px]", cyan ? "-left-[22%]" : "-right-[22%]")}
+          style={cyan ? glow("41 196 245", 0.14, 1.39) : glow("27 53 208", 0.35, 1.39)}
         />
         <span
-          className={cn(
-            "absolute top-[38%] h-[620px] w-[620px] rounded-full blur-[150px]",
-            cyan ? "-right-[26%] bg-cyan/[0.06]" : "-left-[26%] bg-blue-bright/[0.12]",
-          )}
+          className={cn("resplandor absolute top-[38%] h-[620px] w-[620px]", cyan ? "-right-[26%]" : "-left-[26%]")}
+          style={cyan ? glow("41 196 245", 0.06, 1.48) : glow("61 90 255", 0.12, 1.48)}
         />
         <span
-          className={cn(
-            "absolute bottom-0 h-[680px] w-[680px] rounded-full blur-[150px]",
-            cyan ? "-left-[24%] bg-cyan/[0.1]" : "-right-[24%] bg-blue/[0.3]",
-          )}
+          className={cn("resplandor absolute bottom-0 h-[680px] w-[680px]", cyan ? "-left-[24%]" : "-right-[24%]")}
+          style={cyan ? glow("41 196 245", 0.1, 1.44) : glow("27 53 208", 0.3, 1.44)}
         />
       </div>
       <div
@@ -158,7 +152,7 @@ export function TarjetaCalifica({
               cyan ? "border-cyan/30 bg-gradient-to-br from-cyan-deep/40 via-ink-2 to-ink-2" : "border-blue-bright/35 bg-gradient-to-br from-blue/45 via-ink-2 to-ink-2",
             )}
           >
-            <span aria-hidden className={cn("absolute -right-20 -top-24 h-64 w-64 rounded-full blur-[90px]", cyan ? "bg-cyan/30" : "bg-blue-bright/35")} />
+            <span aria-hidden className="resplandor absolute -right-20 -top-24 h-64 w-64" style={cyan ? glow("41 196 245", 0.3, 1.7) : glow("61 90 255", 0.35, 1.7)} />
             <Badge tono={tono} className="relative">
               La pregunta
             </Badge>

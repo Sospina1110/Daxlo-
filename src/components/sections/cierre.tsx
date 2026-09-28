@@ -7,17 +7,20 @@ import { agendar, contacto, faq, nosotros } from "@/content/copy";
 import { Badge, GlowButton, Orb } from "@/components/ui/primitives";
 import { SectionHeading } from "@/components/ui/blocks";
 import { Reveal } from "@/components/ui/reveal";
-import { cn, EASE } from "@/lib/utils";
+import { cn, EASE, glow } from "@/lib/utils";
 
 // ------------------------------------------------ Quiénes somos
 
 export function Nosotros() {
   const n = nosotros;
   return (
-    <section className="relative py-24 md:py-32">
+    // overflow-hidden: el halo de la foto se sale de su caja. Sin recortarlo, en
+    // un celular la página queda más ancha que la pantalla y se desliza de lado.
+    <section className="relative overflow-hidden py-24 md:py-32">
       <div className="container-page grid items-center gap-12 lg:grid-cols-[400px_1fr] lg:gap-20">
         <Reveal className="relative mx-auto w-full max-w-[400px]">
-          <span aria-hidden className="absolute -inset-6 rounded-[40px] bg-gradient-to-br from-cyan/30 via-transparent to-blue/40 blur-3xl" />
+          <span aria-hidden className="resplandor absolute -left-12 -top-12 h-72 w-72" style={glow("41 196 245", 0.32, 1.4)} />
+          <span aria-hidden className="resplandor absolute -bottom-12 -right-12 h-80 w-80" style={glow("27 53 208", 0.5, 1.4)} />
           <div className="relative overflow-hidden rounded-[28px] border border-line-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -132,8 +135,8 @@ export function Agendar() {
   const a = agendar;
   return (
     <section id="agendar" className="relative isolate overflow-hidden py-28 md:py-36">
-      <span aria-hidden className="absolute -left-[20%] top-1/3 -z-10 h-[680px] w-[680px] rounded-full bg-cyan/25 blur-[150px]" />
-      <span aria-hidden className="absolute -right-[20%] top-1/4 -z-10 h-[680px] w-[680px] rounded-full bg-blue/45 blur-[150px]" />
+      <span aria-hidden className="absolute -left-[20%] top-1/3 -z-10 h-[680px] w-[680px] resplandor" style={glow("41 196 245", 0.25, 1.44)} />
+      <span aria-hidden className="absolute -right-[20%] top-1/4 -z-10 h-[680px] w-[680px] resplandor" style={glow("27 53 208", 0.45, 1.44)} />
       <div className="container-page">
         <div className="mx-auto max-w-[760px] text-center">
           <Reveal className="flex justify-center">

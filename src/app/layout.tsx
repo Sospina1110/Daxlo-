@@ -41,25 +41,50 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
+const SCRIPT_CABECERA = [
+  "document.documentElement.classList.add('js');",
+  "setTimeout(function(){if(!document.documentElement.dataset.hidratado){document.documentElement.classList.add('forzar-visible')}},3500);",
+].join("");
+
+// Sin IntersectionObserver (navegadores muy viejos) se quita .js y todo queda
+// visible. El MutationObserver cubre nodos que React cree después.
+const SCRIPT_APARICIONES = `(function(){
+var d=document.documentElement;
+if(!('IntersectionObserver' in window)){d.classList.remove('js');return;}
+var io=new IntersectionObserver(function(es){es.forEach(function(e){
+if(!e.isIntersecting)return;var el=e.target;io.unobserve(el);
+var p=el.parentElement;
+if(p&&p.hasAttribute('data-escalonar')){
+var hs=[].filter.call(p.children,function(c){return c.hasAttribute('data-revelar')});
+el.style.setProperty('--retraso',(hs.indexOf(el)*(parseFloat(p.getAttribute('data-escalonar'))||0.09))+'s');}
+el.setAttribute('data-visible','');
+});},{rootMargin:'0px 0px -6% 0px'});
+function observar(r){[].forEach.call(r.querySelectorAll('[data-revelar]:not([data-visible])'),function(el){io.observe(el)});}
+observar(document);
+new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(n){
+if(n.nodeType!==1)return;
+if(n.hasAttribute('data-revelar')&&!n.hasAttribute('data-visible'))io.observe(n);
+observar(n);});});}).observe(document.body,{childList:true,subtree:true});
+})();`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className={`${inter.variable} ${outfit.variable}`}>
       <head>
-        {/* Red de seguridad: el contenido animado sale del HTML invisible y lo
-            revela JavaScript. Si un archivo JS no carga (red móvil inestable),
-            a los 3,5 s se fuerza todo visible para que la página nunca quede en blanco. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "setTimeout(function(){if(!document.documentElement.dataset.hidratado){document.documentElement.classList.add('forzar-visible')}},3500)",
-          }}
-        />
+        {/* Corre antes de pintar: marca que hay JavaScript (el CSS de las
+            apariciones solo oculta contenido bajo .js). Y red de seguridad: lo
+            poco que todavía anima Motion espera a React; si React no hidrata
+            en 3,5 s, se fuerza visible. */}
+        <script dangerouslySetInnerHTML={{ __html: SCRIPT_CABECERA }} />
         <noscript>
           <style>{"[style*=opacity]{opacity:1!important;transform:none!important;filter:none!important}"}</style>
         </noscript>
       </head>
       <body>
         <MotionProvider>{children}</MotionProvider>
+        {/* Revela cada bloque [data-revelar] al entrar en pantalla. Corre apenas
+            se lee el HTML, sin esperar a que cargue React. */}
+        <script dangerouslySetInnerHTML={{ __html: SCRIPT_APARICIONES }} />
       </body>
     </html>
   );

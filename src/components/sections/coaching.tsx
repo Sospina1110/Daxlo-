@@ -9,7 +9,7 @@ import { SectionHeading } from "@/components/ui/blocks";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { TextoQueSeEscribe } from "./hero";
 import { TarjetaCalifica, TarjetasProblema, Zona, ZonaPortada } from "./zona";
-import { cn, EASE } from "@/lib/utils";
+import { cn, EASE, glow } from "@/lib/utils";
 
 export function ZonaCoaching() {
   const c = coaching;
@@ -64,7 +64,7 @@ function VentanaSesion() {
       aria-hidden
       className="relative overflow-hidden rounded-[26px] border border-line-2 bg-ink-2/90 shadow-[0_40px_100px_rgba(0,0,0,0.5)]"
     >
-      <span className="absolute -bottom-40 -left-24 h-96 w-96 rounded-full bg-cyan/25 blur-[110px]" />
+      <span className="absolute -bottom-40 -left-24 h-96 w-96 resplandor" style={glow("41 196 245", 0.25, 1.57)} />
       <div className="relative grid md:grid-cols-[250px_1fr]">
         <aside className="hidden flex-col border-r border-line p-5 md:flex">
           <WindowDots />
@@ -177,7 +177,7 @@ function Pasos() {
 function VisualLlamada() {
   return (
     <div aria-hidden className="absolute inset-0 flex items-center justify-center">
-      <span className="absolute -left-10 -top-10 h-48 w-48 rounded-full bg-cyan/25 blur-[70px]" />
+      <span className="absolute -left-10 -top-10 h-48 w-48 resplandor" style={glow("41 196 245", 0.25, 1.73)} />
       <div className="relative flex items-center gap-4 rounded-2xl border border-line-2 bg-ink/85 px-5 py-4 shadow-xl">
         <span className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-cyan/15 text-cyan">
           <span className="absolute inset-0 animate-ping rounded-xl bg-cyan/20" />
@@ -199,7 +199,7 @@ function VisualPlan() {
   const visible = useInView(ref, { once: true, margin: "0px 0px -60px 0px" });
   return (
     <div ref={ref} aria-hidden className="absolute inset-0 flex items-center justify-center">
-      <span className="absolute -right-10 -top-12 h-48 w-48 rounded-full bg-cyan/20 blur-[70px]" />
+      <span className="absolute -right-10 -top-12 h-48 w-48 resplandor" style={glow("41 196 245", 0.2, 1.73)} />
       <div className="relative w-[70%] rounded-2xl border border-line-2 bg-ink/85 p-4 shadow-xl">
         <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-dim">Tu plan</p>
         <ul className="mt-3 space-y-2">
@@ -225,7 +225,7 @@ function VisualPlan() {
 function VisualConstruye() {
   return (
     <div aria-hidden className="absolute inset-0 flex items-center justify-center">
-      <span className="absolute -bottom-12 left-1/3 h-48 w-48 rounded-full bg-cyan/25 blur-[70px]" />
+      <span className="absolute -bottom-12 left-1/3 h-48 w-48 resplandor" style={glow("41 196 245", 0.25, 1.73)} />
       <div className="relative w-[74%] overflow-hidden rounded-xl border border-line-2 bg-ink/85 shadow-xl">
         <div className="flex items-center justify-between border-b border-line px-3 py-2">
           <WindowDots />
