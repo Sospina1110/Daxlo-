@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "node scripts/precarga-segmentos.mjs",
     "start": "npx serve out -l 3000",
     "typecheck": "tsc --noEmit"
   },

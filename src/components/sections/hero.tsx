@@ -1,5 +1,5 @@
-import { ArrowRight, ArrowUp, BarChart3, ChevronDown, Globe, MessageSquare, Paperclip, Workflow } from "lucide-react";
-import { hero } from "@/content/copy";
+import { ArrowRight, ArrowUp, BarChart3, Check, ChevronDown, Globe, MessageSquare, Paperclip, Workflow } from "lucide-react";
+import { hero, rutas } from "@/content/copy";
 import { Badge, GlowButton, WindowDots } from "@/components/ui/primitives";
 import { ToolLogo } from "@/components/ui/blocks";
 import { TextoQueSeEscribe } from "@/components/ui/escritura";
@@ -22,7 +22,10 @@ export function Hero() {
       <FondoHero />
       <div className="container-page relative">
         <Entrada>
-          <Badge>{hero.badge}</Badge>
+          <Badge>
+            <span className="sm:hidden">{hero.badgeCorto}</span>
+            <span className="hidden sm:inline">{hero.badge}</span>
+          </Badge>
         </Entrada>
 
         <h1 className="mt-7 text-[clamp(2.7rem,6.6vw,5rem)] max-[359px]:text-[2.3rem] leading-[1.02] tracking-[-0.03em]">
@@ -34,12 +37,17 @@ export function Hero() {
           <p className="mt-7 max-w-[580px] text-[18px] leading-relaxed text-muted md:text-[19px]">{hero.sub}</p>
         </Entrada>
 
-        <Entrada retraso={0.55} className="mt-9">
-          <GlowButton href="#agendar" tamano="lg">
+        {/* Un solo llamado, y debajo lo único que hace falta saber antes de
+            tocarlo. En celular el botón ocupa el ancho: se toca con el pulgar. */}
+        <Entrada retraso={0.55} className="mt-9 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:gap-6">
+          <GlowButton href={rutas.agendar} tamano="lg">
             {hero.cta}
             <ArrowRight size={18} className="transition-transform group-hover:translate-x-0.5" />
           </GlowButton>
-          <p className="mt-4 text-[15px] text-dim">{hero.meta}</p>
+          <p className="flex items-center justify-center gap-2 text-[15px] text-white/60 sm:justify-start">
+            <Check size={16} className="text-mint" aria-hidden />
+            {hero.meta}
+          </p>
         </Entrada>
 
         <Maqueta />

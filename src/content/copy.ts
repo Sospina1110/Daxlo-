@@ -12,22 +12,81 @@ export const contacto = {
   instagram: "https://www.instagram.com/daxlo.co/",
 };
 
+// Rutas del sitio. Cada línea de servicio y cada tema tiene su propia página:
+// así cada una puede posicionarse sola en buscadores y el visitante va directo
+// a lo que le interesa.
+export const rutas = {
+  inicio: "/",
+  coaching: "/coaching",
+  consultoria: "/consultoria",
+  herramientas: "/herramientas",
+  nosotros: "/nosotros",
+  preguntas: "/preguntas",
+  agendar: "/agendar",
+} as const;
+
+// Enlace a agendar con la línea ya elegida en el formulario.
+export const agendarCon = (linea: "coaching" | "consultoria") => `${rutas.agendar}?linea=${linea}`;
+
 export const nav = {
   links: [
-    { label: "Coaching", href: "#coaching" },
-    { label: "Consultoría", href: "#consultoria" },
-    { label: "Herramientas", href: "#herramientas" },
-    { label: "Preguntas", href: "#preguntas" },
+    { label: "Coaching", href: rutas.coaching },
+    { label: "Consultoría", href: rutas.consultoria },
+    { label: "Herramientas", href: rutas.herramientas },
+    { label: "Nosotros", href: rutas.nosotros },
+    { label: "Preguntas", href: rutas.preguntas },
   ],
-  cta: { label: "Agendar", href: "#agendar" },
+  cta: { label: "Agendar", href: rutas.agendar },
+};
+
+// Título y descripción de cada página para buscadores y para cuando se
+// comparte el enlace. El título de cada página lleva " · Daxlo" al final.
+export const paginas = {
+  inicio: {
+    titulo: "Daxlo · Coaching de IA 1 a 1 y consultoría de implementación",
+    descripcion:
+      "Coaching 1 a 1 para resolver tu propio trabajo con IA, y consultoría de implementación para automatizar un proceso de tu empresa. En los dos casos quedas sabiendo cómo funciona.",
+  },
+  coaching: {
+    titulo: "Coaching de IA 1 a 1",
+    descripcion:
+      "Sesiones por videollamada sobre tu propio trabajo. Tú construyes con Claude, ChatGPT y otras herramientas, nosotros corregimos en el momento. Pagas por sesión, sin matrícula.",
+  },
+  consultoria: {
+    titulo: "Consultoría de implementación de IA",
+    descripcion:
+      "Automatizamos procesos documentales de alto volumen con tu equipo al lado. Discovery pagado, precio cerrado por el sistema y la operación queda en manos de tu equipo.",
+  },
+  herramientas: {
+    titulo: "Herramientas de IA que enseñamos",
+    descripcion:
+      "Claude, ChatGPT, Claude Code, Codex, n8n, Obsidian y Base44. Qué hacemos con cada una en el coaching y en los proyectos de consultoría.",
+  },
+  nosotros: {
+    titulo: "Quiénes somos",
+    descripcion:
+      "Martín Zárate y Santiago Ospina, socios de Daxlo. Construimos sistemas de IA adentro de las empresas y no cerramos un proyecto hasta que tu equipo pueda sostenerlo.",
+  },
+  preguntas: {
+    titulo: "Preguntas frecuentes",
+    descripcion:
+      "Cómo son las sesiones de coaching, cuánto cuesta un proyecto de consultoría, por qué el discovery se paga y qué pasa cuando terminamos.",
+  },
+  agendar: {
+    titulo: "Agendar una conversación",
+    descripcion:
+      "Cuéntanos qué te está consumiendo horas. La primera conversación no tiene costo y en ella te decimos si te sirve el coaching, la consultoría o ninguna de las dos.",
+  },
 };
 
 export const hero = {
   badge: "Coaching 1 a 1 · Consultoría de implementación",
+  // En celular la etiqueta completa ocupaba dos líneas.
+  badgeCorto: "Coaching 1 a 1 · Consultoría",
   titulo: ["Implementamos la IA.", "Transferimos la capacidad."],
   sub: "Te enseñamos a resolver tu propio trabajo con IA, o construimos el sistema que lo resuelve dentro de tu empresa. En los dos casos quedas sabiendo cómo funciona.",
   cta: "Agendar una conversación",
-  meta: "Primera conversación sin costo. Te decimos cuál de las dos te sirve.",
+  meta: "Primera conversación sin costo",
   // El recuadro del hero escribe estas tareas solo, una tras otra.
   tareas: [
     "Lee las facturas que llegaron hoy y pásalas a la hoja de costos",
@@ -94,7 +153,6 @@ export const comparacion = {
 
 export const coaching = {
   portada: {
-    ordinal: "01",
     eyebrow: "Coaching 1 a 1",
     gigante: ["Para", "ti."],
     sub: "Traes un trabajo tuyo que hoy te toma horas y lo dejas funcionando antes de colgar. Tú escribes, nosotros corregimos en el momento.",
@@ -173,7 +231,6 @@ export const herramientas = {
 
 export const consultoria = {
   portada: {
-    ordinal: "02",
     eyebrow: "Consultoría de implementación",
     gigante: ["Para tu", "empresa."],
     sub: "Un proceso que repiten varias personas y se lleva más de cuarenta horas a la semana. Lo construimos con tu equipo al lado y ellos quedan operándolo.",
@@ -340,8 +397,69 @@ export const agendar = {
 export const footer = {
   lema: "Implementamos la IA. Transferimos la capacidad.",
   columnas: [
-    { titulo: "Coaching", enlaces: [{ t: "Para ti", h: "#coaching" }, { t: "Cómo funciona", h: "#coaching-pasos" }, { t: "Herramientas", h: "#herramientas" }] },
-    { titulo: "Consultoría", enlaces: [{ t: "Para tu empresa", h: "#consultoria" }, { t: "Cómo trabajamos", h: "#consultoria-fases" }, { t: "Qué automatizamos", h: "#automatizamos" }] },
+    {
+      titulo: "Coaching",
+      enlaces: [
+        { t: "Coaching 1 a 1", h: rutas.coaching },
+        { t: "Cómo funciona", h: `${rutas.coaching}#como-funciona` },
+        { t: "Herramientas", h: rutas.herramientas },
+      ],
+    },
+    {
+      titulo: "Consultoría",
+      enlaces: [
+        { t: "Consultoría de implementación", h: rutas.consultoria },
+        { t: "Cómo trabajamos", h: `${rutas.consultoria}#como-trabajamos` },
+        { t: "Qué automatizamos", h: `${rutas.consultoria}#que-automatizamos` },
+      ],
+    },
+    {
+      titulo: "Daxlo",
+      enlaces: [
+        { t: "Quiénes somos", h: rutas.nosotros },
+        { t: "Preguntas frecuentes", h: rutas.preguntas },
+        { t: "Agendar una conversación", h: rutas.agendar },
+      ],
+    },
   ],
   derechos: "© 2026 Daxlo. Todos los derechos reservados.",
 };
+
+// ------------------------------------------------------ ENTRE PÁGINAS
+
+// Al final de cada línea, un puente hacia la otra por si el visitante entró
+// por la puerta equivocada.
+export const otraLinea = {
+  consultoria: {
+    etiqueta: "Para tu empresa",
+    titulo: "¿El trabajo pasa por varias personas?",
+    texto: "Si entre todos los que lo tocan se van más de 40 horas semanales, eso es un proyecto de consultoría. Lo construimos con tu equipo al lado.",
+    enlace: "Ver la consultoría de implementación",
+  },
+  coaching: {
+    etiqueta: "Para ti",
+    titulo: "¿Es un trabajo que haces tú solo?",
+    texto: "Si el proceso no da para un proyecto, el coaching 1 a 1 suele resolver más por menos. Construyes tú, con nosotros en la llamada.",
+    enlace: "Ver el coaching 1 a 1",
+  },
+};
+
+export const preguntasLinea = {
+  coaching: { titulo: "Preguntas sobre el coaching", grupo: 0 },
+  consultoria: { titulo: "Preguntas sobre la consultoría", grupo: 1 },
+  todas: "Ver todas las preguntas",
+};
+
+// Cierre de cada página: la invitación a agendar.
+export const cierre = {
+  titulo: "Cuéntanos qué te está consumiendo horas.",
+  sub: "Una primera conversación sin costo. Te decimos cuál de las dos te sirve, y si no te sirve ninguna, también.",
+  cta: "Agendar una conversación",
+};
+
+export const inicioNosotros = {
+  enlace: "Conoce a los dos socios",
+};
+
+export const franjaEnlace = "Qué hacemos con cada una";
+

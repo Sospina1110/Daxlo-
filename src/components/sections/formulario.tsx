@@ -24,7 +24,12 @@ export function FormularioContacto() {
 
   useEffect(() => {
     cargadoEn.current = Date.now();
-  }, []);
+    // Si llega desde la página de una línea (/agendar?linea=coaching), la
+    // opción ya viene elegida.
+    const linea = new URLSearchParams(window.location.search).get("linea");
+    const select = formRef.current?.elements.namedItem("linea") as HTMLSelectElement | null;
+    if (linea && select && a.campos.lineaOpciones.some((o) => o.valor === linea)) select.value = linea;
+  }, [a.campos.lineaOpciones]);
 
   const valor = (id: string) => (formRef.current?.elements.namedItem(id) as HTMLInputElement | null)?.value.trim() ?? "";
 

@@ -9,7 +9,9 @@ type TonoZona = "cyan" | "blue";
 // Cada línea de servicio vive en su propio territorio: coaching con aire cian
 // sobre el casi negro, consultoría más oscura y con resplandor azul. Sobre un
 // sitio oscuro, el cambio de ambiente es lo que marca la frontera.
-export function Zona({ tono, children }: { tono: TonoZona; children: React.ReactNode }) {
+// Con `arriba` la zona abre la página: sin la línea de luz del borde, que
+// quedaría pegada a la barra de navegación.
+export function Zona({ tono, arriba = false, children }: { tono: TonoZona; arriba?: boolean; children: React.ReactNode }) {
   const cyan = tono === "cyan";
   return (
     <div className={cn("relative isolate", !cyan && "bg-[#08090e]")}>
@@ -27,10 +29,12 @@ export function Zona({ tono, children }: { tono: TonoZona; children: React.React
           style={cyan ? glow("41 196 245", 0.1, 1.44) : glow("27 53 208", 0.3, 1.44)}
         />
       </div>
-      <div
-        aria-hidden
-        className={cn("h-px w-full bg-gradient-to-r from-transparent to-transparent", cyan ? "via-cyan/60" : "via-blue-bright/70")}
-      />
+      {!arriba && (
+        <div
+          aria-hidden
+          className={cn("h-px w-full bg-gradient-to-r from-transparent to-transparent", cyan ? "via-cyan/60" : "via-blue-bright/70")}
+        />
+      )}
       {children}
     </div>
   );
@@ -52,7 +56,7 @@ export function TarjetasProblema({
   tono: TonoZona;
 }) {
   return (
-    <section className="relative py-20 md:py-28">
+    <section className="relative py-14 md:py-28">
       <div className="container-page">
         <SectionHeading titulo={titulo} sub={sub} tono={tono} alineacion="izquierda" />
         <Stagger className="mt-12 grid gap-5 md:grid-cols-3" escalon={0.12}>
@@ -78,6 +82,7 @@ export function TarjetaCalifica({
   pregunta,
   respuesta,
   cta,
+  href,
   tono,
 }: {
   titulo: string;
@@ -85,11 +90,12 @@ export function TarjetaCalifica({
   pregunta: string;
   respuesta: readonly string[];
   cta: string;
+  href: string;
   tono: TonoZona;
 }) {
   const cyan = tono === "cyan";
   return (
-    <section className="relative py-20 md:py-28">
+    <section className="relative py-14 md:py-28">
       <div className="container-page grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
         <SectionHeading titulo={titulo} sub={sub} tono={tono} alineacion="izquierda" />
         <Reveal delay={0.1}>
@@ -112,7 +118,7 @@ export function TarjetaCalifica({
               ))}
             </div>
             <div className="relative mt-8">
-              <GlowButton href="#agendar" tono={tono}>
+              <GlowButton href={href} tono={tono} className="w-full sm:w-auto">
                 {cta} <ArrowRight size={16} />
               </GlowButton>
             </div>

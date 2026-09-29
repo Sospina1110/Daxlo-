@@ -3,13 +3,16 @@ import { toolLogos, type ToolId } from "@/lib/logos";
 import { Badge } from "./primitives";
 import { Reveal } from "./reveal";
 
-// Badge + titular + bajada: la cabecera de casi todas las secciones.
+// Badge + titular + bajada: la cabecera de casi todas las secciones. Con
+// nivel={1} es el titular de la página: h1, y entra con la página en vez de
+// esperar al scroll.
 export function SectionHeading({
   badge,
   titulo,
   sub,
   tono = "dual",
   alineacion = "centro",
+  nivel = 2,
   className,
   id,
 }: {
@@ -18,10 +21,12 @@ export function SectionHeading({
   sub?: React.ReactNode;
   tono?: Tono;
   alineacion?: "centro" | "izquierda";
+  nivel?: 1 | 2;
   className?: string;
   id?: string;
 }) {
   const centro = alineacion === "centro";
+  const Titular = nivel === 1 ? "h1" : "h2";
   return (
     <div className={cn(centro ? "mx-auto max-w-[760px] text-center" : "max-w-[680px]", className)}>
       {badge && (
@@ -30,9 +35,15 @@ export function SectionHeading({
         </Reveal>
       )}
       <Reveal delay={0.08}>
-        <h2 id={id} className="mt-5 text-[clamp(2.1rem,4.6vw,3.5rem)] leading-[1.05] text-white">
+        <Titular
+          id={id}
+          className={cn(
+            "mt-5 leading-[1.05] text-white",
+            nivel === 1 ? "text-[clamp(2.3rem,5.4vw,4rem)] tracking-[-0.025em]" : "text-[clamp(2rem,4.6vw,3.5rem)]",
+          )}
+        >
           {titulo}
-        </h2>
+        </Titular>
       </Reveal>
       {sub && (
         <Reveal delay={0.16}>

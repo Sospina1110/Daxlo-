@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { ArrowRight, Bell, FileText, Mail, Sheet } from "lucide-react";
-import { comparacion, dosFormas, franjaHerramientas, herramientas } from "@/content/copy";
+import { comparacion, dosFormas, franjaEnlace, franjaHerramientas, herramientas, rutas } from "@/content/copy";
 import { Badge, GlowButton, MarcaX, WindowDots } from "@/components/ui/primitives";
 import { Marquee, Puntos, SectionHeading, ToolLogo } from "@/components/ui/blocks";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
@@ -9,9 +10,9 @@ import { cn, type Tono, glow } from "@/lib/utils";
 
 // El lugar del "Trusted by" de la plantilla. Daxlo no tiene logos de clientes
 // autorizados, así que muestra lo que sí es verificable: con qué trabaja.
-export function FranjaHerramientas() {
+export function FranjaHerramientas({ conEnlace = false }: { conEnlace?: boolean }) {
   return (
-    <section aria-label="Herramientas con las que trabajamos" className="relative py-14 md:py-16">
+    <section aria-label="Herramientas con las que trabajamos" className="relative py-12 md:py-16">
       <Reveal>
         <p className="text-center text-[15px] text-dim">{franjaHerramientas}</p>
       </Reveal>
@@ -23,6 +24,14 @@ export function FranjaHerramientas() {
           </span>
         ))}
       </Marquee>
+      {conEnlace && (
+        <Reveal className="mt-8 flex justify-center">
+          <Link href={rutas.herramientas} className="inline-flex items-center gap-2 text-[15px] font-medium text-white/70 transition-colors hover:text-white">
+            {franjaEnlace}
+            <ArrowRight size={15} />
+          </Link>
+        </Reveal>
+      )}
     </section>
   );
 }
@@ -31,15 +40,15 @@ export function FranjaHerramientas() {
 
 export function DosFormas() {
   return (
-    <section className="relative py-24 md:py-32">
+    <section className="relative py-16 md:py-32">
       <div className="container-page">
         <SectionHeading badge={dosFormas.badge} titulo={dosFormas.titulo} sub={dosFormas.sub} />
-        <Stagger className="mt-14 grid gap-5 md:grid-cols-2" escalon={0.14}>
+        <Stagger className="mt-10 grid gap-5 md:mt-14 md:grid-cols-2" escalon={0.14}>
           <StaggerItem>
-            <TarjetaLinea tono="cyan" datos={dosFormas.coaching} href="#coaching" visual={<VisualCoaching />} />
+            <TarjetaLinea tono="cyan" datos={dosFormas.coaching} href={rutas.coaching} visual={<VisualCoaching />} />
           </StaggerItem>
           <StaggerItem>
-            <TarjetaLinea tono="blue" datos={dosFormas.consultoria} href="#consultoria" visual={<VisualConsultoria />} />
+            <TarjetaLinea tono="blue" datos={dosFormas.consultoria} href={rutas.consultoria} visual={<VisualConsultoria />} />
           </StaggerItem>
         </Stagger>
       </div>
@@ -66,10 +75,11 @@ function TarjetaLinea({ tono, datos, href, visual }: { tono: Tono; datos: DatosL
         <h3 className="mt-5 text-[28px] leading-tight text-white md:text-[32px]">{datos.titulo}</h3>
         <p className="mt-3 text-[18px] leading-relaxed text-muted">{datos.linea}</p>
         <Puntos items={datos.puntos} tono={tono} className="mt-6" />
-        <a href={href} className={cn("mt-8 inline-flex items-center gap-2 self-start text-[16px] font-medium", acento)}>
+        <Link href={href} className={cn("mt-8 inline-flex min-h-[44px] items-center gap-2 self-start text-[16px] font-medium", acento)}>
           {datos.enlace}
+          <span className="sr-only">: {datos.titulo}</span>
           <ArrowRight size={17} className="transition-transform group-hover:translate-x-1" />
-        </a>
+        </Link>
       </div>
     </article>
   );
@@ -122,10 +132,12 @@ function VisualCoaching() {
 
 // Correo que entra, el sistema en el medio, tres salidas. La consultoría en una imagen.
 function VisualConsultoria() {
+  // En celular las salidas se anclan al borde derecho con un nombre corto:
+  // centradas en el 82 % y con el nombre largo se salían de la tarjeta.
   const salidas = [
-    { y: 22, t: "Hoja de cálculo", i: <Sheet size={14} /> },
-    { y: 50, t: "Borrador para revisar", i: <FileText size={14} /> },
-    { y: 78, t: "Aviso al equipo", i: <Bell size={14} /> },
+    { y: 22, t: "Hoja de cálculo", corto: "Hoja de cálculo", i: <Sheet size={14} /> },
+    { y: 50, t: "Borrador para revisar", corto: "Borrador", i: <FileText size={14} /> },
+    { y: 78, t: "Aviso al equipo", corto: "Aviso al equipo", i: <Bell size={14} /> },
   ];
   return (
     <div aria-hidden className="absolute inset-0">
@@ -153,18 +165,22 @@ function VisualConsultoria() {
         <img src="/img/daxlo-x.png" alt="" width={30} height={22} />
       </span>
       {salidas.map((s) => (
-        <Nodo key={s.y} x={82} y={s.y} icono={s.i}>
-          {s.t}
+        <Nodo key={s.y} x={82} y={s.y} icono={s.i} derecha>
+          <span className="sm:hidden">{s.corto}</span>
+          <span className="hidden sm:inline">{s.t}</span>
         </Nodo>
       ))}
     </div>
   );
 }
 
-function Nodo({ x, y, icono, children }: { x: number; y: number; icono: React.ReactNode; children: React.ReactNode }) {
+function Nodo({ x, y, icono, derecha = false, children }: { x: number; y: number; icono: React.ReactNode; derecha?: boolean; children: React.ReactNode }) {
   return (
     <span
-      className="absolute flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 whitespace-nowrap rounded-lg border border-line-2 bg-ink/95 px-2.5 py-1.5 text-[12px] text-white/85"
+      className={cn(
+        "absolute flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 whitespace-nowrap rounded-lg border border-line-2 bg-ink/95 px-2.5 py-1.5 text-[12px] text-white/85",
+        derecha && "max-sm:!left-auto max-sm:right-3 max-sm:translate-x-0 max-sm:px-2 max-sm:text-[11.5px]",
+      )}
       style={{ left: `${x}%`, top: `${y}%` }}
     >
       <span className="text-[#8ea0ff]">{icono}</span>
@@ -177,10 +193,19 @@ function Nodo({ x, y, icono, children }: { x: number; y: number; icono: React.Re
 
 export function Comparacion() {
   return (
-    <section className="relative py-24 md:py-28">
+    <section className="relative py-16 md:py-28">
       <div className="container-page">
         <SectionHeading badge={comparacion.badge} titulo={comparacion.titulo} sub={comparacion.sub} />
-        <Reveal className="glass mt-12 overflow-hidden rounded-[24px]">
+        {/* En celular las dos respuestas van lado a lado bajo cada criterio,
+            con la cabecera de columnas fija mientras se lee: apiladas, la
+            tabla medía dos pantallas y no se podía comparar de un vistazo.
+            overflow-clip (y no hidden) para que la cabecera pueda quedarse
+            fija. */}
+        <Reveal className="glass mt-10 overflow-clip rounded-[24px] md:mt-12">
+          <div className="sticky top-[72px] z-10 grid grid-cols-2 border-b border-line bg-ink-2/95 md:hidden">
+            <CabeceraMovil tono="cyan">Coaching</CabeceraMovil>
+            <CabeceraMovil tono="blue">Consultoría</CabeceraMovil>
+          </div>
           <div className="hidden grid-cols-[1fr_1.4fr_1.4fr] border-b border-line md:grid">
             <span />
             <CabeceraColumna tono="cyan">Coaching 1 a 1</CabeceraColumna>
@@ -188,19 +213,16 @@ export function Comparacion() {
           </div>
           <dl>
             {comparacion.filas.map((f, i) => (
-              <div
-                key={f.criterio}
-                className={cn("grid gap-3 p-5 md:grid-cols-[1fr_1.4fr_1.4fr] md:gap-0 md:p-0", i > 0 && "border-t border-line")}
-              >
-                <dt className="text-[13px] font-semibold uppercase tracking-[0.1em] text-dim md:px-6 md:py-5 md:text-[15px] md:normal-case md:tracking-normal md:text-white">
+              <div key={f.criterio} className={cn("grid grid-cols-2 md:grid-cols-[1fr_1.4fr_1.4fr]", i > 0 && "border-t border-line")}>
+                <dt className="col-span-2 px-4 pb-1 pt-4 text-[12px] font-semibold uppercase tracking-[0.1em] text-dim md:col-span-1 md:px-6 md:py-5 md:text-[15px] md:normal-case md:tracking-normal md:text-white">
                   {f.criterio}
                 </dt>
-                <dd className="text-[17px] text-white/80 md:border-l md:border-line md:bg-cyan/[0.035] md:px-6 md:py-5">
-                  <span className="mb-1 block text-[12px] font-semibold uppercase tracking-[0.1em] text-cyan md:hidden">Coaching</span>
+                <dd className="bg-cyan/[0.035] px-4 pb-4 pt-2 text-[15px] leading-snug text-white/85 md:border-l md:border-line md:px-6 md:py-5 md:text-[17px] md:leading-normal">
+                  <span className="sr-only">Coaching: </span>
                   {f.coaching}
                 </dd>
-                <dd className="text-[17px] text-white/80 md:border-l md:border-line md:bg-blue-bright/[0.05] md:px-6 md:py-5">
-                  <span className="mb-1 block text-[12px] font-semibold uppercase tracking-[0.1em] text-[#8ea0ff] md:hidden">Consultoría</span>
+                <dd className="border-l border-line bg-blue-bright/[0.05] px-4 pb-4 pt-2 text-[15px] leading-snug text-white/85 md:px-6 md:py-5 md:text-[17px] md:leading-normal">
+                  <span className="sr-only">Consultoría: </span>
                   {f.consultoria}
                 </dd>
               </div>
@@ -208,15 +230,30 @@ export function Comparacion() {
           </dl>
         </Reveal>
         <Reveal className="mt-9 flex flex-wrap justify-center gap-3">
-          <GlowButton href="#coaching" tono="cyan">
+          <GlowButton href={rutas.coaching} tono="cyan" className="w-full sm:w-auto">
             Lo mío es aprender <ArrowRight size={16} />
           </GlowButton>
-          <GlowButton href="#consultoria" tono="blue">
+          <GlowButton href={rutas.consultoria} tono="blue" className="w-full sm:w-auto">
             Lo mío es un proceso <ArrowRight size={16} />
           </GlowButton>
         </Reveal>
       </div>
     </section>
+  );
+}
+
+function CabeceraMovil({ tono, children }: { tono: Tono; children: React.ReactNode }) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        "flex items-center gap-2 px-4 py-3 text-[13px] font-semibold uppercase tracking-[0.1em]",
+        tono === "cyan" ? "text-cyan" : "border-l border-line text-[#8ea0ff]",
+      )}
+    >
+      <span className={cn("h-2 w-2 rounded-full", tono === "cyan" ? "bg-cyan" : "bg-blue-bright")} />
+      {children}
+    </span>
   );
 }
 

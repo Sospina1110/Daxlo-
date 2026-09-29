@@ -64,7 +64,7 @@ function TarjetaApilada({
         </div>
         <div
           className={cn(
-            "relative min-h-[480px] overflow-hidden border-t border-line bg-gradient-to-br from-blue/25 via-ink-2 to-ink-2 sm:min-h-[340px]",
+            "relative min-h-[380px] overflow-hidden border-t border-line bg-gradient-to-br from-blue/25 via-ink-2 to-ink-2 sm:min-h-[340px]",
             "lg:min-h-0 lg:border-t-0",
             alterna ? "lg:order-1 lg:border-r" : "lg:border-l",
           )}

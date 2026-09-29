@@ -1,32 +1,23 @@
-import { Nav } from "@/components/sections/nav";
 import { Hero } from "@/components/sections/hero";
 import { Comparacion, DosFormas, FranjaHerramientas } from "@/components/sections/intro";
-import { ZonaCoaching } from "@/components/sections/coaching";
-import { Herramientas } from "@/components/sections/herramientas";
-import { ZonaConsultoria } from "@/components/sections/consultoria";
-import { Agendar, Faq, Nosotros } from "@/components/sections/cierre";
-import { Footer } from "@/components/sections/footer";
+import { CtaFinal, NosotrosResumen } from "@/components/sections/entre-paginas";
+import { JsonLd } from "@/components/ui/json-ld";
+import { ldSitioWeb, metadatosPagina } from "@/lib/sitio";
 
-// Orden de la página. Coaching va primero y consultoría después, cada una en
-// su propio territorio visual. Las herramientas quedan entre las dos: son lo
-// que se enseña en coaching y con lo que se construye en consultoría.
+export const metadata = metadatosPagina("inicio");
+
+// El inicio es el índice: presenta las dos líneas y manda a cada visitante a
+// la página de la que le interesa. El detalle de cada una vive en su ruta.
 export default function Inicio() {
   return (
     <>
-      <Nav />
-      <main>
-        <Hero />
-        <FranjaHerramientas />
-        <DosFormas />
-        <Comparacion />
-        <ZonaCoaching />
-        <Herramientas />
-        <ZonaConsultoria />
-        <Nosotros />
-        <Faq />
-        <Agendar />
-      </main>
-      <Footer />
+      <JsonLd datos={ldSitioWeb} />
+      <Hero />
+      <FranjaHerramientas conEnlace />
+      <DosFormas />
+      <Comparacion />
+      <NosotrosResumen />
+      <CtaFinal />
     </>
   );
 }

@@ -1,6 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Outfit } from "next/font/google";
 import { MotionProvider } from "@/components/motion-provider";
+import { Nav } from "@/components/sections/nav";
+import { Footer } from "@/components/sections/footer";
+import { JsonLd } from "@/components/ui/json-ld";
+import { paginas } from "@/content/copy";
+import { ldOrganizacion, URL_SITIO } from "@/lib/sitio";
 import "./globals.css";
 
 // Las dos fuentes de marca. next/font las descarga al compilar y las sirve
@@ -8,25 +13,15 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-outfit", display: "swap" });
 
-const titulo = "Daxlo · Implementamos la IA. Transferimos la capacidad.";
-const descripcion =
-  "Coaching 1 a 1 para resolver tu propio trabajo con IA, y consultoría de implementación para automatizar un proceso de tu empresa. En los dos casos quedas sabiendo cómo funciona.";
-
+// Valores por defecto. Cada página define su título, descripción, URL
+// canónica y tarjeta para redes (metadatosPagina en src/lib/sitio.ts).
 export const metadata: Metadata = {
-  metadataBase: new URL("https://daxlo.co"),
-  title: titulo,
-  description: descripcion,
-  alternates: { canonical: "/" },
-  openGraph: {
-    type: "website",
-    locale: "es_CO",
-    url: "/",
-    siteName: "Daxlo",
-    title: titulo,
-    description: "Dos formas de trabajar con nosotros: coaching 1 a 1 para tu propio trabajo, o consultoría de implementación para un proceso de tu empresa.",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Daxlo. Implementamos la IA. Transferimos la capacidad." }],
-  },
-  twitter: { card: "summary_large_image", title: titulo, description: descripcion, images: ["/og.png"] },
+  metadataBase: new URL(URL_SITIO),
+  title: { default: paginas.inicio.titulo, template: "%s · Daxlo" },
+  description: paginas.inicio.descripcion,
+  applicationName: "Daxlo",
+  authors: [{ name: "Daxlo" }],
+  formatDetection: { telephone: false },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -41,7 +36,22 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
+// Los enlaces viejos del sitio de una sola página (daxlo.co/#agendar) siguen
+// funcionando: lo que va después del # nunca llega al servidor, así que el
+// salto a la ruta nueva se hace aquí, antes de pintar nada.
+const ANCLAS_VIEJAS: Record<string, string> = {
+  "#coaching": "/coaching",
+  "#coaching-pasos": "/coaching#como-funciona",
+  "#consultoria": "/consultoria",
+  "#consultoria-fases": "/consultoria#como-trabajamos",
+  "#automatizamos": "/consultoria#que-automatizamos",
+  "#herramientas": "/herramientas",
+  "#preguntas": "/preguntas",
+  "#agendar": "/agendar",
+};
+
 const SCRIPT_CABECERA = [
+  `if(location.pathname==='/'){var d=${JSON.stringify(ANCLAS_VIEJAS)}[location.hash];if(d)location.replace(d);}`,
   "document.documentElement.classList.add('js');",
   "setTimeout(function(){if(!document.documentElement.dataset.hidratado){document.documentElement.classList.add('forzar-visible')}},3500);",
 ].join("");
@@ -91,7 +101,7 @@ observar(n);});});}).observe(document.body,{childList:true,subtree:true});
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${inter.variable} ${outfit.variable}`}>
+    <html lang="es-CO" className={`${inter.variable} ${outfit.variable}`}>
       <head>
         {/* Corre antes de pintar: marca que hay JavaScript (el CSS de las
             apariciones solo oculta contenido bajo .js). Y red de seguridad: lo
@@ -104,7 +114,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </noscript>
       </head>
       <body>
-        <MotionProvider>{children}</MotionProvider>
+        <a
+          href="#contenido"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-xl focus:bg-white focus:px-4 focus:py-3 focus:text-ink"
+        >
+          Saltar al contenido
+        </a>
+        <JsonLd datos={ldOrganizacion} />
+        <MotionProvider>
+          <Nav />
+          <main id="contenido">{children}</main>
+          <Footer />
+        </MotionProvider>
         {/* Revela cada bloque [data-revelar] al entrar en pantalla. Corre apenas
             se lee el HTML, sin esperar a que cargue React. */}
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_APARICIONES }} />

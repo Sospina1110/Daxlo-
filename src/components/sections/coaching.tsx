@@ -1,5 +1,5 @@
 import { CalendarClock, Check, CircleX, Clapperboard, Circle, MonitorUp, Video } from "lucide-react";
-import { coaching } from "@/content/copy";
+import { agendarCon, coaching } from "@/content/copy";
 import { MarcaX, WindowDots } from "@/components/ui/primitives";
 import { SectionHeading } from "@/components/ui/blocks";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
@@ -8,11 +8,11 @@ import { TarjetaCalifica, TarjetasProblema, Zona } from "./zona";
 import { ZonaPortada } from "./zona-portada";
 import { cn, glow } from "@/lib/utils";
 
-export function ZonaCoaching() {
+export function ZonaCoaching({ migas }: { migas?: React.ReactNode }) {
   const c = coaching;
   return (
-    <Zona tono="cyan">
-      <ZonaPortada id="coaching" tono="cyan" {...c.portada} />
+    <Zona tono="cyan" arriba>
+      <ZonaPortada tono="cyan" {...c.portada} migas={migas} />
       <TarjetasProblema
         tono="cyan"
         titulo={c.problema.titulo}
@@ -22,7 +22,7 @@ export function ZonaCoaching() {
       />
       <Sesion />
       <Pasos />
-      <TarjetaCalifica tono="cyan" {...c.paraTi} />
+      <TarjetaCalifica tono="cyan" {...c.paraTi} href={agendarCon("coaching")} />
     </Zona>
   );
 }
@@ -32,7 +32,7 @@ export function ZonaCoaching() {
 function Sesion() {
   const s = coaching.sesion;
   return (
-    <section className="relative py-20 md:py-28">
+    <section className="relative py-14 md:py-28">
       <div className="container-page">
         <div className="grid gap-8 lg:grid-cols-[1fr_340px] lg:items-end">
           <SectionHeading titulo={s.titulo} sub={s.texto} tono="cyan" alineacion="izquierda" />
@@ -144,7 +144,7 @@ function Pasos() {
   const p = coaching.pasos;
   const visuales = [<VisualLlamada key="a" />, <VisualPlan key="b" />, <VisualConstruye key="c" />];
   return (
-    <section id="coaching-pasos" className="relative py-20 md:py-28">
+    <section id="como-funciona" className="relative py-14 md:py-28">
       <div className="container-page">
         <SectionHeading badge={p.badge} titulo={p.titulo} sub={p.sub} tono="cyan" />
         <Stagger className="mt-14 grid gap-5 md:grid-cols-3" escalon={0.14}>

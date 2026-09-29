@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { cn, type Tono } from "@/lib/utils";
 
 const bordePorTono: Record<Tono, React.CSSProperties> = {
@@ -62,6 +63,15 @@ export function GlowButton({ children, href, tono = "dual", tamano = "md", class
       <span className="relative inline-flex items-center gap-2">{children}</span>
     </>
   );
+  // Las rutas del propio sitio van con Link: la página siguiente se precarga y
+  // se abre sin recargar. Los enlaces externos (WhatsApp) quedan como <a>.
+  if (href?.startsWith("/")) {
+    return (
+      <Link href={href} className={clases} style={estilo}>
+        {interior}
+      </Link>
+    );
+  }
   if (href) {
     return (
       <a href={href} className={clases} style={estilo}>

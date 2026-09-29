@@ -1,5 +1,5 @@
 import { AlertTriangle, BookOpen, Check, Clock, LogOut, Mail, ScanText, ShieldCheck, Timer, Users } from "lucide-react";
-import { consultoria } from "@/content/copy";
+import { agendarCon, consultoria } from "@/content/copy";
 import { SectionHeading } from "@/components/ui/blocks";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { cn, glow } from "@/lib/utils";
@@ -10,11 +10,11 @@ import { Lienzo } from "./lienzo";
 
 const AZUL_CLARO = "#8ea0ff";
 
-export function ZonaConsultoria() {
+export function ZonaConsultoria({ migas }: { migas?: React.ReactNode }) {
   const c = consultoria;
   return (
-    <Zona tono="blue">
-      <ZonaPortada id="consultoria" tono="blue" {...c.portada} />
+    <Zona tono="blue" arriba>
+      <ZonaPortada tono="blue" {...c.portada} migas={migas} />
       <TarjetasProblema
         tono="blue"
         titulo={c.problema.titulo}
@@ -24,7 +24,7 @@ export function ZonaConsultoria() {
       />
       <Fases />
       <Automatizamos />
-      <TarjetaCalifica tono="blue" {...c.califica} />
+      <TarjetaCalifica tono="blue" {...c.califica} href={agendarCon("consultoria")} />
       <PorQue />
     </Zona>
   );
@@ -156,7 +156,7 @@ function VisualTraspaso() {
 function Fases() {
   const f = consultoria.fases;
   return (
-    <section id="consultoria-fases" className="relative py-20 md:py-28">
+    <section id="como-trabajamos" className="relative py-14 md:py-28">
       <div className="container-page">
         <SectionHeading badge={f.badge} titulo={f.titulo} sub={f.sub} tono="blue" />
         <Apilado items={f.items} visuales={[<VisualDiscovery key="a" />, <VisualConstruccion key="b" />, <VisualTraspaso key="c" />]} />
@@ -168,7 +168,7 @@ function Fases() {
 function Automatizamos() {
   const a = consultoria.automatizamos;
   return (
-    <section id="automatizamos" className="relative py-20 md:py-28">
+    <section id="que-automatizamos" className="relative py-14 md:py-28">
       <div className="container-page">
         <SectionHeading badge={a.badge} titulo={a.titulo} sub={a.sub} tono="blue" />
         <Reveal className="mt-12" y={40}>
@@ -177,10 +177,15 @@ function Automatizamos() {
         <Reveal className="mx-auto mt-8 max-w-[680px] text-center">
           <p className="text-[17px] leading-relaxed text-white/75">{a.nota}</p>
         </Reveal>
-        <Stagger as="ul" className="mt-10 flex flex-wrap justify-center gap-2.5" escalon={0.04}>
+        {/* En celular, lista a lo ancho: como píldoras centradas, las frases
+            largas partían en dos líneas y la fila quedaba desigual. */}
+        <Stagger as="ul" className="mt-10 grid gap-2 sm:flex sm:flex-wrap sm:justify-center sm:gap-2.5" escalon={0.04}>
           {a.procesos.map((p) => (
             <StaggerItem as="li" key={p}>
-              <span className="inline-flex rounded-2xl border border-line-2 bg-white/[0.03] px-4 py-2 text-[15px] text-white/80 sm:rounded-full">{p}</span>
+              <span className="flex items-center gap-3 rounded-xl border border-line-2 bg-white/[0.03] px-4 py-3 text-[16px] text-white/85 sm:inline-flex sm:rounded-full sm:py-2 sm:text-[15px]">
+                <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-blue-bright sm:hidden" />
+                {p}
+              </span>
             </StaggerItem>
           ))}
         </Stagger>
@@ -196,7 +201,7 @@ function Automatizamos() {
 function PorQue() {
   const p = consultoria.porQue;
   return (
-    <section className="relative py-20 md:py-28">
+    <section className="relative py-14 md:py-28">
       <div className="container-page grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
         <div>
           <SectionHeading titulo={p.titulo} tono="blue" alineacion="izquierda" />
