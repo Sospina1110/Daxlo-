@@ -80,6 +80,19 @@ for (const ruta of RUTAS) {
   });
 }
 
+// Los dos logos (barra y pie) llevan al inicio: en celular se tocan con el
+// pulgar, así que su área táctil mide al menos 44 px de alto, como el resto.
+test("los logos de la barra y del pie tienen al menos 44 px de alto para tocarlos", async ({ page, isMobile }) => {
+  test.skip(!isMobile, "el área táctil se exige en celular");
+  await page.goto("/");
+  await esperarHidratacion(page);
+  for (const logo of [page.locator("header a[aria-label='Daxlo, ir al inicio']"), page.locator("footer a[aria-label='Daxlo, ir al inicio']")]) {
+    await logo.scrollIntoViewIfNeeded();
+    const alto = await logo.evaluate((a) => Math.round(a.getBoundingClientRect().height));
+    expect(alto, "alto del enlace del logo").toBeGreaterThanOrEqual(44);
+  }
+});
+
 // El botón principal del inicio se ve sin bajar, también en los celulares más
 // chicos y con las barras del navegador a la vista.
 test("el botón 'Agendar una conversación' del hero queda dentro de la primera pantalla", async ({ page }) => {
