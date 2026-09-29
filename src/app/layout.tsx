@@ -101,7 +101,10 @@ observar(n);});});}).observe(document.body,{childList:true,subtree:true});
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es-CO" className={`${inter.variable} ${outfit.variable}`}>
+    // data-scroll-behavior: el CSS pone scroll suave en <html>; con este
+    // atributo Next lo apaga mientras cambia de página. Sin él, la página
+    // nueva se deslizaba hacia abajo en vez de abrir arriba.
+    <html lang="es-CO" data-scroll-behavior="smooth" className={`${inter.variable} ${outfit.variable}`}>
       <head>
         {/* Corre antes de pintar: marca que hay JavaScript (el CSS de las
             apariciones solo oculta contenido bajo .js). Y red de seguridad: lo

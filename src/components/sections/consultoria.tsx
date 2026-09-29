@@ -42,7 +42,7 @@ function VisualDiscovery() {
   const manual = ["Toda factura trae orden de compra", "El proveedor manda un solo archivo", "El total cuadra con el pedido"];
   const real = ["Algunas llegan sin orden", "A veces manda tres archivos", "El total no siempre cuadra"];
   return (
-    <div aria-hidden className="absolute inset-0 flex items-center justify-center p-6">
+    <div aria-hidden className="relative flex items-center justify-center px-5 py-10 lg:absolute lg:inset-0 lg:p-6">
       <span className="absolute -right-16 -top-16 h-64 w-64 resplandor" style={glow("61 90 255", 0.4, 1.70)} />
       <div className="relative grid w-full max-w-[460px] gap-3 sm:grid-cols-2">
         <PanelVisual className="p-4">
@@ -69,8 +69,8 @@ function VisualDiscovery() {
             ))}
           </ul>
         </PanelVisual>
-        <span className="mx-auto inline-flex sm:col-span-2 items-center gap-2 rounded-full border border-cyan/35 bg-cyan/10 px-3 py-1.5 text-[12px] text-cyan">
-          <AlertTriangle size={13} /> Contradicción encontrada antes de construir
+        <span className="mx-auto inline-flex sm:col-span-2 items-center gap-2 whitespace-nowrap rounded-full border border-cyan/35 bg-cyan/10 px-3 py-1.5 text-[12px] text-cyan">
+          <AlertTriangle size={13} /> Contradicción encontrada
         </span>
       </div>
     </div>
@@ -84,12 +84,12 @@ function VisualConstruccion() {
     { t: "Validar las reglas", i: <ShieldCheck size={14} /> },
   ];
   return (
-    <div aria-hidden className="absolute inset-0 flex items-center justify-center p-6">
+    <div aria-hidden className="relative flex items-center justify-center px-5 py-10 lg:absolute lg:inset-0 lg:p-6">
       <span className="absolute -bottom-16 -left-10 h-64 w-64 resplandor" style={glow("27 53 208", 0.5, 1.70)} />
       <PanelVisual className="w-full max-w-[340px]">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-dim">Construcción</p>
-          <span className="inline-flex items-center gap-1.5 text-[12px]" style={{ color: AZUL_CLARO }}>
+          <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-[12px]" style={{ color: AZUL_CLARO }}>
             <Timer size={13} /> Precio cerrado
           </span>
         </div>
@@ -117,7 +117,7 @@ function VisualConstruccion() {
 function VisualTraspaso() {
   const items = ["Entrenamiento con el equipo", "Operación acompañada", "Tu equipo hace los ajustes"];
   return (
-    <div aria-hidden className="absolute inset-0 flex items-center justify-center p-6">
+    <div aria-hidden className="relative flex items-center justify-center px-5 py-10 lg:absolute lg:inset-0 lg:p-6">
       <span className="absolute -right-10 -top-10 h-64 w-64 resplandor" style={glow("61 90 255", 0.4, 1.70)} />
       <PanelVisual className="w-full max-w-[340px]">
         <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-dim">Traspaso</p>

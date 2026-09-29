@@ -147,7 +147,7 @@ function Pasos() {
     <section id="como-funciona" className="relative py-14 md:py-28">
       <div className="container-page">
         <SectionHeading badge={p.badge} titulo={p.titulo} sub={p.sub} tono="cyan" />
-        <Stagger className="mt-14 grid gap-5 md:grid-cols-3" escalon={0.14}>
+        <Stagger className="mt-10 grid gap-5 md:mt-14 lg:grid-cols-3" escalon={0.14}>
           {p.items.map((it, i) => (
             <StaggerItem key={it.titulo} className="h-full">
               <article className="glass flex h-full flex-col overflow-hidden rounded-[22px]">

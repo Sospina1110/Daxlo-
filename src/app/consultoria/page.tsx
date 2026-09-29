@@ -8,12 +8,12 @@ export const metadata = metadatosPagina("consultoria");
 
 export default function PaginaConsultoria() {
   return (
-    <>
-      <JsonLd datos={[ldServicio("consultoria"), ldMigas("consultoria", "Consultoría de implementación")]} />
+    <div>
       <ZonaConsultoria migas={<Migas actual="Consultoría de implementación" />} />
       <PreguntasLinea linea="consultoria" />
       <OtraLinea hacia="coaching" />
       <CtaFinal linea="consultoria" />
-    </>
+      <JsonLd datos={[ldServicio("consultoria"), ldMigas("consultoria", "Consultoría de implementación")]} />
+    </div>
   );
 }

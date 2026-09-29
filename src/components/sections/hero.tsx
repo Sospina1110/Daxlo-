@@ -16,9 +16,11 @@ function Entrada({ children, retraso = 0, className = "" }: { children: React.Re
   );
 }
 
+// En los celulares más chicos (320 px) el hero se compacta un poco para que el
+// botón de agendar quede dentro de la primera pantalla.
 export function Hero() {
   return (
-    <section id="top" className="relative isolate overflow-hidden pb-8 pt-32 md:pt-44">
+    <section id="top" className="relative isolate overflow-hidden pb-8 pt-28 max-[359px]:pt-24 md:pt-44">
       <FondoHero />
       <div className="container-page relative">
         <Entrada>
@@ -28,18 +30,18 @@ export function Hero() {
           </Badge>
         </Entrada>
 
-        <h1 className="mt-7 text-[clamp(2.7rem,6.6vw,5rem)] max-[359px]:text-[2.3rem] leading-[1.02] tracking-[-0.03em]">
+        <h1 className="mt-6 text-[clamp(2.7rem,6.6vw,5rem)] leading-[1.02] tracking-[-0.03em] max-[359px]:mt-5 max-[359px]:text-[2.15rem]">
           <LineaTitular texto={hero.titulo[0]} retraso={0.1} />{" "}
           <LineaTitular texto={hero.titulo[1]} retraso={0.22} clase="text-gradient-dual pb-1" />
         </h1>
 
         <Entrada retraso={0.45}>
-          <p className="mt-7 max-w-[580px] text-[18px] leading-relaxed text-muted md:text-[19px]">{hero.sub}</p>
+          <p className="mt-5 max-w-[580px] text-[18px] leading-relaxed text-muted max-[359px]:mt-4 max-[359px]:leading-normal md:mt-7 md:text-[19px]">{hero.sub}</p>
         </Entrada>
 
         {/* Un solo llamado, y debajo lo único que hace falta saber antes de
             tocarlo. En celular el botón ocupa el ancho: se toca con el pulgar. */}
-        <Entrada retraso={0.55} className="mt-9 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:gap-6">
+        <Entrada retraso={0.55} className="mt-8 flex flex-col max-[359px]:mt-6 md:mt-9 items-stretch gap-4 sm:flex-row sm:items-center sm:gap-6">
           <GlowButton href={rutas.agendar} tamano="lg">
             {hero.cta}
             <ArrowRight size={18} className="transition-transform group-hover:translate-x-0.5" />
@@ -148,7 +150,7 @@ function Maqueta() {
             <div className="flex flex-wrap gap-2">
               <Ficha icono={<Paperclip size={14} />}>Adjuntar</Ficha>
               <Ficha icono={<Workflow size={14} />}>Automatizar</Ficha>
-              <Ficha icono={<BarChart3 size={14} />} clase="hidden sm:inline-flex">
+              <Ficha icono={<BarChart3 size={14} />} clase="max-sm:hidden">
                 Analizar
               </Ficha>
             </div>

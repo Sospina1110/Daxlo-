@@ -246,7 +246,7 @@ export const consultoria = {
   },
   fases: {
     badge: "Cómo trabajamos",
-    titulo: "Construimos al lado de tu equipo. Y les transferimos la operación antes de salir.",
+    titulo: "Construimos al lado de tu equipo. Y les transferimos la operación antes de salir.",
     sub: "Salir es parte del contrato, no un accidente. Cobramos por lo entregado, no por horas trabajadas.",
     items: [
       {

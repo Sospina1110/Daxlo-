@@ -9,13 +9,13 @@ export const metadata = metadatosPagina("coaching");
 
 export default function PaginaCoaching() {
   return (
-    <>
-      <JsonLd datos={[ldServicio("coaching"), ldMigas("coaching", "Coaching 1 a 1")]} />
+    <div>
       <ZonaCoaching migas={<Migas actual="Coaching 1 a 1" />} />
       <FranjaHerramientas conEnlace />
       <PreguntasLinea linea="coaching" />
       <OtraLinea hacia="consultoria" />
       <CtaFinal linea="coaching" />
-    </>
+      <JsonLd datos={[ldServicio("coaching"), ldMigas("coaching", "Coaching 1 a 1")]} />
+    </div>
   );
 }

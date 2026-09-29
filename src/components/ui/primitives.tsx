@@ -46,9 +46,11 @@ type GlowButtonProps = {
 export function GlowButton({ children, href, tono = "dual", tamano = "md", className, type = "button", disabled, onClick }: GlowButtonProps) {
   const clases = cn(
     "group border-gradient relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl font-medium text-white transition duration-300 hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-60",
-    tamano === "sm" && "px-4 py-2 text-[15px]",
-    tamano === "md" && "px-5 py-3 text-[16px]",
-    tamano === "lg" && "px-7 py-4 text-[17px]",
+    tamano === "sm" && "min-h-[44px] px-4 py-2 text-[15px]",
+    tamano === "md" && "px-4 py-3 text-[16px] min-[360px]:px-5",
+    // En pantallas de 320 px el padding completo partía "Agendar una
+    // conversación" en dos líneas.
+    tamano === "lg" && "px-4 py-4 text-[16px] min-[360px]:px-7 min-[360px]:text-[17px]",
     className,
   );
   const estilo = { ...bordePorTono[tono], ["--fill" as string]: "#10121a", ["--angle" as string]: "120deg" } as React.CSSProperties;

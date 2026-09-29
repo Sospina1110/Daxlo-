@@ -28,11 +28,19 @@ export function Nav() {
 
   const actual = (href: string) => ruta === href || ruta === `${href}/`;
 
+  // Con el menú abierto la página de atrás no se mueve ni recibe toques: se
+  // cierra con Escape, tocando fuera o eligiendo una opción.
   useEffect(() => {
     if (!abierta) return;
     const alEscape = (e: KeyboardEvent) => e.key === "Escape" && setAbierta(false);
     window.addEventListener("keydown", alEscape);
-    return () => window.removeEventListener("keydown", alEscape);
+    const html = document.documentElement;
+    const antes = html.style.overflow;
+    html.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", alEscape);
+      html.style.overflow = antes;
+    };
   }, [abierta]);
 
   return (
@@ -42,7 +50,7 @@ export function Nav() {
         className={cn(
           "entrada mx-auto flex items-center justify-between rounded-2xl border transition-[max-width,background-color,border-color,padding,box-shadow] duration-500",
           compacta || abierta
-            ? "max-w-[1000px] border-line-2 bg-ink/92 px-4 py-2.5 shadow-[0_10px_40px_rgba(0,0,0,0.45)] md:bg-ink/75 md:backdrop-blur-xl"
+            ? "max-w-[1000px] border-line-2 bg-ink/[0.97] px-4 py-2.5 shadow-[0_10px_40px_rgba(0,0,0,0.45)] md:bg-ink/75 md:backdrop-blur-xl"
             : "max-w-[1200px] border-transparent px-4 py-3.5 md:px-6",
         )}
       >
@@ -88,12 +96,25 @@ export function Nav() {
       <AnimatePresence>
         {abierta && (
           <m.div
+            key="fondo"
+            aria-hidden
+            onClick={() => setAbierta(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 -z-10 bg-black/60 lg:hidden"
+          />
+        )}
+        {abierta && (
+          <m.div
+            key="menu"
             id="menu-movil"
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.25, ease: EASE }}
-            className="mx-auto mt-2 max-h-[calc(100dvh-96px)] max-w-[1000px] overflow-y-auto rounded-2xl border border-line-2 bg-ink/95 p-3 lg:hidden"
+            className="mx-auto mt-2 max-h-[calc(100dvh-96px)] max-w-[1000px] overflow-y-auto overscroll-contain rounded-2xl border border-line-2 bg-ink p-3 shadow-[0_20px_60px_rgba(0,0,0,0.6)] lg:hidden"
           >
             <ul className="flex flex-col">
               {nav.links.map((l) => (

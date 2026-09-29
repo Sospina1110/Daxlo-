@@ -66,9 +66,11 @@ export function Faq({ migas }: { migas?: React.ReactNode }) {
     <section className="relative pb-20 pt-28 md:pb-32 md:pt-36">
       {migas && <div className="container-page">{migas}</div>}
       <div className="container-page mt-10 grid gap-12 md:mt-14 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-        <div className="lg:sticky lg:top-28 lg:self-start">
+        {/* En celular la columna izquierda se deshace (contents) para que la
+            ayuda por WhatsApp quede después de las preguntas y no antes. */}
+        <div className="max-lg:contents lg:sticky lg:top-28 lg:self-start">
           <SectionHeading badge={f.badge} titulo={f.titulo} alineacion="izquierda" nivel={1} />
-          <Reveal delay={0.15} className="glass mt-8 rounded-[22px] p-6">
+          <Reveal delay={0.15} className="glass rounded-[22px] p-6 max-lg:order-last lg:mt-8">
             <p className="font-display text-[20px] text-white">{f.ayuda}</p>
             <p className="mt-2 text-[17px] text-muted">{f.ayudaTexto}</p>
             <GlowButton href={contacto.whatsapp} className="mt-5" tamano="sm">

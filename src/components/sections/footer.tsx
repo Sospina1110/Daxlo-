@@ -17,11 +17,11 @@ export function Footer() {
   const f = footer;
   return (
     <footer className="container-page pb-8 pt-4">
-      <div className="glass relative overflow-hidden rounded-[28px] p-8 md:p-12">
+      <div className="glass relative overflow-hidden rounded-[28px] p-6 sm:p-8 md:p-12">
         <span aria-hidden className="absolute -right-24 -top-24 h-72 w-72 resplandor" style={glow("27 53 208", 0.35, 1.69)} />
         {/* En celular las columnas de enlaces van de a dos: en una sola
             columna el pie ocupaba casi dos pantallas. */}
-        <div className="relative grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr]">
+        <div className="relative grid grid-cols-2 gap-x-4 gap-y-10 min-[360px]:gap-x-6 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr]">
           <div className="col-span-2 lg:col-span-1">
             <Link href="/" aria-label="Daxlo, ir al inicio" className="inline-block">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -32,10 +32,10 @@ export function Footer() {
           {f.columnas.map((col) => (
             <nav key={col.titulo} aria-label={col.titulo}>
               <p className="font-display text-[17px] text-white">{col.titulo}</p>
-              <ul className="mt-3 space-y-1">
+              <ul className="mt-2">
                 {col.enlaces.map((e) => (
                   <li key={e.h}>
-                    <Link href={e.h} className="inline-block py-1.5 text-[16px] leading-snug text-white/60 transition-colors hover:text-white">
+                    <Link href={e.h} className="inline-flex min-h-[44px] items-center py-1 text-[15px] leading-snug text-white/60 transition-colors hover:text-white min-[360px]:text-[16px]">
                       {e.t}
                     </Link>
                   </li>
@@ -43,19 +43,21 @@ export function Footer() {
               </ul>
             </nav>
           ))}
-          <div>
+          {/* En celular el contacto va a lo ancho y en fila: en media columna
+              el correo no cabía en 320 px. */}
+          <div className="col-span-2 sm:col-span-1">
             <p className="font-display text-[17px] text-white">Contacto</p>
-            <ul className="mt-3 space-y-1 text-[16px]">
+            <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-[16px] sm:block sm:space-y-1">
               <li>
-                <a href={contacto.whatsapp} target="_blank" rel="noopener" className="inline-flex items-center gap-2 py-1.5 text-white/60 hover:text-white">
+                <a href={contacto.whatsapp} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center gap-2 text-white/60 hover:text-white">
                   <MessageCircle size={16} /> WhatsApp
                 </a>
               </li>
               <li>
-                <CorreoContacto className="inline-flex items-center gap-2 py-1.5 text-white/60 hover:text-white" />
+                <CorreoContacto className="inline-flex min-h-[44px] items-center gap-2 text-white/60 hover:text-white" />
               </li>
               <li>
-                <a href={contacto.instagram} target="_blank" rel="noopener" className="inline-flex items-center gap-2 py-1.5 text-white/60 hover:text-white">
+                <a href={contacto.instagram} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center gap-2 text-white/60 hover:text-white">
                   <Instagram size={16} /> Instagram
                 </a>
               </li>

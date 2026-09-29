@@ -54,7 +54,7 @@ function TarjetaApilada({
         style={escritorio ? { scale: escala } : undefined}
         className="relative mb-5 w-full origin-top overflow-hidden rounded-[28px] border border-line-2 bg-[#0e1019] shadow-[0_-24px_70px_rgba(0,0,0,0.55)] lg:mb-0 lg:grid lg:min-h-[500px] lg:grid-cols-2"
       >
-        <div className={cn("flex flex-col justify-center p-8 md:p-12", alterna && "lg:order-2")}>
+        <div className={cn("flex flex-col justify-center p-6 sm:p-8 md:p-12", alterna && "lg:order-2")}>
           <span className="font-display text-[15px] font-medium tracking-[0.1em]" style={{ color: AZUL_CLARO }}>
             FASE {item.numero}
           </span>
@@ -64,8 +64,8 @@ function TarjetaApilada({
         </div>
         <div
           className={cn(
-            "relative min-h-[380px] overflow-hidden border-t border-line bg-gradient-to-br from-blue/25 via-ink-2 to-ink-2 sm:min-h-[340px]",
-            "lg:min-h-0 lg:border-t-0",
+            "relative overflow-hidden border-t border-line bg-gradient-to-br from-blue/25 via-ink-2 to-ink-2",
+            "lg:border-t-0",
             alterna ? "lg:order-1 lg:border-r" : "lg:border-l",
           )}
         >

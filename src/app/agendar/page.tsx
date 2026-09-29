@@ -7,9 +7,9 @@ export const metadata = metadatosPagina("agendar");
 
 export default function PaginaAgendar() {
   return (
-    <>
-      <JsonLd datos={ldMigas("agendar", "Agendar")} />
+    <div>
       <Agendar migas={<Migas actual="Agendar" centro />} />
-    </>
+      <JsonLd datos={ldMigas("agendar", "Agendar")} />
+    </div>
   );
 }

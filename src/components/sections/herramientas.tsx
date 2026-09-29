@@ -25,7 +25,7 @@ export function Herramientas({ migas }: { migas?: React.ReactNode }) {
       aria-labelledby="titulo-herramientas"
     >
       <div aria-hidden className={cn("pointer-events-none absolute left-1/2 -z-10 -translate-x-1/2", principal ? "top-40 md:top-24" : "top-16 md:top-6")}>
-        <Orb tamano="min(560px, 96vw)" tono="dual" className="animate-float opacity-90" />
+        <Orb tamano="min(560px, 96vw)" tono="dual" className="animate-float opacity-60 md:opacity-90" />
       </div>
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[520px] bg-gradient-to-b from-ink via-transparent to-ink" />
 

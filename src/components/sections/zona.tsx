@@ -59,7 +59,7 @@ export function TarjetasProblema({
     <section className="relative py-14 md:py-28">
       <div className="container-page">
         <SectionHeading titulo={titulo} sub={sub} tono={tono} alineacion="izquierda" />
-        <Stagger className="mt-12 grid gap-5 md:grid-cols-3" escalon={0.12}>
+        <Stagger className="mt-10 grid gap-4 md:mt-12 md:gap-5 lg:grid-cols-3" escalon={0.12}>
           {tarjetas.map((t, i) => (
             <StaggerItem key={t.titulo} className="h-full">
               <article className="glass flex h-full flex-col rounded-[22px] p-7">
@@ -101,7 +101,7 @@ export function TarjetaCalifica({
         <Reveal delay={0.1}>
           <div
             className={cn(
-              "relative overflow-hidden rounded-[26px] border p-8 md:p-10",
+              "relative overflow-hidden rounded-[26px] border p-6 sm:p-8 md:p-10",
               cyan ? "border-cyan/30 bg-gradient-to-br from-cyan-deep/40 via-ink-2 to-ink-2" : "border-blue-bright/35 bg-gradient-to-br from-blue/45 via-ink-2 to-ink-2",
             )}
           >

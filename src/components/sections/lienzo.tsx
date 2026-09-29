@@ -72,7 +72,7 @@ export function Lienzo() {
           <p className="text-[13px] text-dim">Así se ve un proceso documental automatizado</p>
 
           {/* Escritorio: lienzo con nodos y conexiones que se dibujan. */}
-          <div data-motion-oculto="" className="bg-grid relative mt-5 hidden aspect-[1000/470] rounded-2xl border border-line md:block">
+          <div data-motion-oculto="" className="bg-grid relative mt-5 hidden aspect-[1000/470] rounded-2xl border border-line lg:block">
             <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
               {conexiones.map((d, i) => (
                 <g key={d}>
@@ -116,13 +116,13 @@ export function Lienzo() {
           </div>
 
           {/* Móvil: el mismo flujo en columna. */}
-          <ol className="mt-5 space-y-2.5 md:hidden">
+          <ol className="mt-5 space-y-2.5 lg:hidden">
             {a.nodos.slice(0, 4).map((n) => (
               <li key={n.id}>
                 <NodoFlujo id={n.id} titulo={n.titulo} detalle={n.detalle} />
               </li>
             ))}
-            <li className="grid grid-cols-2 gap-2.5">
+            <li className="grid grid-cols-1 gap-2.5 min-[375px]:grid-cols-2">
               {a.nodos.slice(4).map((n) => (
                 <NodoFlujo key={n.id} id={n.id} titulo={n.titulo} detalle={n.detalle} />
               ))}
@@ -152,7 +152,7 @@ function NodoFlujo({ id, titulo, detalle }: { id: string; titulo: string; detall
       {(esHoja || esBorrador) && (
         <span
           className={cn(
-            "mt-2 inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium",
+            "mt-2 inline-flex whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium",
             esHoja ? "bg-mint/15 text-mint" : "bg-cyan/15 text-cyan",
           )}
         >

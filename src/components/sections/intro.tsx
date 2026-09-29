@@ -43,7 +43,7 @@ export function DosFormas() {
     <section className="relative py-16 md:py-32">
       <div className="container-page">
         <SectionHeading badge={dosFormas.badge} titulo={dosFormas.titulo} sub={dosFormas.sub} />
-        <Stagger className="mt-10 grid gap-5 md:mt-14 md:grid-cols-2" escalon={0.14}>
+        <Stagger className="mt-10 grid gap-5 md:mt-14 lg:grid-cols-2" escalon={0.14}>
           <StaggerItem>
             <TarjetaLinea tono="cyan" datos={dosFormas.coaching} href={rutas.coaching} visual={<VisualCoaching />} />
           </StaggerItem>

@@ -8,10 +8,10 @@ export const metadata = metadatosPagina("preguntas");
 
 export default function PaginaPreguntas() {
   return (
-    <>
-      <JsonLd datos={[ldPreguntas, ldMigas("preguntas", "Preguntas frecuentes")]} />
+    <div>
       <Faq migas={<Migas actual="Preguntas frecuentes" />} />
       <CtaFinal />
-    </>
+      <JsonLd datos={[ldPreguntas, ldMigas("preguntas", "Preguntas frecuentes")]} />
+    </div>
   );
 }

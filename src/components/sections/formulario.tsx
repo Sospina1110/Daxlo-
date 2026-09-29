@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, ChevronDown } from "lucide-react";
 import { agendar, contacto } from "@/content/copy";
 import { GlowButton } from "@/components/ui/primitives";
 import { cn } from "@/lib/utils";
@@ -108,20 +108,25 @@ export function FormularioContacto() {
     // directo al Apps Script por POST. Sin esto se enviaba por GET a la misma
     // página, con el nombre, el WhatsApp y el correo en la URL, y el contacto
     // se perdía. Con JavaScript, enviar() lo intercepta y nada cambia.
-    <form ref={formRef} onSubmit={enviar} method="post" action={ENDPOINT} noValidate className="glass relative overflow-hidden rounded-[26px] p-6 md:p-10">
+    <form ref={formRef} onSubmit={enviar} method="post" action={ENDPOINT} noValidate className="glass relative overflow-hidden rounded-[26px] p-5 sm:p-6 md:p-10">
       <span aria-hidden className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-cyan/70 to-transparent" />
       <div className="grid gap-5">
         <Campo id="linea" etiqueta={c.linea} error={errores.linea} obligatorio>
-          <select id="linea" name="linea" defaultValue="" className={claseCampo(errores.linea)} aria-invalid={!!errores.linea || undefined} aria-describedby={errores.linea ? "error-linea" : undefined}>
-            <option value="" disabled>
-              Selecciona una opción
-            </option>
-            {c.lineaOpciones.map((o) => (
-              <option key={o.valor} value={o.valor}>
-                {o.texto}
+          {/* Apariencia propia: el select nativo de Safari salía gris y
+              distinto al resto de los campos. */}
+          <div className="relative">
+            <select id="linea" name="linea" defaultValue="" className={cn(claseCampo(errores.linea), "appearance-none pr-11")} aria-invalid={!!errores.linea || undefined} aria-describedby={errores.linea ? "error-linea" : undefined}>
+              <option value="" disabled>
+                Selecciona una opción
               </option>
-            ))}
-          </select>
+              {c.lineaOpciones.map((o) => (
+                <option key={o.valor} value={o.valor}>
+                  {o.texto}
+                </option>
+              ))}
+            </select>
+            <ChevronDown size={18} aria-hidden className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/55" />
+          </div>
         </Campo>
         <Campo id="nombre" etiqueta={c.nombre} error={errores.nombre} obligatorio>
           <input id="nombre" name="nombre" autoComplete="name" placeholder="Tu nombre" className={claseCampo(errores.nombre)} aria-invalid={!!errores.nombre || undefined} aria-describedby={errores.nombre ? "error-nombre" : undefined} />
@@ -138,7 +143,7 @@ export function FormularioContacto() {
           <input id="empresa" name="empresa" autoComplete="organization" placeholder="Nombre de tu empresa" className={claseCampo()} />
         </Campo>
         <Campo id="interes" etiqueta={c.interes}>
-          <textarea id="interes" name="interes" rows={4} placeholder={c.interesEjemplo} className={cn(claseCampo(), "resize-y")} />
+          <textarea id="interes" name="interes" rows={5} placeholder={c.interesEjemplo} className={cn(claseCampo(), "resize-y")} />
         </Campo>
 
         {/* Trampa para bots: una persona no ve este campo; si llega lleno, es spam. */}

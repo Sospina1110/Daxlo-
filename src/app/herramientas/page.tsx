@@ -8,10 +8,10 @@ export const metadata = metadatosPagina("herramientas");
 
 export default function PaginaHerramientas() {
   return (
-    <>
-      <JsonLd datos={ldMigas("herramientas", "Herramientas")} />
+    <div>
       <Herramientas migas={<Migas actual="Herramientas" centro />} />
       <CtaFinal />
-    </>
+      <JsonLd datos={ldMigas("herramientas", "Herramientas")} />
+    </div>
   );
 }
