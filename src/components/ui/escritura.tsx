@@ -33,10 +33,22 @@ export function TextoQueSeEscribe({ frases }: { frases: readonly string[] }) {
     return () => clearTimeout(t);
   }, [texto, borrando, indice, frases, reducir, visible]);
 
+  // Todas las frases van invisibles y apiladas en la misma celda que la que se
+  // escribe: la caja toma la altura de la más larga. Sin esto, en pantallas de
+  // 360 y 375 px la caja ganaba y perdía una línea en cada frase y toda la
+  // página de abajo saltaba.
   return (
-    <span ref={ref}>
-      {reducir ? frases[0] : texto}
-      <span className="animate-caret ml-0.5 inline-block h-[1.05em] w-[2px] translate-y-[0.18em] bg-cyan" />
+    <span ref={ref} className="grid">
+      {frases.map((f) => (
+        <span key={f} aria-hidden className="invisible [grid-area:1/1]">
+          {f}
+          <span className="ml-0.5 inline-block h-[1.05em] w-[2px]" />
+        </span>
+      ))}
+      <span className="[grid-area:1/1]">
+        {reducir ? frases[0] : texto}
+        <span className="animate-caret ml-0.5 inline-block h-[1.05em] w-[2px] translate-y-[0.18em] bg-cyan" />
+      </span>
     </span>
   );
 }

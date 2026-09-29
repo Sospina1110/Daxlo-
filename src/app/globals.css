@@ -82,6 +82,10 @@
     -moz-osx-font-smoothing: grayscale;
     overflow-x: clip;
   }
+  /* En Safari el clip de body no contiene lo que se sale de lado; en main sí. */
+  main {
+    overflow-x: clip;
+  }
   h1, h2, h3, h4 {
     font-family: var(--font-display);
     font-weight: 500;
@@ -213,11 +217,25 @@
   border-radius: 9999px;
 }
 
-/* Activada por la red de seguridad del layout si JavaScript no hidrató. */
-.forzar-visible [style*="opacity"] {
+/* Activada por la red de seguridad del layout si JavaScript no hidrató. Solo
+   toca lo que Motion deja oculto al arrancar (data-motion-oculto): antes
+   alcanzaba cualquier opacidad en línea y encendía de golpe los haces del hero. */
+.forzar-visible [data-motion-oculto] [style*="opacity"] {
   opacity: 1 !important;
   transform: none !important;
-  filter: none !important;
+}
+
+/* El script del layout marca [data-pausa] las animaciones infinitas que están
+   fuera de pantalla. */
+[data-pausa] { animation-play-state: paused !important; }
+
+@media (max-width: 767px) {
+  /* En celular estas dos no corren. Las líneas punteadas animan
+     stroke-dashoffset, que se repinta en el hilo principal en cada frame. El
+     "respirar" de los haces obliga a recomponer una capa enmascarada enorme en
+     cada frame. Quietas se ven casi igual. */
+  .animate-flow,
+  .animate-breathe { animation: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -229,6 +247,8 @@
   .animate-spin-slow,
   .animate-breathe,
   .animate-paseo,
+  .animate-ping,
+  .animate-caret,
   .entrada,
   .subir,
   .fundir { animation: none !important; }

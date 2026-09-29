@@ -31,7 +31,7 @@ export function ZonaPortada({
   const cyan = tono === "cyan";
 
   return (
-    <div id={id} ref={ref} className="relative overflow-hidden pb-16 pt-24 md:pb-24 md:pt-36" style={{ scrollMarginTop: 80 }}>
+    <div id={id} ref={ref} className="relative overflow-hidden pb-16 pt-24 md:pb-24 md:pt-36">
       <div className="container-page">
         <Reveal className="flex items-center gap-3 text-[14px] font-medium uppercase tracking-[0.16em]">
           <span className={cyan ? "text-cyan" : "text-[#8ea0ff]"}>{ordinal}</span>

@@ -48,22 +48,44 @@ const SCRIPT_CABECERA = [
 
 // Sin IntersectionObserver (navegadores muy viejos) se quita .js y todo queda
 // visible. El MutationObserver cubre nodos que React cree después.
+//
+// Tres trabajos:
+// 1. Revela cada [data-revelar] al entrar en pantalla.
+// 2. Respaldo para Safari: con frames lentos y scroll rápido, un bloque puede
+//    pasar de abajo a arriba de la pantalla entre dos frames sin contar nunca
+//    como visible, y se quedaba oculto. Al hacer scroll se revela todo lo que
+//    ya quedó por encima del borde inferior.
+// 3. Pausa las animaciones infinitas (.animate-*) fuera de pantalla: marca
+//    [data-pausa] y el CSS las detiene. Corriendo todas a la vez mantenían el
+//    celular trabajando aunque nadie tocara la página.
 const SCRIPT_APARICIONES = `(function(){
 var d=document.documentElement;
 if(!('IntersectionObserver' in window)){d.classList.remove('js');return;}
-var io=new IntersectionObserver(function(es){es.forEach(function(e){
-if(!e.isIntersecting)return;var el=e.target;io.unobserve(el);
+function revelar(el){
 var p=el.parentElement;
 if(p&&p.hasAttribute('data-escalonar')){
 var hs=[].filter.call(p.children,function(c){return c.hasAttribute('data-revelar')});
 el.style.setProperty('--retraso',(hs.indexOf(el)*(parseFloat(p.getAttribute('data-escalonar'))||0.09))+'s');}
-el.setAttribute('data-visible','');
+el.setAttribute('data-visible','');}
+var io=new IntersectionObserver(function(es){es.forEach(function(e){
+if(!e.isIntersecting)return;io.unobserve(e.target);revelar(e.target);
 });},{rootMargin:'0px 0px -6% 0px'});
-function observar(r){[].forEach.call(r.querySelectorAll('[data-revelar]:not([data-visible])'),function(el){io.observe(el)});}
+var espera=0;
+addEventListener('scroll',function(){if(espera)return;espera=setTimeout(function(){espera=0;var limite=innerHeight*0.94;
+[].forEach.call(document.querySelectorAll('[data-revelar]:not([data-visible])'),function(el){
+if(el.getBoundingClientRect().top<limite){io.unobserve(el);revelar(el);}});},200);},{passive:true});
+var A='.animate-flow,.animate-breathe,.animate-float,.animate-marquee,.animate-marquee-reverse,.animate-ping,.animate-paseo,.animate-caret';
+var ia=new IntersectionObserver(function(es){es.forEach(function(e){
+if(e.isIntersecting)e.target.removeAttribute('data-pausa');else e.target.setAttribute('data-pausa','');
+});},{rootMargin:'100px'});
+function observar(r){
+[].forEach.call(r.querySelectorAll('[data-revelar]:not([data-visible])'),function(el){io.observe(el)});
+[].forEach.call(r.querySelectorAll(A),function(el){ia.observe(el)});}
 observar(document);
 new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(n){
 if(n.nodeType!==1)return;
 if(n.hasAttribute('data-revelar')&&!n.hasAttribute('data-visible'))io.observe(n);
+if(n.matches(A))ia.observe(n);
 observar(n);});});}).observe(document.body,{childList:true,subtree:true});
 })();`;
 
@@ -73,11 +95,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         {/* Corre antes de pintar: marca que hay JavaScript (el CSS de las
             apariciones solo oculta contenido bajo .js). Y red de seguridad: lo
-            poco que todavía anima Motion espera a React; si React no hidrata
-            en 3,5 s, se fuerza visible. */}
+            poco que todavía arranca oculto por Motion (marcado con
+            data-motion-oculto) espera a React; si React no hidrata en 3,5 s,
+            se fuerza visible. */}
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_CABECERA }} />
         <noscript>
-          <style>{"[style*=opacity]{opacity:1!important;transform:none!important;filter:none!important}"}</style>
+          <style>{"[data-motion-oculto] [style*=opacity]{opacity:1!important;transform:none!important}"}</style>
         </noscript>
       </head>
       <body>

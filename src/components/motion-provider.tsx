@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { LazyMotion, MotionConfig, domAnimation } from "motion/react";
+import { LazyMotion, MotionConfig } from "motion/react";
+
+const cargarFunciones = () => import("./motion-features").then((m) => m.default);
 
 // Quien tiene activado "reducir movimiento" en su sistema ve la página sin
 // desplazamientos: las apariciones quedan solo en opacidad.
@@ -16,10 +18,11 @@ export function MotionProvider({ children }: { children: React.ReactNode }) {
     d.classList.remove("forzar-visible");
   }, []);
   // LazyMotion carga solo las funciones de animación que se usan (sin layout
-  // ni arrastre). strict hace fallar cualquier <motion.x> que se cuele: todas
-  // las islas usan <m.x>.
+  // ni arrastre), y las pide aparte, después de hidratar: son unos 29 KB
+  // comprimidos que ya no frenan el arranque en celular. strict hace fallar
+  // cualquier <motion.x> que se cuele: todas las islas usan <m.x>.
   return (
-    <LazyMotion features={domAnimation} strict>
+    <LazyMotion features={cargarFunciones} strict>
       <MotionConfig reducedMotion="user">{children}</MotionConfig>
     </LazyMotion>
   );

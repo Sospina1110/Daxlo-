@@ -72,7 +72,7 @@ export function Lienzo() {
           <p className="text-[13px] text-dim">Así se ve un proceso documental automatizado</p>
 
           {/* Escritorio: lienzo con nodos y conexiones que se dibujan. */}
-          <div className="bg-grid relative mt-5 hidden aspect-[1000/470] rounded-2xl border border-line md:block">
+          <div data-motion-oculto="" className="bg-grid relative mt-5 hidden aspect-[1000/470] rounded-2xl border border-line md:block">
             <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
               {conexiones.map((d, i) => (
                 <g key={d}>

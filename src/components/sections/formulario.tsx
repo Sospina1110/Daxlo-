@@ -33,7 +33,7 @@ export function FormularioContacto() {
     const linea = valor("linea");
     const nombre = valor("nombre");
     const whatsapp = valor("whatsapp");
-    const correo = valor("email");
+    const correo = valor("correo");
 
     const nuevos: Errores = {};
     if (!linea) nuevos.linea = a.errores.linea;
@@ -98,7 +98,12 @@ export function FormularioContacto() {
 
   const c = a.campos;
   return (
-    <form ref={formRef} onSubmit={enviar} noValidate className="glass relative overflow-hidden rounded-[26px] p-6 md:p-10">
+    // method y action son el respaldo para cuando el JavaScript no llega a
+    // cargar (red que corta, iOS anterior a 16.4): el formulario se envía
+    // directo al Apps Script por POST. Sin esto se enviaba por GET a la misma
+    // página, con el nombre, el WhatsApp y el correo en la URL, y el contacto
+    // se perdía. Con JavaScript, enviar() lo intercepta y nada cambia.
+    <form ref={formRef} onSubmit={enviar} method="post" action={ENDPOINT} noValidate className="glass relative overflow-hidden rounded-[26px] p-6 md:p-10">
       <span aria-hidden className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-cyan/70 to-transparent" />
       <div className="grid gap-5">
         <Campo id="linea" etiqueta={c.linea} error={errores.linea} obligatorio>
@@ -121,7 +126,7 @@ export function FormularioContacto() {
             <input id="whatsapp" name="whatsapp" type="tel" autoComplete="tel" placeholder="+57 300 123 4567" className={claseCampo(errores.whatsapp)} aria-invalid={!!errores.whatsapp || undefined} aria-describedby={errores.whatsapp ? "error-whatsapp" : undefined} />
           </Campo>
           <Campo id="email" etiqueta={c.correo} error={errores.email} obligatorio>
-            <input id="email" name="email" type="email" autoComplete="email" placeholder="tu@correo.com" className={claseCampo(errores.email)} aria-invalid={!!errores.email || undefined} aria-describedby={errores.email ? "error-email" : undefined} />
+            <input id="email" name="correo" type="email" autoComplete="email" placeholder="tu@correo.com" className={claseCampo(errores.email)} aria-invalid={!!errores.email || undefined} aria-describedby={errores.email ? "error-email" : undefined} />
           </Campo>
         </div>
         <Campo id="empresa" etiqueta={c.empresa}>

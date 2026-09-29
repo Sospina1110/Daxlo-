@@ -25,7 +25,7 @@ export function Hero() {
           <Badge>{hero.badge}</Badge>
         </Entrada>
 
-        <h1 className="mt-7 text-[clamp(2.7rem,6.6vw,5rem)] leading-[1.02] tracking-[-0.03em]">
+        <h1 className="mt-7 text-[clamp(2.7rem,6.6vw,5rem)] max-[359px]:text-[2.3rem] leading-[1.02] tracking-[-0.03em]">
           <LineaTitular texto={hero.titulo[0]} retraso={0.1} />{" "}
           <LineaTitular texto={hero.titulo[1]} retraso={0.22} clase="text-gradient-dual pb-1" />
         </h1>
@@ -85,7 +85,7 @@ function FondoHero() {
     <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
       <div className="bg-grid absolute inset-0 [mask-image:radial-gradient(ellipse_70%_55%_at_50%_20%,#000_20%,transparent_75%)]" />
       <div className="fundir absolute -right-[14%] -top-[6%] h-[980px] w-[78%] overflow-hidden [mask-image:linear-gradient(to_left,#000_45%,transparent)] max-md:-right-[40%] max-md:w-[140%] max-md:opacity-50">
-        <div className="animate-breathe absolute right-0 top-0 aspect-square w-[max(100%,980px)] rotate-[-38deg] will-change-[opacity]">
+        <div className="animate-breathe absolute right-0 top-0 aspect-square w-[max(100%,980px)] rotate-[-38deg] md:will-change-[opacity]">
           {haces.map((h) => (
             <div key={h.y} className="absolute" style={{ left: pct(-150), width: pct(1250), top: pct(h.y), height: pct(h.h), opacity: h.o }}>
               <span className="absolute inset-x-0 top-[-150%] h-[400%]" style={{ background: degradado, opacity: 0.35, ...suave("linear-gradient(to bottom, transparent, #000 50%, transparent)") }} />
