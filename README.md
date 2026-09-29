@@ -80,6 +80,26 @@ scripts/          precarga-segmentos.mjs (ver abajo)
 public/           favicon, imagen para redes, logo claro, foto del equipo
 ```
 
+## Pruebas
+
+```bash
+npm test               # unitarias y de integración (Vitest), unos 10 s
+npm run build          # las E2E prueban el sitio compilado en out/
+npm run test:e2e       # de punta a punta (Playwright) en 4 dispositivos
+npm run test:todo      # build + las dos suites
+```
+
+| Carpeta | Qué comprueba |
+|---|---|
+| `tests/unit` | Metadatos y datos estructurados de cada página, reglas del texto (sin guiones largos, enlaces a rutas reales, largo de títulos y descripciones) |
+| `tests/integracion` | Formulario (contrato exacto con el Apps Script, validación, `?linea=`, respaldo sin JavaScript), barra y menú, preguntas, migas, texto que se escribe; y el HTML compilado: un `h1` por página, canónicas, JSON-LD, enlaces y anclas que existen, sitemap y robots |
+| `tests/e2e` | iPhone SE (320 px), iPhone 13, Pixel 7 y escritorio: nada se desliza de lado, todo aparece al bajar, áreas táctiles de 44 px, campos de 16 px, menú, navegación que abre arriba, enlaces viejos, llamados a la acción y el formulario completo (interceptado: nunca llega al Apps Script real), animaciones pausadas fuera de pantalla |
+| `tests/e2e/criterios-propios.spec.ts` | Texto cortado por su contenedor, scroll rápido, botón del hero en la primera pantalla, área táctil de los logos |
+
+Las E2E corren en el puerto 4391 (se cambia con `PUERTO_E2E`). En Windows,
+si Smart App Control bloquea el WebKit de Playwright, los proyectos de iPhone
+no abren el navegador; no es del sitio.
+
 ## Formulario
 
 Envía a un Google Apps Script con estos campos exactos: `linea`, `nombre`,
