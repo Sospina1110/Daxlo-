@@ -45,12 +45,12 @@ export const paginas = {
   inicio: {
     titulo: "Daxlo · Coaching de IA 1 a 1 y consultoría de implementación",
     descripcion:
-      "Coaching 1 a 1 para resolver tu propio trabajo con IA, y consultoría de implementación para automatizar un proceso de tu empresa. En los dos casos quedas sabiendo cómo funciona.",
+      "Coaching 1 a 1 para resolver tu propio trabajo con IA y consultoría para automatizar un proceso de tu empresa. En los dos casos quedas sabiendo cómo funciona.",
   },
   coaching: {
     titulo: "Coaching de IA 1 a 1",
     descripcion:
-      "Sesiones por videollamada sobre tu propio trabajo. Tú construyes con Claude, ChatGPT y otras herramientas, nosotros corregimos en el momento. Pagas por sesión, sin matrícula.",
+      "Sesiones por videollamada sobre tu propio trabajo. Construyes tú con Claude, ChatGPT y otras herramientas, y corregimos en el momento. Pagas por sesión.",
   },
   consultoria: {
     titulo: "Consultoría de implementación de IA",

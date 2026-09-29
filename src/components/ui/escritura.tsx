@@ -6,7 +6,12 @@ import { useInView, useReducedMotion } from "motion/react";
 // Escribe una frase letra por letra, la sostiene, la borra y pasa a la
 // siguiente. Con "reducir movimiento" muestra la primera frase quieta.
 export function TextoQueSeEscribe({ frases }: { frases: readonly string[] }) {
-  const reducir = useReducedMotion();
+  // La preferencia de movimiento solo se conoce en el navegador. Hasta montar,
+  // el texto es el mismo que salió del servidor (vacío); si no, React ve un
+  // HTML distinto al esperado (error #418) y vuelve a pintar la página.
+  const [montado, setMontado] = useState(false);
+  useEffect(() => setMontado(true), []);
+  const reducir = Boolean(useReducedMotion()) && montado;
   // Solo escribe mientras está en pantalla: fuera de ella no gasta procesador.
   const ref = useRef<HTMLSpanElement>(null);
   const visible = useInView(ref);

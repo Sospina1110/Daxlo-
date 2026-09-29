@@ -124,14 +124,9 @@ describe("títulos y descripciones para buscadores", () => {
     expect(d.length, d).toBeGreaterThanOrEqual(70);
   });
 
-  // BUG DEL SITIO (src/content/copy.ts, paginas): dos descripciones pasan del
-  // tope de 170 caracteres. inicio mide 177 y coaching 174; Google las corta
-  // con "..." en el resultado de búsqueda. Cuando se acorten, estas dos
-  // pruebas empiezan a "fallar por pasar" y hay que quitarlas de la lista.
-  const LARGAS_CONOCIDAS: Clave[] = ["inicio", "coaching"];
+  // Por encima de ~170 caracteres Google corta la descripción con "...".
   for (const clave of CLAVES) {
-    const prueba = LARGAS_CONOCIDAS.includes(clave) ? it.fails : it;
-    prueba(`${clave}: la descripción no pasa de 170 caracteres`, () => {
+    it(`${clave}: la descripción no pasa de 170 caracteres`, () => {
       const d = paginas[clave].descripcion;
       expect(d.length, d).toBeLessThanOrEqual(170);
     });

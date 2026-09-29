@@ -23,7 +23,7 @@ export function Footer() {
             columna el pie ocupaba casi dos pantallas. */}
         <div className="relative grid grid-cols-2 gap-x-4 gap-y-10 min-[360px]:gap-x-6 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr]">
           <div className="col-span-2 lg:col-span-1">
-            <Link href="/" aria-label="Daxlo, ir al inicio" className="inline-block">
+            <Link href="/" aria-label="Daxlo, ir al inicio" className="inline-flex min-h-[44px] items-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/img/daxlo-logo-claro.png" alt="Daxlo" width={126} height={32} className="h-8 w-auto" loading="lazy" />
             </Link>

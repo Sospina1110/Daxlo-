@@ -54,7 +54,7 @@ export function Nav() {
             : "max-w-[1200px] border-transparent px-4 py-3.5 md:px-6",
         )}
       >
-        <Link href="/" className="shrink-0" aria-label="Daxlo, ir al inicio">
+        <Link href="/" className="inline-flex min-h-[44px] shrink-0 items-center" aria-label="Daxlo, ir al inicio">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/img/daxlo-logo-claro.png" alt="Daxlo" width={110} height={28} className="h-7 w-auto" />
         </Link>

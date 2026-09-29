@@ -29,14 +29,9 @@ describe("JsonLd", () => {
     expect(JSON.parse(b[0]).name).toBe("Martín Zárate, ¿qué pasó con la señal?");
   });
 
-  // BUG DEL SITIO (src/components/ui/json-ld.tsx): el comentario dice que el
-  // reemplazo de "<" evita que un texto con "</script>" cierre la etiqueta,
-  // pero el código usa .replace(/</g, "<"). En una cadena de JavaScript
-  // "<" ya es "<", así que el reemplazo no cambia nada. Hoy ningún texto
-  // de copy.ts lleva "<", por eso no se nota; el día que uno lo lleve, el HTML
-  // se corta ahí (y si el texto viniera de afuera, sería una inyección). El
-  // arreglo es escapar la barra: .replace(/</g, "\\u003c").
-  it.fails("un texto con </script> no puede cerrar la etiqueta antes de tiempo", () => {
+  // Antes el reemplazo usaba "\u003c", que en JavaScript ya es "<", y no
+  // escapaba nada: un texto con "</script>" cerraba la etiqueta.
+  it("un texto con </script> no puede cerrar la etiqueta antes de tiempo", () => {
     const peligroso = { name: "Cierre </script><script>window.__inyectado = true</script>" };
     const html = renderToStaticMarkup(<JsonLd datos={peligroso} />);
     // Solo debe haber un cierre: el propio.

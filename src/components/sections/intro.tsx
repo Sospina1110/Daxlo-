@@ -202,7 +202,7 @@ export function Comparacion() {
             overflow-clip (y no hidden) para que la cabecera pueda quedarse
             fija. */}
         <Reveal className="glass mt-10 overflow-clip rounded-[24px] md:mt-12">
-          <div className="sticky top-[72px] z-10 grid grid-cols-2 border-b border-line bg-ink-2/95 md:hidden">
+          <div className="sticky top-[78px] z-10 grid grid-cols-2 border-b border-line bg-ink-2/95 md:hidden">
             <CabeceraMovil tono="cyan">Coaching</CabeceraMovil>
             <CabeceraMovil tono="blue">Consultoría</CabeceraMovil>
           </div>

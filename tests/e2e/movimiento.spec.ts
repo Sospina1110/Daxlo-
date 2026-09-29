@@ -239,19 +239,12 @@ test.describe("con 'reducir movimiento'", () => {
     await expect(visible).toHaveText(hero.tareas[0]);
   });
 
-  // BUG DEL SITIO (src/components/ui/escritura.tsx): con "reducir movimiento",
-  // TextoQueSeEscribe pinta en el servidor el texto vacío (allá no se sabe la
-  // preferencia) y en el navegador, desde el primer render, frases[0], porque
-  // useReducedMotion() de Motion lee matchMedia de inmediato. El texto no
-  // coincide, React lanza el error #418 (hidratación) y vuelve a pintar la
-  // página en el cliente: se pierde el HTML del servidor, hay más trabajo al
-  // cargar y el error queda en la consola de cada visita con esa preferencia.
-  // Pasa en / (hero) y en /coaching (la maqueta de la sesión). Se arregla
-  // mostrando frases[0] recién después de montar (un useEffect que active la
-  // preferencia) o dejando que la frase quieta la ponga el CSS.
+  // Con "reducir movimiento", TextoQueSeEscribe pintaba frases[0] desde el
+  // primer render del navegador y el servidor había pintado el texto vacío:
+  // React lanzaba el error #418 y volvía a pintar la página. Ahora la frase
+  // quieta aparece después de montar.
   for (const ruta of CON_ESCRITURA) {
     test(`${ruta}: la página hidrata sin errores con 'reducir movimiento'`, async ({ page, vigilancia }) => {
-      test.fail(true, "Bug conocido: error de hidratación #418 de TextoQueSeEscribe con reducir movimiento");
       // El error se revisa aquí mismo, no en la vigilancia, para que la prueba
       // falle solo por esto.
       vigilancia.tolerar(ERROR_HIDRATACION);
