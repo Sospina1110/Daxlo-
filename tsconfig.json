@@ -37,6 +37,11 @@
   ],
   "exclude": [
     "node_modules",
-    "out"
+    "out",
+    "tests",
+    "vitest.config.ts",
+    "playwright.config.ts",
+    "test-results",
+    "playwright-report"
   ]
 }

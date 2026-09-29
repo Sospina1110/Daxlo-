@@ -1,0 +1,11 @@
+{
+  // Tipos de las pruebas. El tsconfig de la raíz las deja fuera para que un
+  // error de tipos en una prueba no rompa `next build` (y el deploy); se
+  // revisan aparte con `npm run typecheck:pruebas`.
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "incremental": false
+  },
+  "include": ["../next-env.d.ts", "./**/*.ts", "./**/*.tsx", "../vitest.config.ts", "../playwright.config.ts", "../src/**/*.ts", "../src/**/*.tsx"],
+  "exclude": ["../node_modules", "../out"]
+}

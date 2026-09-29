@@ -5,3 +5,7 @@ next-env.d.ts
 *.tsbuildinfo
 .DS_Store
 .env*
+
+# Resultados de las pruebas de punta a punta (Playwright)
+test-results/
+playwright-report/
