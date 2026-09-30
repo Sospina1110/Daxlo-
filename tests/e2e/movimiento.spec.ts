@@ -1,4 +1,4 @@
-import { hero } from "../../src/content/copy";
+import { hero, rutas } from "../../src/content/copy";
 import { expect, irA, irAlFinal, RUTAS, test, textosInvisibles, type Page } from "./apoyo";
 
 // Movimiento y consumo: las animaciones infinitas se pausan fuera de pantalla,
@@ -31,7 +31,8 @@ async function animadas(page: Page): Promise<Animada[]> {
   }, INFINITAS);
 }
 
-for (const ruta of RUTAS) {
+// La política de datos es texto de lectura: no tiene animaciones.
+for (const ruta of RUTAS.filter((r) => r !== rutas.privacidad)) {
   test(`${ruta}: quieta arriba, las animaciones infinitas fuera de pantalla quedan en pausa (y detenidas de verdad)`, async ({ page }) => {
     await irA(page, ruta);
     // Dos segundos sin tocar nada, como quien lee el comienzo.

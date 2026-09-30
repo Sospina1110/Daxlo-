@@ -1,4 +1,4 @@
-import { agendar, coaching, consultoria, dosFormas, hero, otraLinea, preguntasLinea } from "../../src/content/copy";
+import { agendar, coaching, consultoria, dosFormas, hero, otraLinea, preguntasLinea, privacidad } from "../../src/content/copy";
 import { APPS_SCRIPT, esperarArriba, esperarEnAncla, expect, H1, interceptarAppsScript, irA, marcarDocumento, tocar, test, type Page } from "./apoyo";
 
 // Los caminos que terminan en una conversación agendada: cada llamado a la
@@ -6,7 +6,7 @@ import { APPS_SCRIPT, esperarArriba, esperarEnAncla, expect, H1, interceptarApps
 // formulario manda al Apps Script exactamente lo que espera. El Apps Script
 // nunca se toca de verdad: interceptarAppsScript() lo responde en local.
 
-const CONTRATO = ["linea", "nombre", "whatsapp", "correo", "empresa", "interes", "website", "tiempo_llenado_segundos", "origen"];
+const CONTRATO = ["linea", "nombre", "whatsapp", "correo", "empresa", "interes", "website", "tiempo_llenado_segundos", "origen", "autorizacion", "politica_version", "marketing"];
 const campoLinea = (page: Page) => page.getByLabel(agendar.campos.linea);
 const cierre = (page: Page) => page.locator('section[aria-labelledby="titulo-cierre"]');
 
@@ -110,10 +110,11 @@ test.describe("formulario de /agendar", () => {
   async function llenar(page: Page) {
     await campoLinea(page).selectOption("consultoria");
     await page.getByLabel(c.nombre).fill("Martina Gómez Peña");
-    await page.getByLabel(c.whatsapp).fill("+57 300 123 4567");
-    await page.getByLabel(c.correo).fill("martina@ferreteria.co");
+    await page.getByLabel(new RegExp(`^${c.whatsapp}`)).fill("+57 300 123 4567");
+    await page.getByLabel(new RegExp(`^${c.correo}`)).fill("martina@ferreteria.co");
     await page.getByLabel(c.empresa).fill("Ferretería El Tornillo & Cía");
     await page.getByLabel(c.interes).fill("Cada viernes concilio facturas de tres proveedores.\nMe toma la mañana.");
+    await page.getByRole("checkbox", { name: new RegExp(c.autorizacion.slice(0, 20)) }).check();
   }
 
   const enviar = (page: Page) => page.getByRole("button", { name: new RegExp(agendar.enviar) });
@@ -134,10 +135,10 @@ test.describe("formulario de /agendar", () => {
     await irA(page, "/agendar");
     const envios = await interceptarAppsScript(page);
     await llenar(page);
-    await page.getByLabel(c.correo).fill("martina@ferreteria");
+    await page.getByLabel(new RegExp(`^${c.correo}`)).fill("martina@ferreteria");
     await tocar(enviar(page), isMobile);
     await expect(page.getByText(agendar.errores.correoFormato)).toBeVisible();
-    await expect(page.getByLabel(c.correo)).toBeFocused();
+    await expect(page.getByLabel(new RegExp(`^${c.correo}`))).toBeFocused();
     expect(envios).toHaveLength(0);
   });
 
@@ -168,6 +169,9 @@ test.describe("formulario de /agendar", () => {
       empresa: "Ferretería El Tornillo & Cía",
       website: "",
       origen: new URL(page.url()).origin,
+      autorizacion: "si",
+      politica_version: privacidad.version,
+      marketing: "no",
     });
     // En multipart/form-data el navegador manda los saltos de línea como CRLF.
     expect(datos.interes.replace(/\r\n/g, "\n")).toBe("Cada viernes concilio facturas de tres proveedores.\nMe toma la mañana.");
@@ -179,8 +183,9 @@ test.describe("formulario de /agendar", () => {
     await expect(campoLinea(page)).toHaveValue("no_se");
     const envios = await interceptarAppsScript(page);
     await page.getByLabel(c.nombre).fill("Ana");
-    await page.getByLabel(c.whatsapp).fill("3001234567");
-    await page.getByLabel(c.correo).fill("ana@correo.com");
+    await page.getByLabel(new RegExp(`^${c.whatsapp}`)).fill("3001234567");
+    await page.getByLabel(new RegExp(`^${c.correo}`)).fill("ana@correo.com");
+    await page.getByRole("checkbox", { name: new RegExp(c.autorizacion.slice(0, 20)) }).check();
     await tocar(enviar(page), isMobile);
     await expect(page.getByText(agendar.exito.titulo)).toBeVisible();
     expect(Object.fromEntries(envios[0].campos).linea).toBe("no_se");

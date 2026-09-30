@@ -1,0 +1,34 @@
+# Cabeceras de seguridad que aplica Cloudflare Pages (Next copia public/ a out/).
+#
+# Fase 1: la CSP va en modo informe (Content-Security-Policy-Report-Only): no
+# bloquea nada, solo avisa en la consola si algo la viola. Tras una semana sin
+# avisos en daxlo.co, fase 2: cambiar el nombre a Content-Security-Policy y
+# subir HSTS a max-age=31536000.
+#
+# Por qué cada fuente de la CSP:
+# - 'unsafe-inline' en script-src: la exportación estática no admite nonces y
+#   Next mete sus datos en scripts en línea, igual que el layout.
+# - static.cloudflareinsights.com: el script de la analítica que inyecta
+#   Cloudflare (ya viene con integridad SRI).
+# - script.google.com y script.googleusercontent.com: el formulario envía al
+#   Apps Script, que responde con una redirección a googleusercontent. Sin los
+#   dos, fallan el envío con JavaScript (connect-src) y el envío sin JavaScript
+#   (form-action).
+# - Si algún día se agrega Turnstile: sumar https://challenges.cloudflare.com a
+#   script-src y cambiar frame-src 'none' por frame-src
+#   https://challenges.cloudflare.com, o el formulario deja de enviar.
+#
+# HSTS va solo aquí, no también en el panel de Cloudflare (saldría duplicada).
+
+/*
+  Strict-Transport-Security: max-age=86400; includeSubDomains
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://cloudflareinsights.com; form-action https://script.google.com https://script.googleusercontent.com; frame-ancestors 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; upgrade-insecure-requests
+  X-Frame-Options: DENY
+
+# Las copias en *.pages.dev (la del proyecto y las vistas previas por rama)
+# no se indexan: el sitio real es daxlo.co.
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
+
+https://:version.:project.pages.dev/*
+  X-Robots-Tag: noindex

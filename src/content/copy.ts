@@ -23,6 +23,7 @@ export const rutas = {
   nosotros: "/nosotros",
   preguntas: "/preguntas",
   agendar: "/agendar",
+  privacidad: "/privacidad",
 } as const;
 
 // Enlace a agendar con la línea ya elegida en el formulario.
@@ -76,6 +77,11 @@ export const paginas = {
     titulo: "Agendar una conversación",
     descripcion:
       "Cuéntanos qué te está consumiendo horas. La primera conversación no tiene costo y en ella te decimos si te sirve el coaching, la consultoría o ninguna de las dos.",
+  },
+  privacidad: {
+    titulo: "Política de tratamiento de datos",
+    descripcion:
+      "Qué datos recoge Daxlo en su sitio, para qué los usa, dónde los guarda y cómo puedes consultarlos, corregirlos o pedir que los borremos (Ley 1581 de 2012).",
   },
 };
 
@@ -224,7 +230,7 @@ export const herramientas = {
     { id: "base44", nombre: "Base44", uso: "Crear una aplicación web describiéndola con palabras." },
   ],
   otra: { titulo: "¿Usas otra?", texto: "También la trabajamos. Lo que importa es tu caso, no la marca." },
-  aviso: "Los nombres y logos de las herramientas pertenecen a sus dueños.",
+  aviso: "Claude y Claude Code son marcas de Anthropic; ChatGPT y Codex, de OpenAI; n8n, Obsidian y Base44, de sus respectivos dueños. Daxlo no está afiliada, patrocinada ni avalada por ninguna de estas empresas: las nombramos para indicar con qué herramientas trabajamos.",
 } as const;
 
 // ------------------------------------------------------------- CONSULTORÍA
@@ -310,7 +316,7 @@ export const consultoria = {
     items: [
       { titulo: "Te transferimos la operación", texto: "Tu equipo queda capaz de mantener y ajustar el sistema. No vendemos dependencia." },
       { titulo: "Discovery pagado, no diagnóstico gratis", texto: "Cobramos desde la primera hora porque el levantamiento es el trabajo, no la venta. Si el proyecto no se justifica, te lo decimos." },
-      { titulo: "Precio cerrado por el sistema", texto: "Sabes cuánto cuesta antes de arrancar. Sin reloj corriendo ni sorpresas a mitad del proyecto." },
+      { titulo: "Precio cerrado por el sistema", texto: "Sabes cuánto cuesta antes de arrancar. Si el alcance no cambia, el precio tampoco." },
       { titulo: "Los dos socios, en cada proyecto", texto: "Martín y Santiago trabajan juntos en todo lo que sale de Daxlo. No hay un junior aprendiendo con tu operación." },
     ],
   },
@@ -351,7 +357,7 @@ export const faq = {
       nombre: "Consultoría de implementación",
       tono: "blue",
       preguntas: [
-        { p: "¿Cuánto cuesta un proyecto?", r: "Depende del proceso. El precio se cierra en el discovery, cuando ya sabemos qué hay que construir, y no se mueve después. Lo conversamos en la primera llamada." },
+        { p: "¿Cuánto cuesta un proyecto?", r: "Depende del proceso. El precio se cierra en el discovery, cuando ya sabemos qué hay que construir, y no se mueve mientras el alcance siga igual; si el alcance cambia, lo cotizamos antes de hacerlo. Lo conversamos en la primera llamada." },
         { p: "¿Por qué el discovery se paga?", r: "Porque es trabajo, no una visita comercial. Levantamos el proceso real, revisamos tus datos y encontramos las contradicciones entre lo que dice el manual y lo que pasa de verdad. De ahí sale el alcance y el precio cerrado." },
         { p: "¿Cuánto se demora un proyecto?", r: "Semanas, no trimestres. Preferimos entregar un proceso funcionando y después ampliar, que prometer todo y entregar en seis meses." },
         { p: "¿Qué pasa cuando ustedes se van?", r: "Tu equipo opera el sistema. Construimos con ellos al lado justamente para que no queden dependiendo de nosotros. Después acompañamos la operación mientras haga falta." },
@@ -379,6 +385,17 @@ export const agendar = {
     empresa: "Empresa",
     interes: "¿Qué proceso o tema tienes en mente?",
     interesEjemplo: "Por ejemplo: cada semana armo a mano un informe con datos de tres hojas de cálculo distintas.",
+    // Autorización previa, expresa e informada (Ley 1581 de 2012, art. 9). La
+    // casilla arranca sin marcar y es obligatoria.
+    autorizacion: "Autorizo a Daxlo a tratar mis datos para contactarme por WhatsApp y correo sobre esta solicitud, según la",
+    autorizacionEnlace: "política de tratamiento de datos",
+    // Casilla aparte y opcional: los mensajes comerciales necesitan su propia
+    // autorización (Ley 1581, art. 9; Ley 2300 de 2023 para horarios).
+    marketing: "Quiero recibir invitaciones a talleres y contenido de Daxlo por correo o WhatsApp. Me puedo dar de baja cuando quiera.",
+    // Aviso de privacidad corto (Decreto 1377 de 2013, art. 15). Sin el correo
+    // en texto: la ofuscación de Cloudflare lo reescribiría en el HTML.
+    aviso:
+      "Responsable: Daxlo (Martín Zárate y Santiago Ospina). Usamos tus datos solo para lo que autorizas. Se guardan en servicios de Google y Cloudflare, con servidores fuera de Colombia. Puedes conocerlos, corregirlos, pedir que los borremos o revocar la autorización cuando quieras; la política explica cómo.",
   },
   enviar: "Agendar la conversación",
   enviando: "Enviando…",
@@ -388,8 +405,10 @@ export const agendar = {
     linea: "Dinos qué te interesa.",
     nombre: "Cuéntanos tu nombre.",
     whatsapp: "Necesitamos tu WhatsApp para contactarte.",
+    whatsappFormato: "Revisa el número de WhatsApp.",
     correo: "Necesitamos tu correo.",
     correoFormato: "Revisa el formato del correo.",
+    autorizacion: "Necesitamos tu autorización para contactarte.",
     general: "Algo no funcionó. Intenta de nuevo en un momento, o escríbenos directo por WhatsApp.",
   },
 };
@@ -423,6 +442,7 @@ export const footer = {
     },
   ],
   derechos: "© 2026 Daxlo. Todos los derechos reservados.",
+  privacidad: "Política de tratamiento de datos",
 };
 
 // ------------------------------------------------------ ENTRE PÁGINAS
@@ -463,3 +483,112 @@ export const inicioNosotros = {
 
 export const franjaEnlace = "Qué hacemos con cada una";
 
+// ------------------------------------------------------------- PRIVACIDAD
+
+// Política de tratamiento de datos personales (Ley 1581 de 2012 y Decreto
+// 1377 de 2013, hoy compilado en el Decreto 1074 de 2015). Recomendado: que
+// la revise un abogado antes de darla por definitiva.
+//
+// PENDIENTE: Daxlo todavía no está constituida. La ley pide nombre o razón
+// social, domicilio, dirección, correo y teléfono del responsable (Decreto
+// 1377, art. 13). Falta la ciudad y la dirección de notificación; cuando se
+// constituya, reemplazar `responsable` con la razón social, el NIT y la
+// dirección. El correo de contacto NO va en estos textos: se muestra con
+// CorreoContacto, porque la ofuscación de Cloudflare reescribe cualquier
+// correo del HTML y eso rompe la hidratación.
+export const privacidad = {
+  version: "2026-09-29",
+  vigencia: "29 de septiembre de 2026",
+  responsable: {
+    nombre: "Daxlo, nombre comercial con el que trabajan Martín Zárate y Santiago Ospina",
+    domicilio: "Colombia",
+    whatsapp: "+57 320 384 8586",
+    atiende: "Los dos socios atienden las consultas y reclamos sobre datos personales.",
+  },
+  intro:
+    "Esta política explica qué datos personales recogemos en daxlo.co, para qué los usamos, dónde los guardamos y cómo puedes consultarlos, corregirlos o pedir que los borremos.",
+  secciones: [
+    {
+      titulo: "Qué datos recogemos",
+      parrafos: [
+        "Cuando llenas el formulario de agendar: tu nombre, tu WhatsApp, tu correo, la línea que te interesa y, si los escribes, el nombre de tu empresa y el tema que tienes en mente.",
+        "Cuando nos escribes por WhatsApp o por correo: los datos que tú mismo nos compartas en esa conversación.",
+        "No pedimos datos sensibles (salud, origen étnico, orientación política o religiosa, datos biométricos) ni datos de menores de edad. Nuestros servicios están dirigidos a adultos.",
+      ],
+    },
+    {
+      titulo: "Para qué los usamos",
+      lista: [
+        "Contactarte para coordinar la conversación que pediste.",
+        "Entender tu caso y responderte si el coaching, la consultoría o ninguno de los dos te sirve.",
+        "Enviarte la propuesta o la información de servicios que nos pediste.",
+        "Llevar el registro de las solicitudes que recibimos.",
+      ],
+      parrafos: [
+        "No vendemos tus datos ni los compartimos con terceros para publicidad. No te enviaremos información comercial distinta a la que pediste sin una autorización adicional.",
+      ],
+    },
+    {
+      titulo: "Dónde se guardan",
+      parrafos: [
+        "Los datos del formulario se guardan en una hoja de cálculo de Google, que actúa como encargado del tratamiento.",
+        "El sitio está alojado en Cloudflare. Para medir visitas usamos Cloudflare Web Analytics, que cuenta páginas vistas de forma agregada, sin cookies y sin identificar a las personas.",
+        "Cuando te escribimos por WhatsApp, la conversación pasa por los servicios de Meta.",
+        "Estos proveedores tienen servidores fuera de Colombia, incluidos los Estados Unidos. Solo les confiamos los datos para prestar el servicio y bajo sus propias medidas de seguridad.",
+      ],
+    },
+    {
+      titulo: "Cookies",
+      parrafos: [
+        "No usamos cookies de analítica ni de publicidad, y el sitio no guarda información en tu navegador. La estadística de visitas de Cloudflare no usa cookies. Cloudflare puede poner cookies técnicas de seguridad si detecta tráfico sospechoso, solo para proteger el sitio.",
+      ],
+    },
+    {
+      titulo: "Tu autorización",
+      parrafos: [
+        "Antes de enviar el formulario te pedimos que autorices el tratamiento de tus datos marcando una casilla. Guardamos la prueba de esa autorización junto con tu solicitud: la fecha y la versión de esta política que aceptaste.",
+        "Los mensajes sobre talleres y contenido son aparte: solo te los enviamos si marcas esa casilla, que es opcional. Puedes darte de baja cuando quieras respondiendo SALIR o desde el enlace del correo.",
+        "Puedes revocar la autorización en cualquier momento escribiéndonos, siempre que no exista un deber legal o contractual de conservar los datos.",
+      ],
+    },
+    {
+      titulo: "Cuánto tiempo los guardamos",
+      parrafos: [
+        "Mientras exista una relación contigo (una conversación en curso, un plan de sesiones o un proyecto). Si no llegas a ser cliente, los borramos a los 12 meses del último contacto, o antes si nos lo pides.",
+      ],
+    },
+    {
+      titulo: "Tus derechos",
+      lista: [
+        "Conocer, actualizar y rectificar tus datos.",
+        "Pedir prueba de la autorización que nos diste.",
+        "Saber qué uso le hemos dado a tus datos.",
+        "Revocar la autorización o pedir que borremos tus datos.",
+        "Consultar gratis tus datos.",
+        "Presentar quejas ante la Superintendencia de Industria y Comercio (SIC), después de haber hecho tu consulta o reclamo ante nosotros.",
+      ],
+      parrafos: ["Estos derechos están en el artículo 8 de la Ley 1581 de 2012."],
+    },
+    {
+      titulo: "Cómo ejercerlos",
+      parrafos: [
+        "Escríbenos al correo o al WhatsApp que aparecen arriba, con tu nombre, lo que necesitas y un dato de contacto para responderte.",
+        "Consultas: te respondemos en un máximo de 10 días hábiles. Si no alcanzamos, te avisamos el motivo y te respondemos en máximo 5 días hábiles más.",
+        "Reclamos (corregir, actualizar, borrar o revocar): incluye tu identificación, la descripción de los hechos, tu dirección y los documentos que quieras hacer valer. Si falta algo, te pedimos completarlo dentro de los 5 días siguientes; si pasan dos meses sin respuesta, entendemos que desististe. Resolvemos en un máximo de 15 días hábiles, prorrogables 8 días más con aviso.",
+        "Estos plazos son los de los artículos 14 y 15 de la Ley 1581 de 2012.",
+      ],
+    },
+    {
+      titulo: "Seguridad",
+      parrafos: [
+        "Tomamos medidas razonables para proteger tus datos: el sitio funciona solo por conexión cifrada (HTTPS), el acceso a la hoja de cálculo está limitado a los dos socios, con verificación en dos pasos, y el formulario no guarda nada en tu navegador.",
+      ],
+    },
+    {
+      titulo: "Cambios a esta política",
+      parrafos: [
+        "Si cambiamos algo importante de esta política, publicaremos la versión nueva en esta página con su fecha y, cuando la ley lo exija, te pediremos una nueva autorización.",
+      ],
+    },
+  ],
+};

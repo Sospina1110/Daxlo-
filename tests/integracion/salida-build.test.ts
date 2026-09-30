@@ -27,6 +27,7 @@ const TIPOS_LD: Record<Clave, string[]> = {
   nosotros: ["Organization", "AboutPage", "BreadcrumbList"],
   preguntas: ["Organization", "FAQPage", "BreadcrumbList"],
   agendar: ["Organization", "BreadcrumbList"],
+  privacidad: ["Organization", "BreadcrumbList"],
 };
 
 // Archivo de out/ que Cloudflare sirve para una ruta: / → index.html, /x → x.html.
@@ -314,8 +315,49 @@ describe.skipIf(!HAY_BUILD)(HAY_BUILD ? "salida del build (out/)" : "salida del 
     });
   });
 
+  // La ofuscación de correos de Cloudflare reescribe cualquier correo del HTML
+  // de daxlo.co; si React encuentra un texto distinto al esperado, repinta la
+  // página entera (error de hidratación). El correo se arma en el navegador
+  // (CorreoContacto). Solo se permite el ejemplo del campo del formulario.
+  describe("ningún correo en texto dentro del HTML", () => {
+    const PERMITIDOS = new Set(["tu@correo.com"]);
+    for (const archivo of fs.readdirSync(OUT).filter((f) => f.endsWith(".html"))) {
+      it(`${archivo}: sin correos (salvo el ejemplo del formulario)`, () => {
+        const html = fs.readFileSync(path.join(OUT, archivo), "utf8");
+        const correos = (html.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g) ?? []).filter((c) => !PERMITIDOS.has(c));
+        expect(correos).toEqual([]);
+      });
+    }
+  });
+
+  describe("cabeceras de Cloudflare Pages (out/_headers)", () => {
+    it("trae HSTS, la CSP y el bloqueo de iframes para todo el sitio, y noindex en *.pages.dev", () => {
+      const txt = fs.readFileSync(path.join(OUT, "_headers"), "utf8");
+      const lineas = txt.split(/\r?\n/).filter((l) => l.trim() && !l.trim().startsWith("#"));
+      const bloque = (inicio: string) => {
+        const i = lineas.findIndex((l) => l.trim() === inicio);
+        expect(i, inicio).toBeGreaterThanOrEqual(0);
+        const salida: string[] = [];
+        for (let j = i + 1; j < lineas.length && /^\s/.test(lineas[j]); j++) salida.push(lineas[j].trim());
+        return salida;
+      };
+      const todo = bloque("/*");
+      expect(todo.some((l) => /^Strict-Transport-Security: max-age=\d+; includeSubDomains/.test(l))).toBe(true);
+      expect(todo).toContain("X-Frame-Options: DENY");
+      const csp = todo.find((l) => /^Content-Security-Policy(-Report-Only)?:/.test(l)) ?? "";
+      // Lo que el sitio necesita para funcionar tiene que estar permitido.
+      for (const fuente of ["https://static.cloudflareinsights.com", "https://script.google.com", "https://script.googleusercontent.com", "frame-ancestors 'none'"]) {
+        expect(csp, fuente).toContain(fuente);
+      }
+      expect(csp).toMatch(/form-action [^;]*https:\/\/script\.google\.com[^;]*https:\/\/script\.googleusercontent\.com/);
+      expect(csp.length).toBeLessThan(2000);
+      expect(bloque("https://:project.pages.dev/*")).toContain("X-Robots-Tag: noindex");
+      expect(bloque("https://:version.:project.pages.dev/*")).toContain("X-Robots-Tag: noindex");
+    });
+  });
+
   describe("sitemap.xml y robots.txt", () => {
-    it("el sitemap lista exactamente las siete rutas, con https://daxlo.co", () => {
+    it("el sitemap lista exactamente las rutas del sitio, con https://daxlo.co", () => {
       const xml = fs.readFileSync(path.join(OUT, "sitemap.xml"), "utf8");
       const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
       expect(locs.sort()).toEqual(CLAVES.map((c) => `${SITIO}${rutas[c]}`).sort());

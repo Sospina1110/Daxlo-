@@ -50,9 +50,9 @@ describe("voz de marca", () => {
 });
 
 describe("rutas y enlaces", () => {
-  it("hay siete rutas, sin repetidas, todas absolutas", () => {
-    expect(RUTAS).toHaveLength(7);
-    expect(new Set(RUTAS).size).toBe(7);
+  it("hay ocho rutas, sin repetidas, todas absolutas", () => {
+    expect(RUTAS).toHaveLength(8);
+    expect(new Set(RUTAS).size).toBe(8);
     for (const r of RUTAS) expect(r).toMatch(/^\/[a-z]*$/);
     expect(rutas.inicio).toBe("/");
   });
@@ -65,9 +65,9 @@ describe("rutas y enlaces", () => {
     expect(nav.cta.href).toBe(rutas.agendar);
   });
 
-  it("desde la barra se llega a todas las rutas (enlaces + logo al inicio + botón Agendar)", () => {
+  it("desde la barra se llega a todas las rutas salvo la política de datos, que va en el pie", () => {
     const alcanzables = new Set([...nav.links.map((l) => l.href), rutas.inicio, nav.cta.href]);
-    expect([...alcanzables].sort()).toEqual([...RUTAS].sort());
+    expect([...alcanzables].sort()).toEqual(RUTAS.filter((r) => r !== rutas.privacidad).sort());
   });
 
   it("cada enlace del pie apunta a una ruta del sitio, con un ancla válida si la lleva", () => {
@@ -82,7 +82,7 @@ describe("rutas y enlaces", () => {
 
   it("el pie enlaza todas las páginas internas y las tres anclas de cada línea", () => {
     const hrefs = footer.columnas.flatMap((c) => c.enlaces.map((e) => e.h));
-    for (const r of RUTAS.filter((r) => r !== "/")) expect(hrefs, r).toContain(r);
+    for (const r of RUTAS.filter((r) => r !== "/" && r !== rutas.privacidad)) expect(hrefs, r).toContain(r);
     expect(hrefs).toEqual(expect.arrayContaining(["/coaching#como-funciona", "/consultoria#como-trabajamos", "/consultoria#que-automatizamos"]));
     expect(new Set(hrefs).size).toBe(hrefs.length);
   });

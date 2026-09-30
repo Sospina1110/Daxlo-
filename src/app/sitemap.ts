@@ -10,16 +10,15 @@ const prioridad: Record<keyof typeof rutas, number> = {
   coaching: 0.9,
   consultoria: 0.9,
   agendar: 0.8,
+  privacidad: 0.3,
   herramientas: 0.7,
   preguntas: 0.7,
   nosotros: 0.6,
 };
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const hoy = new Date();
   return (Object.keys(rutas) as (keyof typeof rutas)[]).map((clave) => ({
     url: `${URL_SITIO}${rutas[clave] === "/" ? "/" : rutas[clave]}`,
-    lastModified: hoy,
     changeFrequency: "monthly",
     priority: prioridad[clave],
   }));

@@ -1,0 +1,13 @@
+# Avisos y actualizaciones de dependencias (sobre todo de seguridad) una vez
+# al mes, agrupadas para no llenar el repo de PRs sueltos.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      next-react:
+        patterns: ["next", "react", "react-dom", "@types/react", "@types/react-dom"]
+      pruebas:
+        patterns: ["vitest", "jsdom", "@testing-library/*", "@playwright/test"]

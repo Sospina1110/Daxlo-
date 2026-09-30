@@ -82,6 +82,30 @@
     -moz-osx-font-smoothing: grayscale;
     overflow-x: clip;
   }
+  /* Pedido del equipo: el texto de la página no se puede seleccionar para
+     copiarlo. Es un disuasivo, no una protección: el texto sigue en el HTML
+     (Google lo lee igual y se puede sacar con "ver código fuente"). Quedan
+     seleccionables los campos del formulario, el correo y el WhatsApp, que
+     un cliente sí necesita copiar. */
+  main,
+  footer {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  /* En iOS un ancestro con user-select: none puede impedir escribir en los
+     campos: se les devuelve la selección explícitamente. La política de
+     datos (data-copiable) también se puede copiar. */
+  input,
+  textarea,
+  select,
+  [contenteditable],
+  a[href^="mailto:"],
+  a[href*="wa.me"],
+  [data-copiable],
+  [data-copiable] * {
+    -webkit-user-select: text;
+    user-select: text;
+  }
   /* En Safari el clip de body no contiene lo que se sale de lado; en main sí. */
   main {
     overflow-x: clip;

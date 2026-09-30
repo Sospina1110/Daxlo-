@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import { CorreoContacto } from "@/components/ui/correo-contacto";
-import { contacto, footer, herramientas } from "@/content/copy";
+import { contacto, footer, herramientas, rutas } from "@/content/copy";
 import { glow } from "@/lib/utils";
 
 // Glifo de Instagram de simple-icons: lucide ya no trae iconos de marcas.
@@ -65,8 +65,13 @@ export function Footer() {
           </div>
         </div>
         <div className="relative mt-12 flex flex-col gap-2 border-t border-line pt-6 text-[14px] text-dim md:flex-row md:justify-between">
-          <p>{f.derechos}</p>
-          <p>{herramientas.aviso}</p>
+          <div className="flex flex-col md:max-w-[340px]">
+            <p>{f.derechos}</p>
+            <Link href={rutas.privacidad} className="inline-flex min-h-[44px] items-center self-start text-white/60 underline-offset-2 transition-colors hover:text-white hover:underline md:min-h-0 md:pt-1">
+              {f.privacidad}
+            </Link>
+          </div>
+          <p className="md:max-w-[520px] md:text-right">{herramientas.aviso}</p>
         </div>
       </div>
     </footer>

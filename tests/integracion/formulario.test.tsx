@@ -1,14 +1,14 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { agendar, contacto } from "@/content/copy";
+import { agendar, contacto, privacidad, rutas } from "@/content/copy";
 import { FormularioContacto } from "@/components/sections/formulario";
 
 vi.mock("next/link", () => import("../apoyo/link-simulado"));
 
 // El Apps Script guarda cada lead en una hoja leyendo estos nombres exactos.
 // Si uno cambia, el lead deja de guardarse sin que nadie se entere.
-const CONTRATO = ["linea", "nombre", "whatsapp", "correo", "empresa", "interes", "website", "tiempo_llenado_segundos", "origen"];
+const CONTRATO = ["linea", "nombre", "whatsapp", "correo", "empresa", "interes", "website", "tiempo_llenado_segundos", "origen", "autorizacion", "politica_version", "marketing"];
 const APPS_SCRIPT = /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/;
 const c = agendar.campos;
 
@@ -40,10 +40,12 @@ function montar() {
 const campo = {
   linea: () => screen.getByLabelText(c.linea, { exact: false }) as HTMLSelectElement,
   nombre: () => screen.getByLabelText(c.nombre, { exact: false }) as HTMLInputElement,
-  whatsapp: () => screen.getByLabelText(c.whatsapp, { exact: false }) as HTMLInputElement,
-  correo: () => screen.getByLabelText(c.correo, { exact: false }) as HTMLInputElement,
+  whatsapp: () => screen.getByLabelText(new RegExp(`^${c.whatsapp}`)) as HTMLInputElement,
+  correo: () => screen.getByLabelText(new RegExp(`^${c.correo}`)) as HTMLInputElement,
   empresa: () => screen.getByLabelText(c.empresa, { exact: false }) as HTMLInputElement,
   interes: () => screen.getByLabelText(c.interes, { exact: false }) as HTMLTextAreaElement,
+  autoriza: () => screen.getByRole("checkbox", { name: new RegExp(c.autorizacion.slice(0, 20)) }) as HTMLInputElement,
+  marketing: () => screen.getByRole("checkbox", { name: new RegExp(c.marketing.slice(0, 20)) }) as HTMLInputElement,
   enviar: () => screen.getByRole("button", { name: new RegExp(`^(${agendar.enviar}|${agendar.enviando})`) }) as HTMLButtonElement,
 };
 
@@ -54,6 +56,7 @@ async function llenarTodo(user: ReturnType<typeof userEvent.setup>) {
   await user.type(campo.correo(), "martina@ferreteria.co");
   await user.type(campo.empresa(), "Ferretería El Tornillo");
   await user.type(campo.interes(), "Conciliar facturas de proveedores cada viernes");
+  await user.click(campo.autoriza());
 }
 
 // Lo que salió en el último fetch, como pares [campo, valor].
@@ -73,7 +76,7 @@ describe("formulario: respaldo sin JavaScript", () => {
   it("cada campo del contrato que escribe la persona tiene su name, en orden", () => {
     const { form } = montar();
     const nombres = [...form.elements].map((e) => (e as HTMLInputElement).name).filter(Boolean);
-    expect(nombres).toEqual(["linea", "nombre", "whatsapp", "correo", "empresa", "interes", "website"]);
+    expect(nombres).toEqual(["linea", "nombre", "whatsapp", "correo", "empresa", "interes", "autorizacion", "politica_version", "marketing", "website"]);
     const correo = campo.correo();
     expect(correo.name).toBe("correo");
     expect(correo.type).toBe("email");
@@ -124,6 +127,9 @@ describe("formulario: contrato con el Apps Script", () => {
       website: "",
       tiempo_llenado_segundos: "12",
       origen: window.location.origin,
+      autorizacion: "si",
+      politica_version: privacidad.version,
+      marketing: "no",
     });
   });
 
@@ -133,6 +139,7 @@ describe("formulario: contrato con el Apps Script", () => {
     await user.type(campo.nombre(), "Ana");
     await user.type(campo.whatsapp(), "3001234567");
     await user.type(campo.correo(), "ana@correo.com");
+    await user.click(campo.autoriza());
     await user.click(campo.enviar());
     const datos = Object.fromEntries(enviado());
     expect(datos).toMatchObject({ linea: "coaching", empresa: "", interes: "", website: "" });
@@ -308,6 +315,7 @@ describe("formulario: validación en el navegador", () => {
     await user.type(campo.nombre(), "Ana");
     await user.type(campo.whatsapp(), "3001234567");
     await user.type(campo.correo(), correo);
+    await user.click(campo.autoriza());
     await user.click(campo.enviar());
     expect(Object.fromEntries(enviado()).correo).toBe(correo);
   });
@@ -333,6 +341,7 @@ describe("formulario: línea elegida desde otra página (?linea=)", () => {
     await user.type(campo.nombre(), "Ana");
     await user.type(campo.whatsapp(), "3001234567");
     await user.type(campo.correo(), "ana@correo.com");
+    await user.click(campo.autoriza());
     await user.click(campo.enviar());
     expect(Object.fromEntries(enviado()).linea).toBe(linea);
   });
@@ -356,5 +365,101 @@ describe("formulario: línea elegida desde otra página (?linea=)", () => {
     const vacia = select.querySelector('option[value=""]') as HTMLOptionElement;
     expect(vacia.disabled).toBe(true);
     expect([...select.options].map((o) => o.value)).toEqual(["", ...c.lineaOpciones.map((o) => o.valor)]);
+  });
+});
+
+// Ley 1581 de 2012: autorización previa, expresa e informada, con prueba.
+describe("formulario: autorización para tratar los datos", () => {
+  it("la casilla arranca sin marcar, es obligatoria y enlaza la política en otra pestaña", () => {
+    montar();
+    const casilla = campo.autoriza();
+    expect(casilla.checked).toBe(false);
+    expect(casilla.required).toBe(true);
+    expect(casilla.name).toBe("autorizacion");
+    expect(casilla.value).toBe("si");
+    const enlace = screen.getByRole("link", { name: c.autorizacionEnlace });
+    expect(enlace.getAttribute("href")).toBe(rutas.privacidad);
+    expect(enlace.getAttribute("target")).toBe("_blank");
+  });
+
+  it("sin marcarla no se envía: muestra el error y lleva el foco a la casilla", async () => {
+    const { user } = montar();
+    await user.selectOptions(campo.linea(), "coaching");
+    await user.type(campo.nombre(), "Ana");
+    await user.type(campo.whatsapp(), "3001234567");
+    await user.type(campo.correo(), "ana@correo.com");
+    await user.click(campo.enviar());
+    expect(fetchSimulado).not.toHaveBeenCalled();
+    expect(screen.getByText(agendar.errores.autorizacion)).toBeTruthy();
+    expect(campo.autoriza().getAttribute("aria-invalid")).toBe("true");
+    expect(document.activeElement).toBe(campo.autoriza());
+
+    await user.click(campo.autoriza());
+    await user.click(campo.enviar());
+    expect(screen.queryByText(agendar.errores.autorizacion)).toBeNull();
+    expect(Object.fromEntries(enviado()).autorizacion).toBe("si");
+  });
+
+  it("sin JavaScript el envío nativo también lleva la prueba: casilla y versión de la política", () => {
+    const { form } = montar();
+    const version = form.elements.namedItem("politica_version") as HTMLInputElement;
+    expect(version.type).toBe("hidden");
+    expect(version.value).toBe(privacidad.version);
+    // El navegador exige los obligatorios cuando no hay JavaScript (el
+    // noValidate lo pone el componente al montar).
+    for (const nombre of ["linea", "nombre", "whatsapp", "correo", "autorizacion"]) {
+      expect((form.elements.namedItem(nombre) as HTMLInputElement).required, nombre).toBe(true);
+    }
+  });
+});
+
+describe("formulario: invitaciones, formato del WhatsApp y respuesta sin autorización", () => {
+  it("la casilla de invitaciones es opcional, arranca sin marcar y manda 'si' solo si se marca", async () => {
+    const { user } = montar();
+    expect(campo.marketing().checked).toBe(false);
+    expect(campo.marketing().required).toBe(false);
+    await llenarTodo(user);
+    await user.click(campo.marketing());
+    await user.click(campo.enviar());
+    expect(Object.fromEntries(enviado()).marketing).toBe("si");
+  });
+
+  it.each(["123", "12345", "+57 12", "1234567890123456"])("WhatsApp con %s no tiene entre 7 y 15 dígitos: pide revisarlo y no envía", async (numero) => {
+    const { user } = montar();
+    await user.selectOptions(campo.linea(), "coaching");
+    await user.type(campo.nombre(), "Ana");
+    await user.type(campo.whatsapp(), numero);
+    await user.type(campo.correo(), "ana@correo.com");
+    await user.click(campo.autoriza());
+    await user.click(campo.enviar());
+    expect(fetchSimulado).not.toHaveBeenCalled();
+    expect(screen.getByText(agendar.errores.whatsappFormato)).toBeTruthy();
+    expect(document.activeElement).toBe(campo.whatsapp());
+  });
+
+  it.each(["3001234567", "+57 300 123 4567", "(601) 555-1234"])("WhatsApp %s es válido", async (numero) => {
+    const { user } = montar();
+    await user.selectOptions(campo.linea(), "coaching");
+    await user.type(campo.nombre(), "Ana");
+    await user.type(campo.whatsapp(), numero);
+    await user.type(campo.correo(), "ana@correo.com");
+    await user.click(campo.autoriza());
+    await user.click(campo.enviar());
+    expect(Object.fromEntries(enviado()).whatsapp).toBe(numero);
+  });
+
+  it("si el Apps Script responde sin_autorizacion, marca la casilla con el error y deja el formulario", async () => {
+    fetchSimulado.mockImplementation(() => responde({ status: "error", codigo: "sin_autorizacion" }));
+    const { user } = montar();
+    await llenarTodo(user);
+    await user.click(campo.enviar());
+    await waitFor(() => expect(screen.getByText(agendar.errores.autorizacion)).toBeTruthy());
+    expect(campo.autoriza().getAttribute("aria-invalid")).toBe("true");
+    expect(campo.enviar().disabled).toBe(false);
+  });
+
+  it("muestra el aviso de privacidad corto bajo las casillas", () => {
+    montar();
+    expect(screen.getByText(c.aviso)).toBeTruthy();
   });
 });

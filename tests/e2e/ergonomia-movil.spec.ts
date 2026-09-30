@@ -80,8 +80,14 @@ test.describe("ergonomía en celular", () => {
         .filter((el) => !el.closest("[aria-hidden='true']"))
         .map((el) => ({ nombre: el.getAttribute("name"), letra: parseFloat(getComputedStyle(el).fontSize), alto: el.getBoundingClientRect().height })),
     );
-    expect(campos.map((c) => c.nombre)).toEqual(["linea", "nombre", "whatsapp", "correo", "empresa", "interes"]);
-    for (const c of campos) {
+    // La casilla de autorización y la versión de la política (oculta) no son
+    // campos de texto: la casilla se mide aparte, con su etiqueta como área táctil.
+    expect(campos.map((c) => c.nombre)).toEqual(["linea", "nombre", "whatsapp", "correo", "empresa", "interes", "autorizacion", "politica_version", "marketing"]);
+    for (const id of ["autoriza", "marketing"]) {
+      const alto = await page.locator(`label[for='${id}']`).evaluate((l) => l.getBoundingClientRect().height);
+      expect(alto, `alto de la etiqueta de la casilla ${id}`).toBeGreaterThanOrEqual(MIN_TACTIL);
+    }
+    for (const c of campos.filter((x) => !["autorizacion", "politica_version", "marketing"].includes(x.nombre ?? ""))) {
       expect.soft(c.letra, `${c.nombre}: letra de ${c.letra}px`).toBeGreaterThanOrEqual(16);
       expect.soft(c.alto, `${c.nombre}: alto de ${c.alto}px`).toBeGreaterThanOrEqual(MIN_TACTIL);
     }

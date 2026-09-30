@@ -1,5 +1,5 @@
 import { test as base, expect, type ConsoleMessage, type Locator, type Page, type Request, type Response } from "@playwright/test";
-import { agendar, coaching, consultoria, faq, hero, herramientas, nosotros, rutas } from "../../src/content/copy";
+import { agendar, coaching, consultoria, faq, hero, herramientas, nosotros, paginas, rutas } from "../../src/content/copy";
 
 // Base común de las pruebas de punta a punta.
 //
@@ -165,6 +165,7 @@ export const H1: Record<string, string> = {
   "/nosotros": nosotros.titulo,
   "/preguntas": faq.titulo,
   "/agendar": agendar.titulo,
+  "/privacidad": paginas.privacidad.titulo,
 };
 
 // ------------------------------------------------------------------ Carga

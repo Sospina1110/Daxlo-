@@ -1,18 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { ArrowRight, CheckCircle2, ChevronDown } from "lucide-react";
-import { agendar, contacto } from "@/content/copy";
+import { agendar, contacto, privacidad, rutas } from "@/content/copy";
 import { GlowButton } from "@/components/ui/primitives";
 import { cn } from "@/lib/utils";
 
 // Mismo contrato que el formulario anterior: el Apps Script espera estos
 // nombres de campo exactos. Si se cambia uno, deja de guardarse en la hoja.
+// autorizacion y politica_version son la prueba de la autorización
+// que pide la Ley 1581: el Apps Script debe guardarlos en su propia columna.
 const ENDPOINT =
   "https://script.google.com/macros/s/AKfycbz08pM19vMZGmIQMs9QlpOS704oPOKAR6RXJLoSeuS52EOt1swQxt9fJL86AAmL0g9C/exec";
 const CORREO_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-type Errores = Partial<Record<"linea" | "nombre" | "whatsapp" | "email", string>>;
+type Errores = Partial<Record<"linea" | "nombre" | "whatsapp" | "email" | "autoriza", string>>;
 
 export function FormularioContacto() {
   const a = agendar;
@@ -24,6 +27,9 @@ export function FormularioContacto() {
 
   useEffect(() => {
     cargadoEn.current = Date.now();
+    // Sin JavaScript valida el navegador (campos required). Con JavaScript la
+    // validación es la nuestra, con los mensajes en la página.
+    if (formRef.current) formRef.current.noValidate = true;
     // Si llega desde la página de una línea (/agendar?linea=coaching), la
     // opción ya viene elegida.
     const linea = new URLSearchParams(window.location.search).get("linea");
@@ -39,15 +45,19 @@ export function FormularioContacto() {
     const nombre = valor("nombre");
     const whatsapp = valor("whatsapp");
     const correo = valor("correo");
+    const marcado = (id: string) => (formRef.current?.elements.namedItem(id) as HTMLInputElement | null)?.checked ?? false;
+    const digitos = whatsapp.replace(/\D/g, "").length;
 
     const nuevos: Errores = {};
     if (!linea) nuevos.linea = a.errores.linea;
     if (!nombre) nuevos.nombre = a.errores.nombre;
     if (!whatsapp) nuevos.whatsapp = a.errores.whatsapp;
+    else if (digitos < 7 || digitos > 15) nuevos.whatsapp = a.errores.whatsappFormato;
     if (!correo) nuevos.email = a.errores.correo;
     else if (!CORREO_VALIDO.test(correo)) nuevos.email = a.errores.correoFormato;
+    if (!marcado("autorizacion")) nuevos.autoriza = a.errores.autorizacion;
     setErrores(nuevos);
-    const primero = (["linea", "nombre", "whatsapp", "email"] as const).find((k) => nuevos[k]);
+    const primero = (["linea", "nombre", "whatsapp", "email", "autoriza"] as const).find((k) => nuevos[k]);
     if (primero) {
       (formRef.current?.elements.namedItem(primero) as HTMLElement | null)?.focus();
       return;
@@ -65,6 +75,9 @@ export function FormularioContacto() {
     datos.append("website", (formRef.current?.elements.namedItem("website") as HTMLInputElement | null)?.value ?? "");
     datos.append("tiempo_llenado_segundos", String(Math.round((Date.now() - cargadoEn.current) / 1000)));
     datos.append("origen", window.location.origin);
+    datos.append("autorizacion", "si");
+    datos.append("politica_version", privacidad.version);
+    datos.append("marketing", marcado("marketing") ? "si" : "no");
 
     setEstado("enviando");
     try {
@@ -80,6 +93,10 @@ export function FormularioContacto() {
       } else if (json?.status === "error" && json.codigo === "envio_duplicado") {
         setDuplicado(true);
         setEstado("exito");
+      } else if (json?.status === "error" && json.codigo === "sin_autorizacion") {
+        // El Apps Script rechazó el envío porque no traía la autorización.
+        setErrores({ autoriza: a.errores.autorizacion });
+        setEstado("listo");
       } else {
         setEstado("error");
       }
@@ -108,14 +125,14 @@ export function FormularioContacto() {
     // directo al Apps Script por POST. Sin esto se enviaba por GET a la misma
     // página, con el nombre, el WhatsApp y el correo en la URL, y el contacto
     // se perdía. Con JavaScript, enviar() lo intercepta y nada cambia.
-    <form ref={formRef} onSubmit={enviar} method="post" action={ENDPOINT} noValidate className="glass relative overflow-hidden rounded-[26px] p-5 sm:p-6 md:p-10">
+    <form ref={formRef} onSubmit={enviar} method="post" action={ENDPOINT} className="glass relative overflow-hidden rounded-[26px] p-5 sm:p-6 md:p-10">
       <span aria-hidden className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-cyan/70 to-transparent" />
       <div className="grid gap-5">
         <Campo id="linea" etiqueta={c.linea} error={errores.linea} obligatorio>
           {/* Apariencia propia: el select nativo de Safari salía gris y
               distinto al resto de los campos. */}
           <div className="relative">
-            <select id="linea" name="linea" defaultValue="" className={cn(claseCampo(errores.linea), "appearance-none pr-11")} aria-invalid={!!errores.linea || undefined} aria-describedby={errores.linea ? "error-linea" : undefined}>
+            <select id="linea" name="linea" required defaultValue="" className={cn(claseCampo(errores.linea), "appearance-none pr-11")} aria-invalid={!!errores.linea || undefined} aria-describedby={errores.linea ? "error-linea" : undefined}>
               <option value="" disabled>
                 Selecciona una opción
               </option>
@@ -129,22 +146,60 @@ export function FormularioContacto() {
           </div>
         </Campo>
         <Campo id="nombre" etiqueta={c.nombre} error={errores.nombre} obligatorio>
-          <input id="nombre" name="nombre" autoComplete="name" placeholder="Tu nombre" className={claseCampo(errores.nombre)} aria-invalid={!!errores.nombre || undefined} aria-describedby={errores.nombre ? "error-nombre" : undefined} />
+          <input id="nombre" name="nombre" required maxLength={100} autoComplete="name" placeholder="Tu nombre" className={claseCampo(errores.nombre)} aria-invalid={!!errores.nombre || undefined} aria-describedby={errores.nombre ? "error-nombre" : undefined} />
         </Campo>
         <div className="grid gap-5 md:grid-cols-2">
           <Campo id="whatsapp" etiqueta={c.whatsapp} error={errores.whatsapp} obligatorio>
-            <input id="whatsapp" name="whatsapp" type="tel" autoComplete="tel" placeholder="+57 300 123 4567" className={claseCampo(errores.whatsapp)} aria-invalid={!!errores.whatsapp || undefined} aria-describedby={errores.whatsapp ? "error-whatsapp" : undefined} />
+            <input id="whatsapp" name="whatsapp" required maxLength={25} type="tel" autoComplete="tel" placeholder="+57 300 123 4567" className={claseCampo(errores.whatsapp)} aria-invalid={!!errores.whatsapp || undefined} aria-describedby={errores.whatsapp ? "error-whatsapp" : undefined} />
           </Campo>
           <Campo id="email" etiqueta={c.correo} error={errores.email} obligatorio>
-            <input id="email" name="correo" type="email" autoComplete="email" placeholder="tu@correo.com" className={claseCampo(errores.email)} aria-invalid={!!errores.email || undefined} aria-describedby={errores.email ? "error-email" : undefined} />
+            <input id="email" name="correo" required maxLength={254} type="email" autoComplete="email" placeholder="tu@correo.com" className={claseCampo(errores.email)} aria-invalid={!!errores.email || undefined} aria-describedby={errores.email ? "error-email" : undefined} />
           </Campo>
         </div>
         <Campo id="empresa" etiqueta={c.empresa}>
-          <input id="empresa" name="empresa" autoComplete="organization" placeholder="Nombre de tu empresa" className={claseCampo()} />
+          <input id="empresa" name="empresa" maxLength={120} autoComplete="organization" placeholder="Nombre de tu empresa" className={claseCampo()} />
         </Campo>
         <Campo id="interes" etiqueta={c.interes}>
-          <textarea id="interes" name="interes" rows={5} placeholder={c.interesEjemplo} className={cn(claseCampo(), "resize-y")} />
+          <textarea id="interes" name="interes" rows={5} maxLength={2000} placeholder={c.interesEjemplo} className={cn(claseCampo(), "resize-y")} />
         </Campo>
+
+        {/* Autorización previa, expresa e informada (Ley 1581 de 2012): la
+            casilla arranca sin marcar. La política abre en otra pestaña para no
+            perder lo escrito. */}
+        <div>
+          <label htmlFor="autoriza" className="flex min-h-[44px] cursor-pointer items-start gap-3 text-[16px] leading-snug text-white/80">
+            <input
+              id="autoriza"
+              name="autorizacion"
+              type="checkbox"
+              value="si"
+              required
+              className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-[#29c4f5]"
+              aria-invalid={!!errores.autoriza || undefined}
+              aria-describedby={errores.autoriza ? "error-autoriza" : undefined}
+            />
+            <span>
+              {c.autorizacion}{" "}
+              <Link href={rutas.privacidad} target="_blank" rel="noopener" className="text-cyan underline underline-offset-2">
+                {c.autorizacionEnlace}
+              </Link>
+              .
+            </span>
+          </label>
+          {errores.autoriza && (
+            <p id="error-autoriza" className="mt-1.5 text-[14px] font-medium text-[#ff8a9b]">
+              {errores.autoriza}
+            </p>
+          )}
+          <input type="hidden" name="politica_version" value={privacidad.version} />
+        </div>
+        <label htmlFor="marketing" className="flex min-h-[44px] cursor-pointer items-start gap-3 text-[16px] leading-snug text-white/70">
+          <input id="marketing" name="marketing" type="checkbox" value="si" className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-[#29c4f5]" />
+          <span>
+            {c.marketing} <span className="text-white/45">(opcional)</span>
+          </span>
+        </label>
+        <p className="text-[14px] leading-snug text-dim">{c.aviso}</p>
 
         {/* Trampa para bots: una persona no ve este campo; si llega lleno, es spam. */}
         <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
