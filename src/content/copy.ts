@@ -499,17 +499,24 @@ export const franjaEnlace = "Qué hacemos con cada una";
 
 // ------------------------------------------------------------- AGENDA
 
-// La agenda de Cal.com. Al enviar el formulario, la persona pasa a elegir el
-// día y la hora con su nombre, su correo y la línea ya escritos; la cita entra
-// sola al OS de Daxlo por su webhook (backend/app/rutas/agenda.py).
-// PENDIENTE: las URL públicas de los tipos de evento (https://cal.com/...).
-// Mientras estén vacías, el formulario muestra el mensaje de WhatsApp de
-// siempre y no lleva a ningún lado.
+// La agenda de Cal.com (cuenta de Team Daxlo, usuario «daxlo»). Al enviar el
+// formulario, la persona pasa a elegir el día y la hora con su nombre, su
+// correo y la línea ya escritos; la cita entra sola al OS de Daxlo por su
+// webhook (backend/app/rutas/agenda.py).
+// En los dos tipos de evento tiene que seguir así:
+//   · la pregunta del correo con «Disable input if the URL identifier is
+//     prefilled»: si la persona lo cambiara allá, el OS abriría dos fichas;
+//   · la pregunta «linea» (identificador exacto, sin tilde) con las opciones
+//     de `lineas` tal cual: el prellenado y el OS dependen de ese texto.
+// Si se vacían los enlaces, el formulario vuelve al mensaje de WhatsApp.
 export const calcom = {
-  enlaces: { coaching: "", consultoria: "", no_se: "" } as Record<string, string>,
+  enlaces: {
+    coaching: "https://cal.com/daxlo/diagnostico-gratuito",
+    consultoria: "https://cal.com/daxlo/conversacion-de-alcance",
+    no_se: "https://cal.com/daxlo/conversacion-de-alcance",
+  } as Record<string, string>,
   // Los valores exactos de la pregunta «linea» de Cal.com que entiende el OS.
-  // «Todavía no sé» no manda línea: la persona la elige en la agenda.
-  lineas: { coaching: "Coaching 1 a 1", consultoria: "Consultoría de implementación" } as Record<string, string>,
+  lineas: { coaching: "Coaching 1 a 1", consultoria: "Consultoría de implementación", no_se: "Todavía no sé" } as Record<string, string>,
 };
 
 // ------------------------------------------------------------- PRIVACIDAD

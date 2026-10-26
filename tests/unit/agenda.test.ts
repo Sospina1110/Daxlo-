@@ -78,7 +78,15 @@ describe("la configuración publicada de Cal.com", () => {
     }
   });
 
-  it("las líneas llevan los textos exactos que lee el OS (rutas/agenda.py)", () => {
-    expect(calcom.lineas).toEqual({ coaching: "Coaching 1 a 1", consultoria: "Consultoría de implementación" });
+  it("las líneas llevan los textos exactos de las opciones de Cal.com, que son los que lee el OS (rutas/agenda.py)", () => {
+    expect(calcom.lineas).toEqual({ coaching: "Coaching 1 a 1", consultoria: "Consultoría de implementación", no_se: "Todavía no sé" });
+  });
+
+  it("coaching va al diagnóstico y empresas (o 'todavía no sé') a la conversación de alcance", () => {
+    expect(calcom.enlaces).toEqual({
+      coaching: "https://cal.com/daxlo/diagnostico-gratuito",
+      consultoria: "https://cal.com/daxlo/conversacion-de-alcance",
+      no_se: "https://cal.com/daxlo/conversacion-de-alcance",
+    });
   });
 });
