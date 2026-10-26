@@ -497,8 +497,8 @@ export const franjaEnlace = "Qué hacemos con cada una";
 // CorreoContacto, porque la ofuscación de Cloudflare reescribe cualquier
 // correo del HTML y eso rompe la hidratación.
 export const privacidad = {
-  version: "2026-09-29",
-  vigencia: "29 de septiembre de 2026",
+  version: "2026-10-26",
+  vigencia: "26 de octubre de 2026",
   responsable: {
     nombre: "Daxlo, nombre comercial con el que trabajan Martín Zárate y Santiago Ospina",
     domicilio: "Colombia",
