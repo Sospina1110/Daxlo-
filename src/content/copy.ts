@@ -395,12 +395,24 @@ export const agendar = {
     // Aviso de privacidad corto (Decreto 1377 de 2013, art. 15). Sin el correo
     // en texto: la ofuscación de Cloudflare lo reescribiría en el HTML.
     aviso:
-      "Responsable: Daxlo (Martín Zárate y Santiago Ospina). Usamos tus datos solo para lo que autorizas. Se guardan en servicios de Google y Cloudflare, con servidores fuera de Colombia. Puedes conocerlos, corregirlos, pedir que los borremos o revocar la autorización cuando quieras; la política explica cómo.",
+      "Responsable: Daxlo (Martín Zárate y Santiago Ospina). Usamos tus datos solo para lo que autorizas. Se guardan en servicios de Google, Cloudflare y Cal.com y en nuestro sistema interno, con servidores fuera de Colombia. Puedes conocerlos, corregirlos, pedir que los borremos o revocar la autorización cuando quieras; la política explica cómo.",
   },
   enviar: "Agendar la conversación",
   enviando: "Enviando…",
   meta: "Sin costo · Te contactamos por WhatsApp",
-  exito: { titulo: "Listo. Nos pondremos en contacto.", texto: "Te escribimos por WhatsApp para coordinar la conversación.", duplicado: "Ya recibimos tus datos. Te escribimos por WhatsApp pronto.", whatsapp: "Escríbenos directo por WhatsApp" },
+  metaAgenda: "Sin costo · Al enviar eliges el día y la hora",
+  exito: {
+    titulo: "Listo. Nos pondremos en contacto.",
+    texto: "Te escribimos por WhatsApp para coordinar la conversación.",
+    duplicado: "Ya recibimos tus datos. Te escribimos por WhatsApp pronto.",
+    whatsapp: "Escríbenos directo por WhatsApp",
+    // Cuando hay agenda de Cal.com configurada (ver `calcom`).
+    agenda: {
+      titulo: "Listo. Ahora elige el día y la hora.",
+      texto: "Te llevamos a la agenda para que escojas cuándo hablamos. La confirmación te llega por correo.",
+      boton: "Elegir día y hora",
+    },
+  },
   errores: {
     linea: "Dinos qué te interesa.",
     nombre: "Cuéntanos tu nombre.",
@@ -483,6 +495,21 @@ export const inicioNosotros = {
 
 export const franjaEnlace = "Qué hacemos con cada una";
 
+// ------------------------------------------------------------- AGENDA
+
+// La agenda de Cal.com. Al enviar el formulario, la persona pasa a elegir el
+// día y la hora con su nombre, su correo y la línea ya escritos; la cita entra
+// sola al OS de Daxlo por su webhook (backend/app/rutas/agenda.py).
+// PENDIENTE: las URL públicas de los tipos de evento (https://cal.com/...).
+// Mientras estén vacías, el formulario muestra el mensaje de WhatsApp de
+// siempre y no lleva a ningún lado.
+export const calcom = {
+  enlaces: { coaching: "", consultoria: "", no_se: "" } as Record<string, string>,
+  // Los valores exactos de la pregunta «linea» de Cal.com que entiende el OS.
+  // «Todavía no sé» no manda línea: la persona la elige en la agenda.
+  lineas: { coaching: "Coaching 1 a 1", consultoria: "Consultoría de implementación" } as Record<string, string>,
+};
+
 // ------------------------------------------------------------- PRIVACIDAD
 
 // Política de tratamiento de datos personales (Ley 1581 de 2012 y Decreto
@@ -512,6 +539,7 @@ export const privacidad = {
       titulo: "Qué datos recogemos",
       parrafos: [
         "Cuando llenas el formulario de agendar: tu nombre, tu WhatsApp, tu correo, la línea que te interesa y, si los escribes, el nombre de tu empresa y el tema que tienes en mente.",
+        "Cuando agendas la conversación en Cal.com: el día y la hora que eliges y lo que respondas allí.",
         "Cuando nos escribes por WhatsApp o por correo: los datos que tú mismo nos compartas en esa conversación.",
         "No pedimos datos sensibles (salud, origen étnico, orientación política o religiosa, datos biométricos) ni datos de menores de edad. Nuestros servicios están dirigidos a adultos.",
       ],
@@ -520,6 +548,7 @@ export const privacidad = {
       titulo: "Para qué los usamos",
       lista: [
         "Contactarte para coordinar la conversación que pediste.",
+        "Agendar esa conversación y enviarte por correo la confirmación y los recordatorios de la cita.",
         "Entender tu caso y responderte si el coaching, la consultoría o ninguno de los dos te sirve.",
         "Enviarte la propuesta o la información de servicios que nos pediste.",
         "Llevar el registro de las solicitudes que recibimos.",
@@ -532,6 +561,8 @@ export const privacidad = {
       titulo: "Dónde se guardan",
       parrafos: [
         "Los datos del formulario se guardan en una hoja de cálculo de Google, que actúa como encargado del tratamiento.",
+        "Las solicitudes y las citas pasan también a nuestro sistema interno de seguimiento comercial, alojado en Supabase y Vercel.",
+        "La agenda funciona con Cal.com: al enviar el formulario te llevamos a su página con tu nombre y tu correo ya escritos, y desde ahí te llegan la confirmación y los recordatorios de la cita.",
         "El sitio está alojado en Cloudflare. Para medir visitas usamos Cloudflare Web Analytics, que cuenta páginas vistas de forma agregada, sin cookies y sin identificar a las personas.",
         "Cuando te escribimos por WhatsApp, la conversación pasa por los servicios de Meta.",
         "Estos proveedores tienen servidores fuera de Colombia, incluidos los Estados Unidos. Solo les confiamos los datos para prestar el servicio y bajo sus propias medidas de seguridad.",
@@ -581,7 +612,7 @@ export const privacidad = {
     {
       titulo: "Seguridad",
       parrafos: [
-        "Tomamos medidas razonables para proteger tus datos: el sitio funciona solo por conexión cifrada (HTTPS), el acceso a la hoja de cálculo está limitado a los dos socios, con verificación en dos pasos, y el formulario no guarda nada en tu navegador.",
+        "Tomamos medidas razonables para proteger tus datos: el sitio funciona solo por conexión cifrada (HTTPS), el acceso a la hoja de cálculo y al sistema interno está limitado a los dos socios, con verificación en dos pasos, y el formulario no guarda nada en tu navegador.",
       ],
     },
     {

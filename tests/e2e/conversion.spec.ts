@@ -1,5 +1,6 @@
 import { agendar, coaching, consultoria, dosFormas, hero, otraLinea, preguntasLinea, privacidad } from "../../src/content/copy";
-import { APPS_SCRIPT, esperarArriba, esperarEnAncla, expect, H1, interceptarAppsScript, irA, marcarDocumento, tocar, test, type Page } from "./apoyo";
+import { hayAgenda } from "../../src/lib/agenda";
+import { APPS_SCRIPT, esperarArriba, esperarEnAncla, expect, H1, interceptarAppsScript, irA, marcarDocumento, tocar, test, type Page, type Vigilancia } from "./apoyo";
 
 // Los caminos que terminan en una conversación agendada: cada llamado a la
 // acción lleva a /agendar (con la línea ya elegida cuando corresponde) y el
@@ -119,6 +120,21 @@ test.describe("formulario de /agendar", () => {
 
   const enviar = (page: Page) => page.getByRole("button", { name: new RegExp(agendar.enviar) });
 
+  // Con la agenda de Cal.com configurada (copy.ts, calcom.enlaces), el éxito
+  // del envío lleva sola a la persona a Cal.com; agenda.spec.ts prueba ese
+  // paso a fondo. Aquí Cal.com se responde en local y el éxito es haber
+  // llegado allá. Sin agenda, el éxito es el panel de siempre.
+  const CAL = /^https:\/\/(app\.)?cal\.com\//;
+  async function prepararAgenda(page: Page, vigilancia: Vigilancia) {
+    if (!hayAgenda()) return;
+    vigilancia.tolerar(/^petición externa inesperada: https:\/\/(app\.)?cal\.com\//);
+    await page.route(CAL, (r) => r.fulfill({ status: 200, contentType: "text/html", body: "<!doctype html><title>Agenda</title>" }));
+  }
+  async function esperarExito(page: Page) {
+    if (hayAgenda()) await page.waitForURL(CAL, { timeout: 10_000 });
+    else await expect(page.getByText(agendar.exito.titulo)).toBeVisible();
+  }
+
   test("vacío: muestra los errores, pone el foco en '¿Qué te interesa?' y no envía nada", async ({ page, isMobile }) => {
     await irA(page, "/agendar");
     const envios = await interceptarAppsScript(page);
@@ -142,18 +158,24 @@ test.describe("formulario de /agendar", () => {
     expect(envios).toHaveLength(0);
   });
 
-  test("envío completo: panel de éxito y el Apps Script recibe exactamente los campos del contrato", async ({ page, isMobile }) => {
+  test("envío completo: panel de éxito y el Apps Script recibe exactamente los campos del contrato", async ({ page, isMobile, vigilancia }) => {
     await irA(page, "/agendar");
+    await prepararAgenda(page, vigilancia);
     const envios = await interceptarAppsScript(page);
     const accion = await page.locator("form").getAttribute("action");
     expect(accion).toMatch(APPS_SCRIPT);
+    const sitio = new URL(page.url()).origin;
     await llenar(page);
     await tocar(enviar(page), isMobile);
 
-    const panel = page.getByRole("status").filter({ hasText: agendar.exito.titulo });
-    await expect(panel).toBeVisible();
-    await expect(panel).toContainText(agendar.exito.texto);
-    await expect(page.locator("form")).toHaveCount(0);
+    if (hayAgenda()) {
+      await esperarExito(page);
+    } else {
+      const panel = page.getByRole("status").filter({ hasText: agendar.exito.titulo });
+      await expect(panel).toBeVisible();
+      await expect(panel).toContainText(agendar.exito.texto);
+      await expect(page.locator("form")).toHaveCount(0);
+    }
 
     expect(envios).toHaveLength(1);
     const [envio] = envios;
@@ -168,7 +190,7 @@ test.describe("formulario de /agendar", () => {
       correo: "martina@ferreteria.co",
       empresa: "Ferretería El Tornillo & Cía",
       website: "",
-      origen: new URL(page.url()).origin,
+      origen: sitio,
       autorizacion: "si",
       politica_version: privacidad.version,
       marketing: "no",
@@ -178,16 +200,17 @@ test.describe("formulario de /agendar", () => {
     expect(datos.tiempo_llenado_segundos).toMatch(/^\d+$/);
   });
 
-  test("con ?linea=no_se la opción llega elegida y es la que se envía", async ({ page, isMobile }) => {
+  test("con ?linea=no_se la opción llega elegida y es la que se envía", async ({ page, isMobile, vigilancia }) => {
     await irA(page, "/agendar?linea=no_se");
     await expect(campoLinea(page)).toHaveValue("no_se");
+    await prepararAgenda(page, vigilancia);
     const envios = await interceptarAppsScript(page);
     await page.getByLabel(c.nombre).fill("Ana");
     await page.getByLabel(new RegExp(`^${c.whatsapp}`)).fill("3001234567");
     await page.getByLabel(new RegExp(`^${c.correo}`)).fill("ana@correo.com");
     await page.getByRole("checkbox", { name: new RegExp(c.autorizacion.slice(0, 20)) }).check();
     await tocar(enviar(page), isMobile);
-    await expect(page.getByText(agendar.exito.titulo)).toBeVisible();
+    await esperarExito(page);
     expect(Object.fromEntries(envios[0].campos).linea).toBe("no_se");
   });
 
@@ -197,18 +220,22 @@ test.describe("formulario de /agendar", () => {
     expect(await campoLinea(page).evaluate((s: HTMLSelectElement) => [s.selectedIndex, s.selectedOptions[0]?.textContent])).toEqual([0, "Selecciona una opción"]);
   });
 
-  test("envío duplicado: también muestra éxito, con el texto de 'ya recibimos tus datos'", async ({ page, isMobile }) => {
+  test("envío duplicado: también muestra éxito, con el texto de 'ya recibimos tus datos'", async ({ page, isMobile, vigilancia }) => {
     await irA(page, "/agendar");
+    await prepararAgenda(page, vigilancia);
     await interceptarAppsScript(page, () => ({ cuerpo: { status: "error", codigo: "envio_duplicado" } }));
     await llenar(page);
     await tocar(enviar(page), isMobile);
+    // Con agenda, quien ya estaba en la hoja también pasa a elegir la hora.
+    if (hayAgenda()) return esperarExito(page);
     const panel = page.getByRole("status").filter({ hasText: agendar.exito.titulo });
     await expect(panel).toContainText(agendar.exito.duplicado);
     await expect(panel).not.toContainText(agendar.exito.texto);
   });
 
-  test("error del Apps Script: avisa, deja lo escrito y se puede reintentar", async ({ page, isMobile }) => {
+  test("error del Apps Script: avisa, deja lo escrito y se puede reintentar", async ({ page, isMobile, vigilancia }) => {
     await irA(page, "/agendar");
+    await prepararAgenda(page, vigilancia);
     const envios = await interceptarAppsScript(page, (n) => (n === 1 ? { cuerpo: { status: "error", codigo: "otro" } } : { cuerpo: { status: "ok" } }));
     await llenar(page);
     await tocar(enviar(page), isMobile);
@@ -216,7 +243,7 @@ test.describe("formulario de /agendar", () => {
     await expect(page.getByLabel(c.nombre)).toHaveValue("Martina Gómez Peña");
     await expect(enviar(page)).toBeEnabled();
     await tocar(enviar(page), isMobile);
-    await expect(page.getByText(agendar.exito.titulo)).toBeVisible();
+    await esperarExito(page);
     expect(envios).toHaveLength(2);
   });
 

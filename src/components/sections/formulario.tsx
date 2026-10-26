@@ -5,7 +5,12 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2, ChevronDown } from "lucide-react";
 import { agendar, contacto, privacidad, rutas } from "@/content/copy";
 import { GlowButton } from "@/components/ui/primitives";
+import { enlaceDeAgenda, hayAgenda, irA } from "@/lib/agenda";
 import { cn } from "@/lib/utils";
+
+// Cuánto se ve el "Listo" antes de pasar a la agenda: lo justo para leerlo y
+// entender a dónde va. El botón queda por si el navegador no redirige.
+const ESPERA_AGENDA_MS = 1500;
 
 // Mismo contrato que el formulario anterior: el Apps Script espera estos
 // nombres de campo exactos. Si se cambia uno, deja de guardarse en la hoja.
@@ -24,6 +29,15 @@ export function FormularioContacto() {
   const [errores, setErrores] = useState<Errores>({});
   const [estado, setEstado] = useState<"listo" | "enviando" | "exito" | "error">("listo");
   const [duplicado, setDuplicado] = useState(false);
+  const [agenda, setAgenda] = useState<string | null>(null);
+
+  // Enviado con éxito y con agenda configurada: pasa a Cal.com sin que la
+  // persona tenga que hacer nada más.
+  useEffect(() => {
+    if (estado !== "exito" || !agenda) return;
+    const t = window.setTimeout(() => irA(agenda), ESPERA_AGENDA_MS);
+    return () => window.clearTimeout(t);
+  }, [estado, agenda]);
 
   useEffect(() => {
     cargadoEn.current = Date.now();
@@ -89,8 +103,11 @@ export function FormularioContacto() {
         json = null;
       }
       if (json?.status === "ok") {
+        setAgenda(enlaceDeAgenda(linea, nombre, correo));
         setEstado("exito");
       } else if (json?.status === "error" && json.codigo === "envio_duplicado") {
+        // Ya estaba en la hoja, pero quizá no alcanzó a agendar: también pasa.
+        setAgenda(enlaceDeAgenda(linea, nombre, correo));
         setDuplicado(true);
         setEstado("exito");
       } else if (json?.status === "error" && json.codigo === "sin_autorizacion") {
@@ -103,6 +120,20 @@ export function FormularioContacto() {
     } catch {
       setEstado("error");
     }
+  }
+
+  if (estado === "exito" && agenda) {
+    return (
+      <div role="status" className="glass rounded-[26px] p-10 text-center">
+        <CheckCircle2 size={56} className="mx-auto text-mint" />
+        <h3 className="mt-5 text-[30px] text-white">{a.exito.agenda.titulo}</h3>
+        <p className="mx-auto mt-3 max-w-[460px] text-[18px] text-muted">{a.exito.agenda.texto}</p>
+        <GlowButton href={agenda} className="mt-7">
+          {a.exito.agenda.boton}
+          <ArrowRight size={18} />
+        </GlowButton>
+      </div>
+    );
   }
 
   if (estado === "exito") {
@@ -212,7 +243,7 @@ export function FormularioContacto() {
           {estado !== "enviando" && <ArrowRight size={18} />}
         </GlowButton>
         <p role="status" aria-live="polite" className={cn("text-center text-[15px]", estado === "error" ? "font-medium text-[#ffb4be]" : "text-dim")}>
-          {estado === "error" ? a.errores.general : a.meta}
+          {estado === "error" ? a.errores.general : hayAgenda() ? a.metaAgenda : a.meta}
         </p>
       </div>
     </form>
