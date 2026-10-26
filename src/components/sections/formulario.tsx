@@ -8,10 +8,6 @@ import { GlowButton } from "@/components/ui/primitives";
 import { enlaceDeAgenda, hayAgenda, irA } from "@/lib/agenda";
 import { cn } from "@/lib/utils";
 
-// Cuánto se ve el "Listo" antes de pasar a la agenda: lo justo para leerlo y
-// entender a dónde va. El botón queda por si el navegador no redirige.
-const ESPERA_AGENDA_MS = 1500;
-
 // Mismo contrato que el formulario anterior: el Apps Script espera estos
 // nombres de campo exactos. Si se cambia uno, deja de guardarse en la hoja.
 // autorizacion y politica_version son la prueba de la autorización
@@ -30,16 +26,23 @@ export function FormularioContacto() {
   const [estado, setEstado] = useState<"listo" | "enviando" | "exito" | "error">("listo");
   const [duplicado, setDuplicado] = useState(false);
   const [agenda, setAgenda] = useState<string | null>(null);
+  // El HTML exportado promete lo que pasa sin JavaScript (el envío va directo
+  // al Apps Script, sin agenda); la frase de la agenda sale ya montado.
+  const [montado, setMontado] = useState(false);
+  const exitoRef = useRef<HTMLDivElement>(null);
 
-  // Enviado con éxito y con agenda configurada: pasa a Cal.com sin que la
-  // persona tenga que hacer nada más.
+  // El panel de éxito reemplaza al formulario, que es más alto: quien tocó
+  // enviar al final quedaría mirando el pie. El foco lo trae a la vista y le
+  // dice al lector de pantalla qué pasó.
   useEffect(() => {
-    if (estado !== "exito" || !agenda) return;
-    const t = window.setTimeout(() => irA(agenda), ESPERA_AGENDA_MS);
-    return () => window.clearTimeout(t);
-  }, [estado, agenda]);
+    if (estado !== "exito") return;
+    const el = exitoRef.current;
+    el?.focus({ preventScroll: true });
+    el?.scrollIntoView?.({ block: "center" });
+  }, [estado]);
 
   useEffect(() => {
+    setMontado(true);
     cargadoEn.current = Date.now();
     // Sin JavaScript valida el navegador (campos required). Con JavaScript la
     // validación es la nuestra, con los mensajes en la página.
@@ -102,14 +105,21 @@ export function FormularioContacto() {
       } catch {
         json = null;
       }
+      // Con agenda, pasa a Cal.com apenas queda registrado, sin espera: la
+      // frase bajo el botón ya le dijo a dónde va. El panel con el botón queda
+      // de respaldo si la navegación falla, y es lo que ve si vuelve con Atrás.
       if (json?.status === "ok") {
-        setAgenda(enlaceDeAgenda(linea, nombre, correo));
+        const url = enlaceDeAgenda(linea, nombre, correo);
+        setAgenda(url);
         setEstado("exito");
+        if (url) irA(url);
       } else if (json?.status === "error" && json.codigo === "envio_duplicado") {
         // Ya estaba en la hoja, pero quizá no alcanzó a agendar: también pasa.
-        setAgenda(enlaceDeAgenda(linea, nombre, correo));
+        const url = enlaceDeAgenda(linea, nombre, correo);
+        setAgenda(url);
         setDuplicado(true);
         setEstado("exito");
+        if (url) irA(url);
       } else if (json?.status === "error" && json.codigo === "sin_autorizacion") {
         // El Apps Script rechazó el envío porque no traía la autorización.
         setErrores({ autoriza: a.errores.autorizacion });
@@ -124,7 +134,7 @@ export function FormularioContacto() {
 
   if (estado === "exito" && agenda) {
     return (
-      <div role="status" className="glass rounded-[26px] p-10 text-center">
+      <div ref={exitoRef} tabIndex={-1} role="status" className="glass rounded-[26px] p-10 text-center outline-none">
         <CheckCircle2 size={56} className="mx-auto text-mint" />
         <h3 className="mt-5 text-[30px] text-white">{a.exito.agenda.titulo}</h3>
         <p className="mx-auto mt-3 max-w-[460px] text-[18px] text-muted">{a.exito.agenda.texto}</p>
@@ -138,7 +148,7 @@ export function FormularioContacto() {
 
   if (estado === "exito") {
     return (
-      <div role="status" className="glass rounded-[26px] p-10 text-center">
+      <div ref={exitoRef} tabIndex={-1} role="status" className="glass rounded-[26px] p-10 text-center outline-none">
         <CheckCircle2 size={56} className="mx-auto text-mint" />
         <h3 className="mt-5 text-[30px] text-white">{a.exito.titulo}</h3>
         <p className="mx-auto mt-3 max-w-[460px] text-[18px] text-muted">{duplicado ? a.exito.duplicado : a.exito.texto}</p>
@@ -243,7 +253,7 @@ export function FormularioContacto() {
           {estado !== "enviando" && <ArrowRight size={18} />}
         </GlowButton>
         <p role="status" aria-live="polite" className={cn("text-center text-[15px]", estado === "error" ? "font-medium text-[#ffb4be]" : "text-dim")}>
-          {estado === "error" ? a.errores.general : hayAgenda() ? a.metaAgenda : a.meta}
+          {estado === "error" ? a.errores.general : montado && hayAgenda() ? a.metaAgenda : a.meta}
         </p>
       </div>
     </form>

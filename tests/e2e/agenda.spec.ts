@@ -25,10 +25,9 @@ for (const linea of ["coaching", "consultoria", "no_se"] as const) {
     await expect(page.getByText(agendar.metaAgenda)).toBeVisible();
     await page.getByRole("button", { name: agendar.enviar }).click();
 
-    // Primero queda registrado en la hoja, después pasa a la agenda.
-    await expect(page.getByText(agendar.exito.agenda.titulo)).toBeVisible();
-    expect(envios).toHaveLength(1);
+    // Primero queda registrado en la hoja y apenas responde, pasa a la agenda.
     await page.waitForURL(CAL, { timeout: 10_000 });
+    expect(envios).toHaveLength(1);
 
     const url = new URL(page.url());
     const esperado = new URL(enlaceDeAgenda(linea, "Prueba Agenda", "prueba@example.com") as string);

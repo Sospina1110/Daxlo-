@@ -48,7 +48,30 @@ describe("enlaceDeAgenda", () => {
   });
 });
 
+describe("hayAgenda: solo promete la agenda si todas las opciones del formulario llevan a un evento", () => {
+  const conf = (enlaces: Record<string, string>) => ({ enlaces: { coaching: "", consultoria: "", no_se: "", ...enlaces }, lineas: CONF.lineas });
+
+  it("con el general de no_se basta: toda línea cae ahí", () => {
+    expect(hayAgenda(conf({ no_se: "https://cal.com/daxlo/conversacion" }))).toBe(true);
+    expect(hayAgenda(CONF)).toBe(true);
+  });
+
+  it("a medias (solo coaching y consultoría, sin el general), no: «Todavía no sé» se quedaría sin agenda", () => {
+    expect(hayAgenda(conf({ coaching: "https://cal.com/daxlo/coaching", consultoria: "https://cal.com/daxlo/consultoria" }))).toBe(false);
+    expect(hayAgenda(conf({ coaching: "https://cal.com/daxlo/coaching" }))).toBe(false);
+  });
+
+  it("con las tres líneas propias, sí", () => {
+    expect(hayAgenda(conf({ coaching: "https://cal.com/a/b", consultoria: "https://cal.com/a/c", no_se: "https://cal.com/a/d" }))).toBe(true);
+  });
+});
+
 describe("la configuración publicada de Cal.com", () => {
+  it("o está completa o está vacía: nunca a medias", () => {
+    const alguno = Object.values(calcom.enlaces).some(Boolean);
+    expect(hayAgenda()).toBe(alguno);
+  });
+
   it("cada enlace está vacío o es una página https de Cal.com", () => {
     for (const [linea, enlace] of Object.entries(calcom.enlaces)) {
       if (enlace) expect(enlace, linea).toMatch(/^https:\/\/(app\.)?cal\.com\/[\w.-]+\/[\w.-]+/);

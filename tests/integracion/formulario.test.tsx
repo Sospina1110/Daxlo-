@@ -5,6 +5,9 @@ import { agendar, contacto, privacidad, rutas } from "@/content/copy";
 import { FormularioContacto } from "@/components/sections/formulario";
 
 vi.mock("next/link", () => import("../apoyo/link-simulado"));
+// Este archivo prueba el formulario sin agenda de Cal.com, pase lo que pase en
+// copy.ts (calcom.enlaces). El modo con agenda está en formulario-agenda.test.tsx.
+vi.mock("@/lib/agenda", () => ({ hayAgenda: () => false, enlaceDeAgenda: () => null, irA: vi.fn() }));
 
 // El Apps Script guarda cada lead en una hoja leyendo estos nombres exactos.
 // Si uno cambia, el lead deja de guardarse sin que nadie se entere.

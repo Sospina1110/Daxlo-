@@ -172,7 +172,10 @@ test.describe("formulario de /agendar", () => {
       await esperarExito(page);
     } else {
       const panel = page.getByRole("status").filter({ hasText: agendar.exito.titulo });
-      await expect(panel).toBeVisible();
+      // En pantalla, no solo en la página: el formulario era más alto y quien
+      // tocó enviar quedaba mirando el pie.
+      await expect(panel).toBeInViewport();
+      await expect(panel).toBeFocused();
       await expect(panel).toContainText(agendar.exito.texto);
       await expect(page.locator("form")).toHaveCount(0);
     }

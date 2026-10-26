@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { agendar } from "@/content/copy";
@@ -47,9 +47,9 @@ async function llenarYEnviar(linea = "consultoria") {
 const boton = () => screen.getByRole("link", { name: new RegExp(agendar.exito.agenda.boton) }) as HTMLAnchorElement;
 
 describe("formulario con agenda de Cal.com", () => {
-  it("antes de enviar, avisa que al enviar se elige el día y la hora", () => {
+  it("antes de enviar, avisa a dónde lo lleva el envío (y solo con JavaScript, que es cuando pasa)", async () => {
     render(<FormularioContacto />);
-    expect(screen.getByText(agendar.metaAgenda)).toBeTruthy();
+    expect(await screen.findByText(agendar.metaAgenda)).toBeTruthy();
   });
 
   it("enviado: muestra el paso a la agenda con un botón de respaldo hacia el evento de su línea", async () => {
@@ -63,26 +63,31 @@ describe("formulario con agenda de Cal.com", () => {
     expect(screen.queryByText(agendar.exito.texto)).toBeNull();
   });
 
-  it("pasa sola a la agenda un momento después, a la misma dirección del botón", async () => {
+  it("pasa sola a la agenda apenas queda registrado, a la misma dirección del botón", async () => {
     await llenarYEnviar("coaching");
     await screen.findByText(agendar.exito.agenda.titulo);
-    expect(irA).not.toHaveBeenCalled();
-    await waitFor(() => expect(irA).toHaveBeenCalledTimes(1), { timeout: 3000 });
+    expect(irA).toHaveBeenCalledTimes(1);
     expect(irA).toHaveBeenCalledWith(boton().href);
+    expect(new URL(boton().href).searchParams.get("linea")).toBe("Coaching 1 a 1");
+  });
+
+  it("el panel de respaldo recibe el foco, para que se vea y se lea si la agenda no abre", async () => {
+    await llenarYEnviar();
+    const titulo = await screen.findByText(agendar.exito.agenda.titulo);
+    expect(document.activeElement).toBe(titulo.closest('[role="status"]'));
   });
 
   it("si ya estaba en la hoja (envío repetido), también pasa a la agenda", async () => {
     fetchSimulado.mockImplementation(() => responde({ status: "error", codigo: "envio_duplicado" }));
     await llenarYEnviar();
     expect(await screen.findByText(agendar.exito.agenda.titulo)).toBeTruthy();
-    await waitFor(() => expect(irA).toHaveBeenCalledTimes(1), { timeout: 3000 });
+    expect(irA).toHaveBeenCalledTimes(1);
   });
 
   it("si el envío falla, no lleva a ningún lado: la persona no agenda sin quedar registrada", async () => {
     fetchSimulado.mockImplementation(() => Promise.reject(new Error("sin red")));
     await llenarYEnviar();
     expect(await screen.findByText(agendar.errores.general)).toBeTruthy();
-    await new Promise((r) => setTimeout(r, 1800));
     expect(irA).not.toHaveBeenCalled();
   });
 });

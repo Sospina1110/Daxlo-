@@ -400,16 +400,18 @@ export const agendar = {
   enviar: "Agendar la conversación",
   enviando: "Enviando…",
   meta: "Sin costo · Te contactamos por WhatsApp",
-  metaAgenda: "Sin costo · Al enviar eliges el día y la hora",
+  metaAgenda: "Sin costo · Al enviar te llevamos a la agenda para elegir el día y la hora",
   exito: {
     titulo: "Listo. Nos pondremos en contacto.",
     texto: "Te escribimos por WhatsApp para coordinar la conversación.",
     duplicado: "Ya recibimos tus datos. Te escribimos por WhatsApp pronto.",
     whatsapp: "Escríbenos directo por WhatsApp",
-    // Cuando hay agenda de Cal.com configurada (ver `calcom`).
+    // Cuando hay agenda de Cal.com configurada (ver `calcom`). La persona pasa
+    // sola a Cal.com; este panel lo ve si la agenda no abre o si vuelve con
+    // Atrás sin haber agendado.
     agenda: {
-      titulo: "Listo. Ahora elige el día y la hora.",
-      texto: "Te llevamos a la agenda para que escojas cuándo hablamos. La confirmación te llega por correo.",
+      titulo: "Listo. Falta elegir el día y la hora.",
+      texto: "Si la agenda no se abrió, entra desde aquí. Cuando agendes, la confirmación te llega por correo.",
       boton: "Elegir día y hora",
     },
   },
@@ -524,7 +526,11 @@ export const calcom = {
 // CorreoContacto, porque la ofuscación de Cloudflare reescribe cualquier
 // correo del HTML y eso rompe la hidratación.
 export const privacidad = {
-  version: "2026-10-26",
+  // La versión viaja con cada envío como prueba de qué texto aceptó la
+  // persona: si cambia el texto, cambia la versión (la prueba de copy.test.ts
+  // lo exige). Versiones anteriores: 2026-10-26 = commit de6dfd4 (tag
+  // politica-2026-10-26). Al publicar, la vigencia es el día de publicación.
+  version: "2026-10-26-2",
   vigencia: "26 de octubre de 2026",
   responsable: {
     nombre: "Daxlo, nombre comercial con el que trabajan Martín Zárate y Santiago Ospina",
