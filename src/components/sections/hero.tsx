@@ -3,6 +3,7 @@ import { hero, rutas } from "@/content/copy";
 import { Badge, GlowButton, WindowDots } from "@/components/ui/primitives";
 import { ToolLogo } from "@/components/ui/blocks";
 import { TextoQueSeEscribe } from "@/components/ui/escritura";
+import { CintaHero } from "@/components/ui/cinta-hero";
 import { glow } from "@/lib/utils";
 
 // Entrada por CSS (clase .entrada en globals.css): arranca apenas el navegador
@@ -30,23 +31,25 @@ export function Hero() {
           </Badge>
         </Entrada>
 
+        {/* data-cinta-tope: luminancia máxima que puede tener el fondo en
+            movimiento detrás de cada texto (ver src/lib/cinta). */}
         <h1 className="mt-6 text-[clamp(2.7rem,6.6vw,5rem)] leading-[1.02] tracking-[-0.03em] max-[359px]:mt-5 max-[359px]:text-[2.15rem]">
-          <LineaTitular texto={hero.titulo[0]} retraso={0.1} />{" "}
-          <LineaTitular texto={hero.titulo[1]} retraso={0.22} clase="text-gradient-dual pb-1" />
+          <LineaTitular texto={hero.titulo[0]} retraso={0.1} tope="0.16" />{" "}
+          <LineaTitular texto={hero.titulo[1]} retraso={0.22} clase="text-gradient-dual pb-1" tope="degradado" />
         </h1>
 
         <Entrada retraso={0.45}>
-          <p className="mt-5 max-w-[580px] text-[18px] leading-relaxed text-muted max-[359px]:mt-4 max-[359px]:leading-normal md:mt-7 md:text-[19px]">{hero.sub}</p>
+          <p data-cinta-tope="0.055" className="mt-5 max-w-[580px] text-[18px] leading-relaxed text-muted max-[359px]:mt-4 max-[359px]:leading-normal md:mt-7 md:text-[19px]">{hero.sub}</p>
         </Entrada>
 
         {/* Un solo llamado, y debajo lo único que hace falta saber antes de
             tocarlo. En celular el botón ocupa el ancho: se toca con el pulgar. */}
         <Entrada retraso={0.55} className="mt-8 flex flex-col max-[359px]:mt-6 md:mt-9 items-stretch gap-4 sm:flex-row sm:items-center sm:gap-6">
-          <GlowButton href={rutas.agendar} tamano="lg">
+          <GlowButton href={rutas.agendar} tamano="lg" variante="principal">
             {hero.cta}
             <ArrowRight size={18} className="transition-transform group-hover:translate-x-0.5" />
           </GlowButton>
-          <p className="flex items-center justify-center gap-2 text-[15px] text-white/60 sm:justify-start">
+          <p data-cinta-tope="0.04" className="flex items-center justify-center gap-2 text-[15px] text-white/60 sm:justify-start">
             <Check size={16} className="text-mint" aria-hidden />
             {hero.meta}
           </p>
@@ -60,53 +63,27 @@ export function Hero() {
 
 // Cada línea sube desde abajo de una máscara. El degradado va en el propio
 // elemento animado para que el recorte de texto no se pierda.
-function LineaTitular({ texto, retraso, clase }: { texto: string; retraso: number; clase?: string }) {
+function LineaTitular({ texto, retraso, clase, tope }: { texto: string; retraso: number; clase?: string; tope: string }) {
   return (
     <span className="block overflow-hidden pb-[0.06em]">
-      <span className={`subir block ${clase ?? ""}`} style={{ ["--retraso" as string]: `${retraso}s` } as React.CSSProperties}>
+      <span data-cinta-tope={tope} className={`subir block ${clase ?? ""}`} style={{ ["--retraso" as string]: `${retraso}s` } as React.CSSProperties}>
         {texto}
       </span>
     </span>
   );
 }
 
-// Haces de luz diagonales, resplandores de esquina y rejilla tenue. Todo en
-// código: la plantilla usa un render 3D que no se puede reutilizar.
-//
-// Sin filtros de desenfoque: cada haz es un degradado a lo largo con una
-// máscara suave a lo ancho. Se ve igual, y un celular no tiene que calcular
-// desenfoques gaussianos (en Chrome, los filtros SVG corren en el procesador).
+// Rejilla tenue, la cinta de luz en movimiento (CintaHero) y los resplandores
+// de esquina. La cinta reemplaza a los haces diagonales de antes: ocupa la
+// misma capa, ondula sola y responde al mouse. Con WebGL, los resplandores
+// los pinta el shader (para medir bien el contraste) y estos se apagan.
 function FondoHero() {
-  // Misma geometría que el SVG original (viewBox 900, preserveAspectRatio
-  // xMaxYMin slice, rotado -38° sobre el centro): un cuadrado del lado mayor
-  // del contenedor, pegado arriba a la derecha. Posiciones en % de ese lado.
-  const haces = [
-    { y: 300, h: 16, o: 0.95 },
-    { y: 352, h: 7, o: 0.7 },
-    { y: 392, h: 24, o: 0.85 },
-    { y: 452, h: 5, o: 0.55 },
-    { y: 488, h: 12, o: 0.75 },
-    { y: 560, h: 30, o: 0.5 },
-  ];
-  const pct = (v: number) => `${((v / 900) * 100).toFixed(3)}%`;
-  const degradado = "linear-gradient(90deg, rgba(41,196,245,0) 0%, rgba(61,90,255,0.95) 45%, rgba(41,196,245,0.9) 80%, rgba(41,196,245,0) 100%)";
-  const suave = (m: string) => ({ maskImage: m, WebkitMaskImage: m });
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
       <div className="bg-grid absolute inset-0 [mask-image:radial-gradient(ellipse_70%_55%_at_50%_20%,#000_20%,transparent_75%)]" />
-      <div className="fundir absolute -right-[14%] -top-[6%] h-[980px] w-[78%] overflow-hidden [mask-image:linear-gradient(to_left,#000_45%,transparent)] max-md:-right-[40%] max-md:w-[140%] max-md:opacity-50">
-        <div className="animate-breathe absolute right-0 top-0 aspect-square w-[max(100%,980px)] rotate-[-38deg] md:will-change-[opacity]">
-          {haces.map((h) => (
-            <div key={h.y} className="absolute" style={{ left: pct(-150), width: pct(1250), top: pct(h.y), height: pct(h.h), opacity: h.o }}>
-              <span className="absolute inset-x-0 top-[-150%] h-[400%]" style={{ background: degradado, opacity: 0.35, ...suave("linear-gradient(to bottom, transparent, #000 50%, transparent)") }} />
-              <span className="absolute inset-0 rounded-full" style={{ background: degradado, ...suave("linear-gradient(to bottom, transparent, #000 30%, #000 70%, transparent)") }} />
-              <span className="absolute inset-x-0 top-1/2 h-[1.5px] -translate-y-1/2 bg-[#d8f6ff] opacity-70" />
-            </div>
-          ))}
-        </div>
-      </div>
-      <span className="resplandor absolute -bottom-[30%] -left-[18%] h-[640px] w-[640px]" style={glow("41 196 245", 0.35, 1.44)} />
-      <span className="resplandor absolute -bottom-[34%] right-[-10%] h-[620px] w-[620px]" style={glow("27 53 208", 0.5, 1.48)} />
+      <CintaHero />
+      <span data-cinta-resplandor="cian 0.35" className="resplandor absolute -bottom-[30%] -left-[18%] h-[640px] w-[640px]" style={glow("41 196 245", 0.35, 1.44)} />
+      <span data-cinta-resplandor="azul 0.5" className="resplandor absolute -bottom-[34%] right-[-10%] h-[620px] w-[620px]" style={glow("27 53 208", 0.5, 1.48)} />
     </div>
   );
 }

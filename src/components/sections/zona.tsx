@@ -17,15 +17,15 @@ export function Zona({ tono, arriba = false, children }: { tono: TonoZona; arrib
     <div className={cn("relative isolate", !cyan && "bg-[#08090e]")}>
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <span
-          className={cn("resplandor absolute top-0 h-[760px] w-[760px]", cyan ? "-left-[22%]" : "-right-[22%]")}
+          className={cn("resplandor animate-deriva absolute top-0 h-[760px] w-[760px]", cyan ? "-left-[22%]" : "-right-[22%]")}
           style={cyan ? glow("41 196 245", 0.14, 1.39) : glow("27 53 208", 0.35, 1.39)}
         />
         <span
-          className={cn("resplandor absolute top-[38%] h-[620px] w-[620px]", cyan ? "-right-[26%]" : "-left-[26%]")}
+          className={cn("resplandor animate-deriva absolute top-[38%] h-[620px] w-[620px] [animation-delay:-8s]", cyan ? "-right-[26%]" : "-left-[26%]")}
           style={cyan ? glow("41 196 245", 0.06, 1.48) : glow("61 90 255", 0.12, 1.48)}
         />
         <span
-          className={cn("resplandor absolute bottom-0 h-[680px] w-[680px]", cyan ? "-left-[24%]" : "-right-[24%]")}
+          className={cn("resplandor animate-deriva absolute bottom-0 h-[680px] w-[680px] [animation-delay:-16s]", cyan ? "-left-[24%]" : "-right-[24%]")}
           style={cyan ? glow("41 196 245", 0.1, 1.44) : glow("27 53 208", 0.3, 1.44)}
         />
       </div>
@@ -59,7 +59,7 @@ export function TarjetasProblema({
     <section className="relative py-14 md:py-28">
       <div className="container-page">
         <SectionHeading titulo={titulo} sub={sub} tono={tono} alineacion="izquierda" />
-        <Stagger className="mt-10 grid gap-4 md:mt-12 md:gap-5 lg:grid-cols-3" escalon={0.12}>
+        <Stagger className="mt-10 grid gap-4 md:mt-12 md:gap-5 lg:grid-cols-3">
           {tarjetas.map((t, i) => (
             <StaggerItem key={t.titulo} className="h-full">
               <article className="glass flex h-full flex-col rounded-[22px] p-7">

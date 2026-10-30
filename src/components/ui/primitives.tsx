@@ -35,32 +35,50 @@ type GlowButtonProps = {
   href?: string;
   tono?: Tono;
   tamano?: "sm" | "md" | "lg";
+  // "principal": el único botón relleno de azul de marca (el del hero). El
+  // resto del sitio usa el botón de luz oscuro.
+  variante?: "luz" | "principal";
   className?: string;
   type?: "button" | "submit";
   disabled?: boolean;
   onClick?: () => void;
 };
 
+// Foco de luz del botón principal: cian claro, respira despacio.
+const brilloPrincipal = "radial-gradient(closest-side, rgba(127,224,255,0.95), rgba(41,196,245,0.45) 55%, transparent)";
+
 // Botón oscuro con borde degradado y un foco de luz en el borde superior,
 // como el "Get Started" de la plantilla.
-export function GlowButton({ children, href, tono = "dual", tamano = "md", className, type = "button", disabled, onClick }: GlowButtonProps) {
+export function GlowButton({ children, href, tono = "dual", tamano = "md", variante = "luz", className, type = "button", disabled, onClick }: GlowButtonProps) {
+  const principal = variante === "principal";
   const clases = cn(
-    "group border-gradient relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl font-medium text-white transition duration-300 hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-60",
+    "group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl font-medium text-white transition duration-300 hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-60",
+    principal ? "boton-principal" : "border-gradient",
     tamano === "sm" && "min-h-[44px] px-4 py-2 text-[15px]",
     tamano === "md" && "px-4 py-3 text-[16px] min-[360px]:px-5",
     // En pantallas de 320 px el padding completo partía "Agendar una
     // conversación" en dos líneas.
-    tamano === "lg" && "px-4 py-4 text-[16px] min-[360px]:px-7 min-[360px]:text-[17px]",
+    tamano === "lg" && !principal && "px-4 py-4 text-[16px] min-[360px]:px-7 min-[360px]:text-[17px]",
+    // El principal es un poco más grande desde 360 px (64-65 px de alto); por
+    // debajo queda igual, para no salirse de la primera pantalla en 320 px.
+    tamano === "lg" && principal && "px-4 py-4 text-[16px] min-[360px]:px-8 min-[360px]:py-[18px] min-[360px]:text-[17px]",
     className,
   );
-  const estilo = { ...bordePorTono[tono], ["--fill" as string]: "#10121a", ["--angle" as string]: "120deg" } as React.CSSProperties;
+  const estilo = principal ? undefined : ({ ...bordePorTono[tono], ["--fill" as string]: "#10121a", ["--angle" as string]: "120deg" } as React.CSSProperties);
   const interior = (
     <>
-      <span
-        aria-hidden
-        className="pointer-events-none absolute -top-5 left-1/2 h-10 w-[90%] -translate-x-1/2 opacity-60 transition-opacity duration-300 group-hover:opacity-100"
-        style={{ background: brilloPorTono[tono] }}
-      />
+      {principal ? (
+        <>
+          <span aria-hidden className="animate-halo pointer-events-none absolute -top-5 left-1/2 h-10 w-[90%] -translate-x-1/2" style={{ background: brilloPrincipal }} />
+          <span aria-hidden className="boton-barrido pointer-events-none absolute inset-y-0 left-0 w-1/3" />
+        </>
+      ) : (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -top-5 left-1/2 h-10 w-[90%] -translate-x-1/2 opacity-60 transition-opacity duration-300 group-hover:opacity-100"
+          style={{ background: brilloPorTono[tono] }}
+        />
+      )}
       <span aria-hidden className="pointer-events-none absolute inset-x-3 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
       <span className="relative inline-flex items-center gap-2">{children}</span>
     </>

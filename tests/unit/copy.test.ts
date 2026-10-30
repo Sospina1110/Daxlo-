@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import * as copy from "@/content/copy";
-import { agendar, agendarCon, comparacion, consultoria, coaching, contacto, dosFormas, faq, footer, hero, herramientas, nav, paginas, preguntasLinea, rutas } from "@/content/copy";
+import { agendar, agendarCon, comparacion, consultoria, coaching, contacto, dosFormas, faq, footer, hero, herramientas, nav, paginas, preguntasLinea, rutas, servicios } from "@/content/copy";
 import { toolLogos } from "@/lib/logos";
 
 // Reglas que el texto del sitio tiene que cumplir siempre. Todo el texto vive
@@ -39,6 +39,30 @@ describe("voz de marca", () => {
   it("ninguna frase empieza o termina con espacios, ni tiene espacios dobles", () => {
     const mal = TODAS.filter(([, t]) => t !== t.trim() || / {2}/.test(t)).map(([d]) => d);
     expect(mal).toEqual([]);
+  });
+
+  // Lista negra de la voz (voz-daxlo.md y el brief del sitio). Con \b para que
+  // "reutilizar" o "potencia" dentro de otra palabra no cuenten.
+  it("ninguna frase usa palabras o fórmulas vetadas", () => {
+    const vetadas =
+      /\b(utiliz|realiz|adquir|potenci|empoder|revolucion)\w*|implementación de soluciones|desbloquear el potencial|en la era de la ia|no se trata de|soluciones integrales|transformación digital/i;
+    const mal = TODAS.filter(([, t]) => vetadas.test(t)).map(([d, t]) => `${d}: ${t}`);
+    expect(mal).toEqual([]);
+  });
+
+  // Frases que voz-daxlo.md da como referencia, y las que reconocen límites
+  // ("te lo decimos", "no te vendemos nada"): la regla de la voz que más
+  // confianza genera. Si un recorte o un ajuste de SEO las toca, falla aquí.
+  it("frases de referencia de la voz: el hero, la portada de coaching y los límites", () => {
+    expect(hero.sub).toContain("Te enseñamos a resolver tu propio trabajo con IA, o construimos el sistema que lo resuelve");
+    expect(coaching.portada.sub).toContain("Traes un trabajo tuyo que hoy te toma horas y lo dejas funcionando antes de colgar");
+    expect(coaching.pasos.items[0].texto).toContain("te lo decimos ahí mismo y no te vendemos nada");
+    // El mismo criterio de 40 horas en las dos páginas: cada una dice cuándo
+    // le sirve más la otra.
+    expect(coaching.paraTi.respuesta.join(" ")).toMatch(/40 horas semanales.*Te lo decimos/);
+    expect(consultoria.califica.sub).toContain("te sirve más el coaching, y te lo decimos");
+    expect(consultoria.califica.respuesta.join(" ")).toContain("te lo decimos en la primera conversación y no te cotizamos nada");
+    expect(consultoria.porQue.items.map((i) => i.texto).join(" ")).toMatch(/No vendemos dependencia\..*te lo decimos\./);
   });
 
   it("toda pregunta frecuente abre y cierra con signos de interrogación", () => {
@@ -107,15 +131,19 @@ describe("títulos y descripciones para buscadores", () => {
     expect(Object.keys(paginas).sort()).toEqual([...CLAVES].sort());
   });
 
-  it.each(CLAVES)("%s: el título, con ' · Daxlo', cabe en 65 caracteres", (clave) => {
+  // Por encima de ~60 caracteres Google corta el título en el resultado.
+  it.each(CLAVES)("%s: el título, con ' · Daxlo', cabe en 60 caracteres", (clave) => {
     const p = paginas[clave];
     const completo = clave === "inicio" ? p.titulo : `${p.titulo} · Daxlo`;
     expect(p.titulo.trim().length).toBeGreaterThan(0);
-    expect(completo.length, completo).toBeLessThanOrEqual(65);
+    expect(completo.length, completo).toBeLessThanOrEqual(60);
   });
 
-  it("el título del inicio ya lleva la marca y los internos no la repiten", () => {
-    expect(paginas.inicio.titulo.startsWith("Daxlo")).toBe(true);
+  // El inicio empieza por lo que se busca y termina con la marca, igual que las
+  // internas (que la reciben de la plantilla del layout).
+  it("el título del inicio termina con ' · Daxlo' y los internos no repiten la marca", () => {
+    expect(paginas.inicio.titulo.endsWith(" · Daxlo")).toBe(true);
+    expect(paginas.inicio.titulo.match(/Daxlo/g)).toHaveLength(1);
     for (const c of CLAVES.filter((c) => c !== "inicio")) expect(paginas[c].titulo, c).not.toMatch(/Daxlo/);
   });
 
@@ -124,13 +152,22 @@ describe("títulos y descripciones para buscadores", () => {
     expect(d.length, d).toBeGreaterThanOrEqual(70);
   });
 
-  // Por encima de ~170 caracteres Google corta la descripción con "...".
+  // Por encima de ~155 caracteres Google corta la descripción con "...".
   for (const clave of CLAVES) {
-    it(`${clave}: la descripción no pasa de 170 caracteres`, () => {
+    it(`${clave}: la descripción no pasa de 155 caracteres`, () => {
       const d = paginas[clave].descripcion;
-      expect(d.length, d).toBeLessThanOrEqual(170);
+      expect(d.length, d).toBeLessThanOrEqual(155);
     });
   }
+
+  // El h1 de cada línea nombra el servicio con "IA". "Inteligencia artificial"
+  // va en los metadatos y en los datos estructurados, no metido a la fuerza en
+  // los subtítulos (ver "frases de referencia de la voz", abajo).
+  it("las portadas nombran el servicio con 'IA'", () => {
+    expect(coaching.portada.eyebrow).toBe(servicios.coaching);
+    expect(consultoria.portada.eyebrow).toBe(servicios.consultoria);
+    for (const s of Object.values(servicios)) expect(s).toMatch(/\bIA\b/);
+  });
 
   it("no hay dos páginas con el mismo título ni la misma descripción", () => {
     const p = Object.values(paginas);

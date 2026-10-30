@@ -19,8 +19,8 @@ export function CtaFinal({ linea }: { linea?: Linea }) {
   const tono = linea === "coaching" ? "cyan" : linea === "consultoria" ? "blue" : "dual";
   return (
     <section aria-labelledby="titulo-cierre" className="relative isolate overflow-hidden py-20 md:py-32">
-      <span aria-hidden className="resplandor absolute -left-[30%] top-1/4 -z-10 h-[560px] w-[560px]" style={glow("41 196 245", 0.22, 1.44)} />
-      <span aria-hidden className="resplandor absolute -right-[30%] top-0 -z-10 h-[560px] w-[560px]" style={glow("27 53 208", 0.4, 1.44)} />
+      <span aria-hidden className="resplandor animate-deriva absolute -left-[30%] top-1/4 -z-10 h-[560px] w-[560px]" style={glow("41 196 245", 0.22, 1.44)} />
+      <span aria-hidden className="resplandor animate-deriva absolute -right-[30%] top-0 -z-10 h-[560px] w-[560px] [animation-delay:-8s]" style={glow("27 53 208", 0.4, 1.44)} />
       <div className="container-page">
         <div className="mx-auto max-w-[720px] text-center">
           <Reveal className="flex justify-center">
@@ -124,7 +124,7 @@ export function NosotrosResumen() {
     <section aria-labelledby="titulo-nosotros" className="relative overflow-hidden py-14 md:py-28">
       <div className="container-page grid items-center gap-10 md:grid-cols-[300px_1fr] md:gap-14 lg:grid-cols-[340px_1fr] lg:gap-20">
         <Reveal className="relative mx-auto w-full max-w-[340px]">
-          <span aria-hidden className="resplandor absolute -bottom-10 -right-10 h-64 w-64" style={glow("27 53 208", 0.45, 1.4)} />
+          <span aria-hidden className="resplandor animate-deriva absolute -bottom-10 -right-10 h-64 w-64" style={glow("27 53 208", 0.45, 1.4)} />
           <div className="relative overflow-hidden rounded-[24px] border border-line-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img

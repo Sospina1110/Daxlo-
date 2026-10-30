@@ -2,8 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 import type { Metadata } from "next";
 import { describe, expect, it, vi } from "vitest";
-import { contacto, faq, paginas, rutas } from "@/content/copy";
+import { contacto, faq, paginas, privacidad, rutas, servicios } from "@/content/copy";
+import sitemap from "@/app/sitemap";
 import {
+  idServicio,
   ldMigas,
   ldOrganizacion,
   ldPreguntas,
@@ -59,7 +61,7 @@ describe("metadatosPagina", () => {
     const m = metadatosPagina(clave);
     const titulo = tituloFinal(m.title);
     if (clave === "inicio") {
-      // El inicio no pasa por la plantilla: su título ya empieza con Daxlo.
+      // El inicio no pasa por la plantilla: su título ya trae " · Daxlo".
       expect(m.title).toEqual({ absolute: paginas.inicio.titulo });
       expect(titulo).toBe(paginas.inicio.titulo);
     } else {
@@ -134,8 +136,13 @@ describe("datos estructurados (JSON-LD)", () => {
     });
     expect(ldOrganizacion.founder.map((f) => f.name)).toEqual(["Martín Zárate", "Santiago Ospina"]);
     expect(ldOrganizacion.founder.every((f) => f["@type"] === "Person")).toBe(true);
+    // Los dos socios se describen igual: ninguno va por delante del otro.
+    expect(ldOrganizacion.founder[0].jobTitle).toBe(ldOrganizacion.founder[1].jobTitle);
     expect(ldOrganizacion.sameAs).toContain(contacto.instagram);
     expect(ldOrganizacion.contactPoint.url).toBe(contacto.whatsapp);
+    // El teléfono es el mismo WhatsApp de wa.me y de la política de datos.
+    expect(ldOrganizacion.telephone).toBe(privacidad.responsable.whatsapp);
+    expect(ldOrganizacion.telephone.replace(/\D/g, "")).toBe(contacto.whatsapp.replace(/\D/g, ""));
     // El logo y la imagen apuntan a archivos reales de public/.
     for (const url of [ldOrganizacion.logo, ldOrganizacion.image]) {
       expect(url.startsWith("https://daxlo.co/")).toBe(true);
@@ -147,28 +154,41 @@ describe("datos estructurados (JSON-LD)", () => {
     expect(ldSitioWeb).toMatchObject({
       "@context": "https://schema.org",
       "@type": "WebSite",
+      "@id": "https://daxlo.co/#sitio",
       url: "https://daxlo.co",
       inLanguage: "es-CO",
       publisher: { "@id": ldOrganizacion["@id"] },
     });
   });
 
-  it.each(["coaching", "consultoria"] as const)("Service de %s: nombre, descripción y URL de su página", (clave) => {
+  it.each(["coaching", "consultoria"] as const)("Service de %s: @id fijo, nombre del servicio, descripción y URL de su página", (clave) => {
     const s = ldServicio(clave);
     expect(s).toMatchObject({
       "@context": "https://schema.org",
       "@type": "Service",
-      name: paginas[clave].titulo,
+      "@id": `https://daxlo.co${rutas[clave]}#servicio`,
+      name: servicios[clave],
       description: paginas[clave].descripcion,
       url: `https://daxlo.co${rutas[clave]}`,
       provider: { "@id": ID_ORG },
       areaServed: { "@type": "Country", name: "Colombia" },
+      availableChannel: { "@type": "ServiceChannel", serviceUrl: "https://daxlo.co/agendar" },
     });
     expect(s.serviceType.length).toBeGreaterThan(10);
+    expect(s.audience.audienceType.length).toBeGreaterThan(10);
+    // Sin precio publicado no se declara una oferta con precio.
+    expect(s).not.toHaveProperty("offers");
   });
 
   it("los dos servicios no se describen igual", () => {
     expect(ldServicio("coaching").serviceType).not.toBe(ldServicio("consultoria").serviceType);
+    expect(ldServicio("coaching")["@id"]).not.toBe(ldServicio("consultoria")["@id"]);
+  });
+
+  it("la organización enlaza los dos servicios por su @id", () => {
+    const ids = ldOrganizacion.hasOfferCatalog.itemListElement.map((o) => o.itemOffered["@id"]);
+    expect(ids).toEqual([idServicio("coaching"), idServicio("consultoria")]);
+    expect(ids).toEqual([ldServicio("coaching")["@id"], ldServicio("consultoria")["@id"]]);
   });
 
   const internas = CLAVES.filter((c): c is Exclude<Clave, "inicio"> => c !== "inicio");
@@ -198,6 +218,7 @@ describe("datos estructurados (JSON-LD)", () => {
       name: paginas.nosotros.titulo,
       url: "https://daxlo.co/nosotros",
       about: { "@id": ID_ORG },
+      mainEntity: { "@id": ID_ORG },
     });
   });
 
@@ -205,12 +226,25 @@ describe("datos estructurados (JSON-LD)", () => {
     const bloques = [ldOrganizacion, ldSitioWeb, ldServicio("coaching"), ldServicio("consultoria"), ldPreguntas, ldSobreNosotros, ...internas.map((c) => ldMigas(c, c))];
     const urls: string[] = [];
     const recorrer = (v: unknown, clave = "") => {
-      if (typeof v === "string" && ["url", "item", "logo", "image", "@id", "sameAs"].includes(clave)) urls.push(v);
+      if (typeof v === "string" && ["url", "item", "logo", "image", "@id", "sameAs", "serviceUrl"].includes(clave)) urls.push(v);
       else if (Array.isArray(v)) v.forEach((x) => recorrer(x, clave));
       else if (v && typeof v === "object") Object.entries(v).forEach(([k, x]) => recorrer(x, k));
     };
     bloques.forEach((b) => recorrer(b));
     expect(urls.length).toBeGreaterThan(10);
     for (const u of urls) expect(u, u).toMatch(/^https:\/\//);
+  });
+});
+
+describe("sitemap", () => {
+  it("lista cada ruta una vez, con una fecha de último cambio real (AAAA-MM-DD, no futura)", () => {
+    const entradas = sitemap();
+    expect(entradas.map((e) => e.url).sort()).toEqual(Object.values(rutas).map((r) => `https://daxlo.co${r}`).sort());
+    for (const e of entradas) {
+      const fecha = String(e.lastModified);
+      expect(fecha, e.url).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(Number.isNaN(Date.parse(fecha)), e.url).toBe(false);
+      expect(Date.parse(fecha), e.url).toBeLessThanOrEqual(Date.now());
+    }
   });
 });

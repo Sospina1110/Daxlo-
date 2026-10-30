@@ -209,7 +209,7 @@ function PorQue() {
             <p className="mt-8 border-l-2 border-blue-bright pl-5 font-display text-[22px] leading-snug text-white">{p.admision}</p>
           </Reveal>
         </div>
-        <Stagger className="grid gap-4 sm:grid-cols-2" escalon={0.1}>
+        <Stagger className="grid gap-4 sm:grid-cols-2">
           {p.items.map((it, i) => (
             <StaggerItem key={it.titulo} className="h-full">
               <article className="glass h-full rounded-[22px] p-7">

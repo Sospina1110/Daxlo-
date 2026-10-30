@@ -14,6 +14,16 @@ if (!fs.existsSync("out/index.html")) {
   throw new Error("Falta out/index.html. Corre `npm run build` antes de `npm run test:e2e`.");
 }
 
+// WebGL para la cinta de luz del hero. Chromium sin ventana no lo da por su
+// cuenta: en Windows se usa la tarjeta gráfica de verdad (D3D11); en otros
+// sistemas (una máquina de CI sin GPU), SwiftShader, que dibuja en el
+// procesador. Ahí la calidad adaptativa suele dejar un cuadro quieto y las
+// pruebas del bucle de tests/e2e/cinta.spec.ts se saltan solas.
+const WEBGL =
+  process.platform === "win32"
+    ? ["--use-angle=d3d11", "--enable-gpu", "--ignore-gpu-blocklist"]
+    : ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"];
+
 // Sobre la red de la máquina. En la máquina donde se escribió la suite
 // (Windows con antivirus que filtra la red local), mientras corren los
 // navegadores algunas conexiones nuevas a 127.0.0.1 quedan retenidas 10, 20 o
@@ -50,8 +60,8 @@ export default defineConfig({
     // 320 px: el celular más angosto que todavía circula.
     { name: "iphone-se", use: { ...devices["iPhone SE"] }, workers: 1 },
     { name: "iphone-13", use: { ...devices["iPhone 13"] }, workers: 1 },
-    { name: "pixel-7", use: { ...devices["Pixel 7"] } },
-    { name: "escritorio", use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 } } },
+    { name: "pixel-7", use: { ...devices["Pixel 7"], launchOptions: { args: WEBGL } } },
+    { name: "escritorio", use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 }, launchOptions: { args: WEBGL } } },
   ],
   webServer: {
     command: `npx serve out -l tcp://127.0.0.1:${PUERTO} --no-clipboard`,

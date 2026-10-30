@@ -6,7 +6,7 @@ import { expect, irA, irAlFinal, RUTAS, test, textosInvisibles, type Page } from
 // página, y con "reducir movimiento" todo se ve sin animaciones.
 
 // La misma lista que pausa el script del layout.
-const INFINITAS = ".animate-flow,.animate-breathe,.animate-float,.animate-marquee,.animate-marquee-reverse,.animate-ping,.animate-paseo,.animate-caret";
+const INFINITAS = ".animate-flow,.animate-halo,.animate-deriva,.animate-float,.animate-marquee,.animate-marquee-reverse,.animate-ping,.animate-paseo,.animate-caret";
 
 type Animada = { clase: string; fuera: boolean; dentro: boolean; pausa: boolean; corriendo: number };
 
@@ -51,30 +51,31 @@ for (const ruta of RUTAS.filter((r) => r !== rutas.privacidad)) {
 
 test("al bajar al cierre se pausan las de arriba y arrancan las de abajo", async ({ page }) => {
   await irA(page, "/");
-  // Arriba: los haces del hero (animate-breathe) cubren la primera pantalla en
-  // cualquier tamaño. Abajo: el orbe del cierre (animate-float), antes del pie.
-  const haces = page.locator("#top .animate-breathe");
+  // Arriba: el foco de luz del botón del hero (animate-halo), en la primera
+  // pantalla en cualquier tamaño. Abajo: el orbe del cierre (animate-float),
+  // antes del pie. (La cinta de luz del fondo tiene su propia prueba:
+  // cinta.spec.ts.)
+  const halo = page.locator("#top .animate-halo");
   const orbeCierre = page.locator('section[aria-labelledby="titulo-cierre"] .animate-float');
-  await expect(haces).not.toHaveAttribute("data-pausa", "");
+  await expect(halo).not.toHaveAttribute("data-pausa", "");
   await expect(orbeCierre).toHaveAttribute("data-pausa", "");
 
   // Se baja hasta el orbe (al fondo del todo no: en celular el pie es alto y
   // el orbe queda arriba, fuera de pantalla, con razón en pausa).
   await orbeCierre.evaluate((o) => o.scrollIntoView({ block: "center", behavior: "instant" }));
   await expect(orbeCierre).not.toHaveAttribute("data-pausa", "");
-  await expect(haces).toHaveAttribute("data-pausa", "");
+  await expect(halo).toHaveAttribute("data-pausa", "");
   await expect.poll(() => orbeCierre.evaluate((e) => e.getAnimations().filter((a) => a.playState === "running").length)).toBeGreaterThan(0);
-  // (En celular los haces no animan nunca; en escritorio quedan detenidos.)
-  expect(await haces.evaluate((e) => e.getAnimations().every((a) => a.playState !== "running"))).toBe(true);
+  expect(await halo.evaluate((e) => e.getAnimations().every((a) => a.playState !== "running"))).toBe(true);
 });
 
 test.describe("animaciones caras en celular", () => {
-  // Las líneas punteadas (animate-flow) y el respirar de los haces del hero
-  // (animate-breathe) se apagan por CSS debajo de 768 px.
+  // Las líneas punteadas (animate-flow) y la deriva lenta de los resplandores
+  // de fondo (animate-deriva) se apagan por CSS debajo de 768 px.
   async function flujoYRespirar(page: Page) {
     return page.evaluate(() =>
-      [...document.querySelectorAll(".animate-flow, .animate-breathe")].map((el) => ({
-        clase: el.classList.contains("animate-flow") ? "animate-flow" : "animate-breathe",
+      [...document.querySelectorAll(".animate-flow, .animate-deriva")].map((el) => ({
+        clase: el.classList.contains("animate-flow") ? "animate-flow" : "animate-deriva",
         corriendo: el.getAnimations().filter((a) => a.playState === "running").length,
       })),
     );
@@ -84,7 +85,7 @@ test.describe("animaciones caras en celular", () => {
     await page.locator(selector).first().evaluate((el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
   }
 
-  test("debajo de 768 px no corre ninguna animación de líneas punteadas ni de respirar, aunque estén a la vista", async ({ page }) => {
+  test("debajo de 768 px no corre ninguna animación de líneas punteadas ni de deriva, aunque estén a la vista", async ({ page }) => {
     const ancho = page.viewportSize()?.width ?? 0;
     test.skip(ancho >= 768, "solo pantallas de celular");
     await irA(page, "/");
@@ -96,13 +97,19 @@ test.describe("animaciones caras en celular", () => {
     await page.waitForTimeout(300);
     estados = await flujoYRespirar(page);
     expect(estados.filter((e) => e.corriendo > 0)).toEqual([]);
+    // Y la deriva del resplandor de "quiénes somos", ya en pantalla.
+    await llevarALaVista(page, ".animate-deriva");
+    await page.waitForTimeout(300);
+    estados = await flujoYRespirar(page);
+    expect(estados.filter((e) => e.corriendo > 0)).toEqual([]);
   });
 
   test("control en escritorio: las mismas animaciones sí corren a la vista (la prueba de arriba no pasa por no ver nada)", async ({ page }) => {
     const ancho = page.viewportSize()?.width ?? 0;
     test.skip(ancho < 768, "solo pantallas anchas");
     await irA(page, "/");
-    await expect.poll(async () => (await flujoYRespirar(page)).filter((e) => e.clase === "animate-breathe" && e.corriendo > 0).length).toBeGreaterThan(0);
+    await llevarALaVista(page, ".animate-deriva");
+    await expect.poll(async () => (await flujoYRespirar(page)).filter((e) => e.clase === "animate-deriva" && e.corriendo > 0).length).toBeGreaterThan(0);
     await llevarALaVista(page, ".animate-flow");
     await expect.poll(async () => (await flujoYRespirar(page)).filter((e) => e.clase === "animate-flow" && e.corriendo > 0).length).toBeGreaterThan(0);
   });

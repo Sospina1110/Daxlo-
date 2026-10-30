@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { contacto, faq, nosotros, paginas, rutas } from "@/content/copy";
+import { contacto, faq, nosotros, paginas, privacidad, rutas, servicios } from "@/content/copy";
 
 // Datos del sitio para buscadores: metadatos de cada página y datos
 // estructurados (schema.org) que Google lee para entender quién es Daxlo y qué
@@ -36,6 +36,16 @@ export function metadatosPagina(clave: ClavePagina): Metadata {
 }
 
 const ID_ORGANIZACION = `${URL_SITIO}/#organizacion`;
+const ID_SITIO = `${URL_SITIO}/#sitio`;
+
+type Linea = "coaching" | "consultoria";
+
+// Cada servicio tiene un @id fijo: la organización los enlaza desde todas las
+// páginas y el bloque completo vive en la página de cada línea.
+export const idServicio = (clave: Linea) => `${URL_SITIO}${rutas[clave]}#servicio`;
+
+// Lo que el sitio dice de los dos socios: egresados de Administración del CESA.
+const CESA = { "@type": "CollegeOrUniversity", name: "Colegio de Estudios Superiores de Administración", alternateName: "CESA" };
 
 export const ldOrganizacion = {
   "@context": "https://schema.org",
@@ -48,35 +58,63 @@ export const ldOrganizacion = {
   description: paginas.inicio.descripcion,
   slogan: "Implementamos la IA. Transferimos la capacidad.",
   areaServed: { "@type": "Country", name: "Colombia" },
+  knowsLanguage: "es",
+  knowsAbout: ["Inteligencia artificial", "Automatización de procesos con inteligencia artificial", "Extracción de datos de PDF", "Claude", "ChatGPT", "n8n"],
+  // Los dos socios van juntos, siempre en este orden.
   founder: [
-    { "@type": "Person", name: "Martín Zárate" },
-    { "@type": "Person", name: "Santiago Ospina" },
+    { "@type": "Person", name: "Martín Zárate", jobTitle: "Socio fundador", alumniOf: CESA },
+    { "@type": "Person", name: "Santiago Ospina", jobTitle: "Socio fundador", alumniOf: CESA },
   ],
+  // [DATO FALTANTE: la página de empresa en LinkedIn (hoy con la URL
+  // /company/https-daxlo.co-) y la confirmación de que la cuenta de TikTok
+  // @daxlo.co es de Daxlo. Se suman aquí cuando Santiago lo confirme.]
   sameAs: [contacto.instagram],
+  // El mismo WhatsApp que publica la política de datos.
+  telephone: privacidad.responsable.whatsapp,
   contactPoint: { "@type": "ContactPoint", contactType: "customer service", url: contacto.whatsapp, availableLanguage: "es" },
+  // Sin precio: no hay uno publicado.
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Servicios de Daxlo",
+    itemListElement: (["coaching", "consultoria"] as const).map((clave) => ({ "@type": "Offer", itemOffered: { "@id": idServicio(clave) } })),
+  },
 };
 
 export const ldSitioWeb = {
   "@context": "https://schema.org",
   "@type": "WebSite",
+  "@id": ID_SITIO,
   name: "Daxlo",
+  alternateName: "daxlo.co",
   url: URL_SITIO,
   inLanguage: "es-CO",
   publisher: { "@id": ID_ORGANIZACION },
 };
 
-export function ldServicio(clave: "coaching" | "consultoria") {
+// A quién le sirve cada línea, con las palabras del propio sitio.
+const AUDIENCIA = {
+  coaching: { "@type": "Audience", audienceType: "Personas que quieren resolver su propio trabajo con inteligencia artificial" },
+  consultoria: { "@type": "BusinessAudience", audienceType: "Empresas con un proceso que repiten varias personas" },
+};
+
+// El nombre es el del servicio (`servicios` en copy.ts), no el título de la
+// página: el título se ajusta para buscadores y el servicio sigue siendo el
+// mismo. Es el mismo texto de la portada y de las migas.
+export function ldServicio(clave: Linea) {
   const p = paginas[clave];
   return {
     "@context": "https://schema.org",
     "@type": "Service",
-    name: p.titulo,
+    "@id": idServicio(clave),
+    name: servicios[clave],
     serviceType: clave === "coaching" ? "Coaching en inteligencia artificial" : "Consultoría de implementación de inteligencia artificial",
+    category: "Inteligencia artificial",
     description: p.descripcion,
     url: `${URL_SITIO}${rutas[clave]}`,
     provider: { "@id": ID_ORGANIZACION },
     areaServed: { "@type": "Country", name: "Colombia" },
-    availableLanguage: "es",
+    audience: AUDIENCIA[clave],
+    availableChannel: { "@type": "ServiceChannel", serviceUrl: `${URL_SITIO}${rutas.agendar}`, availableLanguage: "es" },
   };
 }
 
@@ -108,4 +146,5 @@ export const ldSobreNosotros = {
   description: nosotros.parrafos[0],
   url: `${URL_SITIO}${rutas.nosotros}`,
   about: { "@id": ID_ORGANIZACION },
+  mainEntity: { "@id": ID_ORGANIZACION },
 };

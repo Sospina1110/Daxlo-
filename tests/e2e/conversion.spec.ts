@@ -31,7 +31,7 @@ test.describe("llamados a la acción", () => {
     expect(await mismoDocumento()).toBe(marca);
   });
 
-  test("en /coaching, 'Agendar mi llamada' lleva a /agendar con coaching elegido", async ({ page, isMobile }) => {
+  test("en /coaching, el llamado de '¿Esto es para ti?' lleva a /agendar con coaching elegido", async ({ page, isMobile }) => {
     await irA(page, "/coaching");
     await tocar(page.getByRole("link", { name: coaching.paraTi.cta }), isMobile);
     await llegarAAgendar(page, "coaching");

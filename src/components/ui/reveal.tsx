@@ -8,6 +8,12 @@
 // Antes estas apariciones eran de Motion: el contenido salía del HTML con
 // opacity:0 y esperaba a que React hidratara. En un celular de gama media eso
 // dejaba la pantalla vacía más de 5 segundos.
+//
+// Ritmo único en todo el sitio: escalón de 0,08 s entre hermanos y un retraso
+// de 0,32 s como máximo, para que ningún bloque espere más de ~1,1 s.
+
+export const ESCALON = 0.08;
+export const RETRASO_MAXIMO = 0.32;
 
 type RevealProps = {
   children: React.ReactNode;
@@ -18,7 +24,8 @@ type RevealProps = {
 
 export function Reveal({ children, className, delay = 0, y }: RevealProps) {
   const estilo: Record<string, string> = {};
-  if (delay) estilo["--retraso"] = `${delay}s`;
+  const retraso = Math.min(delay, RETRASO_MAXIMO);
+  if (retraso) estilo["--retraso"] = `${+retraso.toFixed(3)}s`;
   if (y !== undefined) estilo["--y"] = `${y}px`;
   return (
     <div data-revelar="" className={className} style={Object.keys(estilo).length ? (estilo as React.CSSProperties) : undefined}>
@@ -28,11 +35,11 @@ export function Reveal({ children, className, delay = 0, y }: RevealProps) {
 }
 
 // Grupo cuyos hijos aparecen escalonados: el script le da a cada hijo un
-// retraso según su posición.
+// retraso según su posición (con el mismo tope).
 export function Stagger({
   children,
   className,
-  escalon = 0.09,
+  escalon = ESCALON,
   as = "div",
 }: {
   children: React.ReactNode;

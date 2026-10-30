@@ -51,10 +51,18 @@ una ruta a mano. Los enlaces viejos del sitio de una sola página
 
 - Cada página tiene su título, descripción, URL canónica y tarjeta para redes
   (`paginas` en `copy.ts`, armados por `metadatosPagina` en `src/lib/sitio.ts`).
-- Datos estructurados (schema.org): la organización en todas las páginas; el
-  sitio web en el inicio; el servicio en coaching y consultoría; las preguntas
-  frecuentes en `/preguntas`; migas de pan en todas las internas.
-- `sitemap.xml` y `robots.txt` se generan al compilar.
+  Todos los títulos terminan en " · Daxlo" y caben en 60 caracteres; las
+  descripciones, en 155 (más largos, Google los corta).
+- El nombre de cada servicio (`servicios` en `copy.ts`) es uno solo: la portada
+  de su página, las migas y los datos estructurados. No es el valor que va a
+  Cal.com (`calcom.lineas`), que no se toca.
+- Datos estructurados (schema.org): la organización en todas las páginas, con
+  los dos servicios enlazados por su `@id`; el sitio web en el inicio; el
+  servicio en coaching y consultoría; las preguntas frecuentes en
+  `/preguntas`; migas de pan en todas las internas.
+- `sitemap.xml` y `robots.txt` se generan al compilar. La fecha de último
+  cambio de cada página (`ultimoCambio` en `src/app/sitemap.ts`) se actualiza a
+  mano cuando cambia su texto.
 - Un solo `h1` por página.
 
 ## Trabajar en local
@@ -95,10 +103,27 @@ npm run test:todo      # build + las dos suites
 | `tests/integracion` | Formulario (contrato exacto con el Apps Script, validación, `?linea=`, respaldo sin JavaScript), barra y menú, preguntas, migas, texto que se escribe; y el HTML compilado: un `h1` por página, canónicas, JSON-LD, enlaces y anclas que existen, sitemap y robots |
 | `tests/e2e` | iPhone SE (320 px), iPhone 13, Pixel 7 y escritorio: nada se desliza de lado, todo aparece al bajar, áreas táctiles de 44 px, campos de 16 px, menú, navegación que abre arriba, enlaces viejos, llamados a la acción y el formulario completo (interceptado: nunca llega al Apps Script real), animaciones pausadas fuera de pantalla |
 | `tests/e2e/criterios-propios.spec.ts` | Texto cortado por su contenedor, scroll rápido, botón del hero en la primera pantalla, área táctil de los logos |
+| `tests/e2e/cinta.spec.ts` | La cinta de luz del hero: no mueve nada al cargar, reacciona al mouse, se detiene fuera de vista, sigue en bucle y a resolución completa con `requestAnimationFrame` a 30 Hz, queda quieta con "reducir movimiento", el logo y el botón de menú siempre protegidos a 280 y 320 px, y el contraste del texto en el peor cuadro; el botón principal (AA, y un foco del teclado que cambia 3:1 contra su propio halo) |
 
 Las E2E corren en el puerto 4391 (se cambia con `PUERTO_E2E`). En Windows,
 si Smart App Control bloquea el WebKit de Playwright, los proyectos de iPhone
 no abren el navegador; no es del sitio.
+
+Los proyectos de Chromium arrancan con banderas de WebGL (en Windows, la
+tarjeta gráfica; en otros sistemas, SwiftShader): sin ellas Chrome sin ventana
+no da WebGL y solo se prueba la banda CSS de respaldo de la cinta.
+
+## Fondo del hero
+
+La cinta de luz es un shader WebGL propio, sin librerías:
+`src/components/ui/cinta-hero.tsx` (el lienzo y la banda CSS de respaldo),
+`src/lib/cinta/motor.ts` (bucle, mouse, toque, pausas, calidad adaptativa) y
+`src/lib/cinta/shader.ts` (el GLSL). El motor llega con un import dinámico
+después de hidratar, así que no pesa en la carga ni en el LCP.
+
+Cada texto del hero lleva `data-cinta-tope`: la luminancia máxima que puede
+tener el fondo detrás. Si se agrega un texto al hero, hay que darle su tope
+(ver `DESIGN.md`, sección Motion) o la cinta puede pasar brillante por debajo.
 
 ## Formulario
 

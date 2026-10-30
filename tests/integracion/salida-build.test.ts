@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { JSDOM } from "jsdom";
 import { describe, expect, it } from "vitest";
-import { agendar, faq, nav, paginas, rutas } from "@/content/copy";
+import { agendar, faq, nav, paginas, rutas, servicios } from "@/content/copy";
 import { OUT } from "../apoyo/proyecto";
 
 // Revisa el sitio tal como sale del build (out/): lo que publica Cloudflare y
@@ -87,7 +87,7 @@ describe.skipIf(!HAY_BUILD)(HAY_BUILD ? "salida del build (out/)" : "salida del 
     it("título, descripción, canónica y og:url correctos", () => {
       const doc = pagina(clave);
       expect(doc.title).toBe(tituloEsperado(clave));
-      if (clave !== "inicio") expect(doc.title.endsWith(" · Daxlo")).toBe(true);
+      expect(doc.title.endsWith(" · Daxlo")).toBe(true);
       expect(meta(doc, 'meta[name="description"]')).toBe(paginas[clave].descripcion);
       const canonica = doc.querySelector('link[rel="canonical"]')?.getAttribute("href") ?? "";
       expect(normal(canonica)).toBe(normal(`${SITIO}${rutas[clave]}`));
@@ -144,11 +144,14 @@ describe.skipIf(!HAY_BUILD)(HAY_BUILD ? "salida del build (out/)" : "salida del 
     for (const q of ld.mainEntity) expect(texto).toContain(q.acceptedAnswer.text);
   });
 
-  it("Service de /coaching y /consultoria nombra el servicio con el título de la página", () => {
+  it("Service de /coaching y /consultoria: el nombre del servicio es el de las migas, con su @id fijo", () => {
     for (const clave of ["coaching", "consultoria"] as const) {
-      const s = datosEstructurados(pagina(clave)).find((d) => d["@type"] === "Service") as { name: string; url: string };
-      expect(s.name).toBe(paginas[clave].titulo);
+      const doc = pagina(clave);
+      const s = datosEstructurados(doc).find((d) => d["@type"] === "Service") as { "@id": string; name: string; url: string };
+      expect(s.name).toBe(servicios[clave]);
+      expect(doc.querySelector('nav[aria-label="Migas de pan"] [aria-current="page"]')?.textContent?.trim()).toBe(servicios[clave]);
       expect(s.url).toBe(`${SITIO}${rutas[clave]}`);
+      expect(s["@id"]).toBe(`${SITIO}${rutas[clave]}#servicio`);
     }
   });
 
@@ -304,14 +307,22 @@ describe.skipIf(!HAY_BUILD)(HAY_BUILD ? "salida del build (out/)" : "salida del 
     it("con 'reducir movimiento' apaga todas las animaciones infinitas y las entradas", () => {
       const bloques = [...css.matchAll(/@media \(prefers-reduced-motion:\s*reduce\)\s*\{([\s\S]*?\})\s*\}/g)].map((m) => m[1]).join("\n");
       const regla = bloques.match(/([^{}]*)\{animation:none!important\}/)?.[1] ?? "";
-      for (const clase of ["animate-marquee", "animate-marquee-reverse", "animate-float", "animate-flow", "animate-breathe", "animate-paseo", "animate-ping", "animate-caret", "entrada", "subir", "fundir"]) {
+      for (const clase of ["animate-marquee", "animate-marquee-reverse", "animate-float", "animate-flow", "animate-halo", "animate-deriva", "animate-paseo", "animate-ping", "animate-caret", "entrada", "subir", "fundir"]) {
         expect(regla.split(",").map((s) => s.trim()), clase).toContain(`.${clase}`);
       }
     });
 
-    it("en celular (< 768 px) no corren las líneas punteadas ni el respirar de los haces", () => {
+    it("en celular (< 768 px) no corren las líneas punteadas ni la deriva de los resplandores", () => {
       const bloque = css.match(/@media \(max-width:\s*767px\)\s*\{([^@]*?)\}\s*\}/)?.[1] ?? "";
-      expect(bloque).toMatch(/\.animate-flow,\s*\.animate-breathe\s*\{animation:none/);
+      expect(bloque).toMatch(/\.animate-flow,\s*\.animate-deriva\s*\{animation:none/);
+    });
+
+    // El lienzo de la cinta y la banda de respaldo aparecen sin transición, y
+    // el barrido de brillo del botón principal no corre.
+    it("con 'reducir movimiento' el fondo del hero y el botón principal no se animan", () => {
+      const bloques = [...css.matchAll(/@media \(prefers-reduced-motion:\s*reduce\)\s*\{([\s\S]*?\})\s*\}/g)].map((m) => m[1]).join("\n").replace(/\s/g, "");
+      expect(bloques).toMatch(/\.cinta-lienzo,\.cinta-respaldo,\.boton-principal:+before\{transition:none!important\}/);
+      expect(bloques).toContain(".boton-barrido{display:none}");
     });
   });
 

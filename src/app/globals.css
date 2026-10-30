@@ -31,8 +31,11 @@
   --animate-caret: caret 1s steps(1) infinite;
   --animate-flow: flow 2.4s linear infinite;
   --animate-spin-slow: spin 18s linear infinite;
-  --animate-breathe: breathe 7s ease-in-out infinite;
   --animate-paseo: paseo 6s ease-in-out infinite;
+  /* Foco de luz del botón principal: 0,65 a 1 y vuelta, cada 4 s. */
+  --animate-halo: halo 2s ease-in-out infinite alternate;
+  /* Resplandores de fondo que se corren muy despacio: 24 s ida y vuelta. */
+  --animate-deriva: deriva 12s ease-in-out infinite alternate;
 
   @keyframes marquee {
     from { transform: translateX(0); }
@@ -58,9 +61,13 @@
     33% { transform: translate3d(14px, -6px, 0); }
     66% { transform: translate3d(4px, 4px, 0); }
   }
-  @keyframes breathe {
-    0%, 100% { opacity: 0.75; }
-    50% { opacity: 1; }
+  @keyframes halo {
+    from { opacity: 0.65; }
+    to { opacity: 1; }
+  }
+  @keyframes deriva {
+    from { transform: translate3d(-24px, 14px, 0); }
+    to { transform: translate3d(24px, -14px, 0); }
   }
 }
 
@@ -207,9 +214,11 @@
   from { opacity: 0; transform: translate3d(0, 105%, 0); }
   to { opacity: 1; transform: none; }
 }
+/* Funde hasta --fundir-hasta (1 si no se dice): con relleno `both`, una
+   opacidad fija en el mismo elemento quedaría tapada por la animación. */
 @keyframes fundir {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to { opacity: var(--fundir-hasta, 1); }
 }
 .entrada { animation: entrar 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--retraso, 0s) both; }
 .subir { animation: subir 1s cubic-bezier(0.22, 1, 0.36, 1) var(--retraso, 0s) both; }
@@ -253,13 +262,165 @@
    fuera de pantalla. */
 [data-pausa] { animation-play-state: paused !important; }
 
+
+/* ------------------------------------------------------------------
+   Cinta de luz del hero (src/components/ui/cinta-hero.tsx)
+   El lienzo WebGL aparece cuando el motor dibuja su primer cuadro; a la vez
+   se apaga la banda quieta de CSS, que es lo que se ve antes (y siempre, sin
+   JavaScript o sin WebGL). La banda imita la pose de reposo de la cinta: una
+   cola baja bajo la fila del botón y la subida por la derecha, lejos del
+   titular. Sin máscaras ni filtros.
+   ------------------------------------------------------------------ */
+.cinta-lienzo {
+  opacity: 0;
+  transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cinta-respaldo { transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+.cinta:is([data-cinta="lista"], [data-cinta="pausa"], [data-cinta="quieta"]) .cinta-lienzo { opacity: 1; }
+.cinta:is([data-cinta="lista"], [data-cinta="pausa"], [data-cinta="quieta"]) .cinta-respaldo { opacity: 0; }
+.cinta-quieta::before,
+.cinta-quieta::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+.cinta-quieta::before {
+  left: 20%;
+  right: -10%;
+  top: 63%;
+  height: 17%;
+  background: radial-gradient(ellipse 55% 42% at 62% 50%, rgb(61 90 255 / 0.34), rgb(27 53 208 / 0.14) 55%, transparent 78%);
+}
+.cinta-quieta::after {
+  right: -14%;
+  top: -14%;
+  width: 46%;
+  height: 100%;
+  background: radial-gradient(ellipse 21% 54% at 50% 50%, rgb(41 196 245 / 0.28), rgb(61 90 255 / 0.22) 42%, rgb(27 53 208 / 0.08) 68%, transparent 80%);
+  transform: rotate(38deg);
+}
+
+/* ------------------------------------------------------------------
+   Botón principal del hero (GlowButton variante="principal")
+   Relleno de azul de marca, borde degradado y halo de luz. El texto blanco
+   da 8,5:1 sobre #1b35d0 y 5,1:1 en la punta #3d5aff. Uno solo por pantalla.
+   ------------------------------------------------------------------ */
+.boton-principal {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(120deg, #1b35d0 0%, #2a47ea 55%, #3d5aff 100%) padding-box,
+    linear-gradient(120deg, #29c4f5, rgb(255 255 255 / 0.45), #8ea0ff) border-box;
+  box-shadow:
+    0 0 0 1px rgb(41 196 245 / 0.18),
+    0 14px 38px -12px rgb(41 196 245 / 0.75),
+    0 0 56px -6px rgb(61 90 255 / 0.6);
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Relleno más claro al pasar o enfocar (los degradados no se animan: se
+   funde una capa encima). #4560fa todavía da 4,9:1 con el texto blanco. */
+.boton-principal::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(120deg, #2a47ea, #4560fa);
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.boton-principal:hover::before,
+.boton-principal:focus-visible::before { opacity: 1; }
+.boton-principal:hover {
+  box-shadow:
+    0 0 0 1px rgb(41 196 245 / 0.35),
+    0 18px 46px -12px rgb(41 196 245 / 0.9),
+    0 0 72px -4px rgb(61 90 255 / 0.75);
+}
+/* Foco del teclado: el anillo cian global se perdía contra el halo cian del
+   propio botón y contra la cinta. Aquí es blanco y va entre dos bandas casi
+   negras (la sombra de 7 px rellena por dentro y por fuera del anillo de 2 px
+   a 3 px): blanco contra #0d0e14 da 19:1, y la banda oscura también se
+   separa del halo. El anillo sigue siendo outline: las sombras desaparecen en
+   modo de alto contraste (forced-colors) y el outline no. */
+.boton-principal:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+  box-shadow:
+    0 0 0 7px #0d0e14,
+    0 0 0 1px rgb(41 196 245 / 0.35),
+    0 18px 46px -12px rgb(41 196 245 / 0.9),
+    0 0 72px -4px rgb(61 90 255 / 0.75);
+}
+/* Debajo de 640 px el botón va a todo lo ancho, con el subtítulo arriba y la
+   nota pegada abajo: un halo ancho caía sobre esos textos y les bajaba el
+   contraste. Aquí el halo es corto y no se sale más de unos 15 px. */
+@media (max-width: 639px) {
+  .boton-principal {
+    box-shadow:
+      0 0 0 1px rgb(41 196 245 / 0.22),
+      0 0 22px -6px rgb(41 196 245 / 0.6),
+      0 0 30px -10px rgb(61 90 255 / 0.55);
+  }
+  .boton-principal:hover {
+    box-shadow:
+      0 0 0 1px rgb(41 196 245 / 0.4),
+      0 0 24px -6px rgb(41 196 245 / 0.75),
+      0 0 32px -10px rgb(61 90 255 / 0.7);
+  }
+  .boton-principal:focus-visible {
+    box-shadow:
+      0 0 0 7px #0d0e14,
+      0 0 0 1px rgb(41 196 245 / 0.4),
+      0 0 24px -6px rgb(41 196 245 / 0.75),
+      0 0 32px -10px rgb(61 90 255 / 0.7);
+  }
+}
+/* Con el teclado también sube, y conserva sus esquinas de 12 px (la regla
+   global de :focus-visible las bajaría a 6). */
+.boton-principal:focus-visible {
+  translate: 0 -2px;
+  border-radius: 0.75rem;
+}
+.boton-principal:active {
+  translate: 0 0;
+  scale: 0.98;
+  transition-duration: 120ms;
+}
+/* Barrido de brillo: solo al pasar o enfocar, nunca solo al cargar. */
+.boton-barrido {
+  background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.22), transparent);
+  transform: translateX(-120%) skewX(-18deg);
+}
+.boton-principal:hover .boton-barrido,
+.boton-principal:focus-visible .boton-barrido {
+  transform: translateX(360%) skewX(-18deg);
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Tarjetas de las dos líneas: con mouse suben 4 px además de encender el borde. */
+@media (hover: hover) and (pointer: fine) {
+  .tarjeta-sube {
+    transition:
+      border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .tarjeta-sube:hover { transform: translate3d(0, -4px, 0); }
+}
+
 @media (max-width: 767px) {
-  /* En celular estas dos no corren. Las líneas punteadas animan
-     stroke-dashoffset, que se repinta en el hilo principal en cada frame. El
-     "respirar" de los haces obliga a recomponer una capa enmascarada enorme en
-     cada frame. Quietas se ven casi igual. */
+  /* En celular estas no corren. Las líneas punteadas animan
+     stroke-dashoffset, que se repinta en el hilo principal en cada frame. La
+     deriva de los resplandores mueve capas grandes que no aportan en una
+     pantalla chica. Quietas se ven casi igual. */
   .animate-flow,
-  .animate-breathe { animation: none; }
+  .animate-deriva { animation: none; }
+  /* En celular la banda de respaldo cruza detrás del texto: más tenue. La
+     opacidad sola no basta (la animación .fundir la deja en 1): el fundido
+     termina en el mismo valor. */
+  .cinta-quieta {
+    opacity: 0.55;
+    --fundir-hasta: 0.55;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -269,13 +430,19 @@
   .animate-float,
   .animate-flow,
   .animate-spin-slow,
-  .animate-breathe,
   .animate-paseo,
   .animate-ping,
   .animate-caret,
+  .animate-halo,
+  .animate-deriva,
   .entrada,
   .subir,
   .fundir { animation: none !important; }
   .js [data-revelar]:not([data-visible]) { transform: none; }
   [data-revelar] { transition: opacity 0.3s ease; }
+  .cinta-lienzo,
+  .cinta-respaldo,
+  .boton-principal::before { transition: none !important; }
+  .boton-barrido { display: none; }
+  .tarjeta-sube:hover { transform: none; }
 }
