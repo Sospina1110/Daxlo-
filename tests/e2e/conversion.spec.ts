@@ -1,4 +1,4 @@
-import { agendar, coaching, consultoria, dosFormas, hero, otraLinea, preguntasLinea, privacidad } from "../../src/content/copy";
+import { agendar, coaching, comparacion, consultoria, dosFormas, hero, otraLinea, preguntasLinea, privacidad } from "../../src/content/copy";
 import { hayAgenda } from "../../src/lib/agenda";
 import { APPS_SCRIPT, esperarArriba, esperarEnAncla, expect, H1, interceptarAppsScript, irA, marcarDocumento, tocar, test, type Page, type Vigilancia } from "./apoyo";
 
@@ -74,13 +74,13 @@ test.describe("llamados a la acción", () => {
     await esperarArriba(page);
   });
 
-  test("los botones bajo la comparación separan a quien aprende de quien tiene un proceso", async ({ page, isMobile }) => {
+  test("los botones bajo la comparación separan a quien trabaja solo de un proceso de varias personas", async ({ page, isMobile }) => {
     await irA(page, "/");
-    await tocar(page.getByRole("link", { name: "Lo mío es aprender" }), isMobile);
+    await tocar(page.getByRole("link", { name: comparacion.botones.coaching }), isMobile);
     await expect(page).toHaveURL("/coaching");
     await esperarArriba(page);
     await irA(page, "/");
-    await tocar(page.getByRole("link", { name: "Lo mío es un proceso" }), isMobile);
+    await tocar(page.getByRole("link", { name: comparacion.botones.consultoria }), isMobile);
     await expect(page).toHaveURL("/consultoria");
     await esperarArriba(page);
   });

@@ -42,8 +42,8 @@ export function Lienzo() {
   const visible = useInView(ref, { once: true, margin: "0px 0px -120px 0px" });
 
   const barra = [
-    { g: "Disparadores", i: [["Correo nuevo", <Mail key="1" size={14} />], ["Archivo en carpeta", <FolderOpen key="2" size={14} />], ["Horario fijo", <Clock key="3" size={14} />]] },
-    { g: "Acciones", i: [["Leer documento", <FileSearch key="4" size={14} />], ["Extraer datos", <ScanText key="5" size={14} />], ["Validar reglas", <ShieldCheck key="6" size={14} />], ["Escribir en hoja", <Sheet key="7" size={14} />], ["Crear borrador", <FilePen key="8" size={14} />]] },
+    { g: "Cuándo arranca", i: [["Llega un correo", <Mail key="1" size={14} />], ["Cae un archivo", <FolderOpen key="2" size={14} />], ["A una hora fija", <Clock key="3" size={14} />]] },
+    { g: "Qué hace", i: [["Lee el documento", <FileSearch key="4" size={14} />], ["Saca los datos", <ScanText key="5" size={14} />], ["Revisa que cuadre", <ShieldCheck key="6" size={14} />], ["Lo pasa a la hoja", <Sheet key="7" size={14} />], ["Deja un borrador", <FilePen key="8" size={14} />]] },
   ] as const;
 
   return (
@@ -156,7 +156,7 @@ function NodoFlujo({ id, titulo, detalle }: { id: string; titulo: string; detall
             esHoja ? "bg-mint/15 text-mint" : "bg-cyan/15 text-cyan",
           )}
         >
-          {esHoja ? "Listo" : "Revisa una persona"}
+          {esHoja ? "Listo" : "Lo revisa tu equipo"}
         </span>
       )}
     </div>

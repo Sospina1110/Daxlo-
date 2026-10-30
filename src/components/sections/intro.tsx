@@ -123,7 +123,7 @@ function VisualCoaching() {
           className="absolute bottom-4 right-4 flex max-w-[230px] items-start gap-2 rounded-xl border border-line-2 bg-ink-2/95 p-3 shadow-xl"
         >
           <MarcaX tamano={24} className="mt-0.5" />
-          <span className="text-[12.5px] leading-snug text-white/85">Ahí se traba. Dile qué hacer con las filas vacías.</span>
+          <span className="text-[12.5px] leading-snug text-white/85">Ahí se traba. Dile qué hacer si la factura no trae NIT.</span>
         </div>
       </div>
     </div>
@@ -231,10 +231,10 @@ export function Comparacion() {
         </Reveal>
         <Reveal className="mt-9 flex flex-wrap justify-center gap-3">
           <GlowButton href={rutas.coaching} tono="cyan" className="w-full sm:w-auto">
-            Lo mío es aprender <ArrowRight size={16} />
+            {comparacion.botones.coaching} <ArrowRight size={16} />
           </GlowButton>
           <GlowButton href={rutas.consultoria} tono="blue" className="w-full sm:w-auto">
-            Lo mío es un proceso <ArrowRight size={16} />
+            {comparacion.botones.consultoria} <ArrowRight size={16} />
           </GlowButton>
         </Reveal>
       </div>

@@ -1,7 +1,7 @@
 import { comparacion } from "../../src/content/copy";
 import { bordeBarra, expect, irA, recorrer, test, type Page } from "./apoyo";
 
-// La tabla "Quién construye y sobre qué" del inicio. En celular las dos
+// La tabla "¿Cuál de las dos te sirve?" del inicio. En celular las dos
 // respuestas van lado a lado bajo cada criterio y la cabecera de columnas
 // (Coaching / Consultoría) se queda fija bajo la barra mientras se lee.
 

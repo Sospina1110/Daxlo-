@@ -57,17 +57,19 @@ export const paginas = {
   inicio: {
     titulo: "Consultoría y coaching de IA en Colombia · Daxlo",
     descripcion:
-      "Coaching 1 a 1 para resolver tu trabajo con inteligencia artificial y consultoría para automatizar un proceso de tu empresa. Quedas sabiendo cómo funciona.",
+      "Consultoría de inteligencia artificial y coaching de IA 1 a 1 en Colombia. Automatizamos lo que tu equipo hace a mano o te enseñamos a usar IA en lo tuyo.",
   },
   coaching: {
-    titulo: "Coaching de IA 1 a 1 con ChatGPT y Claude",
+    titulo: "Coaching de IA 1 a 1: clases de ChatGPT y Claude",
+    // También es la descripción del servicio en los datos estructurados: por
+    // eso es una afirmación y no una pregunta.
     descripcion:
-      "Sesiones por videollamada sobre tu propio trabajo. Construyes tú con Claude, ChatGPT y otras herramientas, y corregimos en el momento. Pagas por sesión.",
+      "Clases de inteligencia artificial 1 a 1 por videollamada: aprendes a usar ChatGPT y Claude en tu propio trabajo, no solo para correos. Pagas por sesión.",
   },
   consultoria: {
     titulo: "Consultoría de IA para empresas en Colombia",
     descripcion:
-      "Automatizamos procesos que tu equipo hace a mano: facturas que llegan por correo, cotizaciones, datos de PDF. Precio cerrado y tu equipo queda operándolos.",
+      "Consultoría de inteligencia artificial para empresas: automatizamos facturas, cotizaciones y datos de PDF que hoy se pasan a mano. Lo opera tu equipo.",
   },
   herramientas: {
     titulo: "Herramientas de IA: Claude, ChatGPT, n8n",
@@ -82,7 +84,7 @@ export const paginas = {
   preguntas: {
     titulo: "Preguntas sobre coaching y consultoría de IA",
     descripcion:
-      "Cómo son las sesiones de coaching de IA, cuánto cuesta un proyecto de consultoría, por qué el discovery se paga y qué pasa cuando terminamos.",
+      "Cómo son las clases de IA 1 a 1, cuánto cuesta una consultoría de IA, por qué se paga el estudio del proceso y qué pasa cuando terminamos.",
   },
   agendar: {
     titulo: "Agendar una conversación sin costo",
@@ -120,22 +122,26 @@ export const hero = {
   ],
 };
 
-export const franjaHerramientas = "Enseñamos y construimos con";
+// Quien no conoce Claude Code ni n8n creía que el sitio era para
+// programadores: la segunda frase lo aclara antes de que se vaya.
+export const franjaHerramientas = "Con estas herramientas enseñamos y construimos. No necesitas conocerlas para empezar.";
 
+// El hilo del inicio: el dolor (título y sub), las dos formas de salir de ahí
+// (tarjetas), cómo elegir (comparación), quiénes somos y el cierre.
 // Cada promesa se dice una vez por página: en las tarjetas va lo que no está
 // en la tabla de abajo, y al revés.
 export const dosFormas = {
   badge: "Coaching y consultoría de IA",
-  titulo: "Para ti o para tu empresa.",
-  sub: "Tu propio trabajo y un proceso de varias personas piden cosas distintas. Hacemos las dos.",
+  titulo: "ChatGPT te escribe el correo. Lo demás, a mano.",
+  sub: "La inteligencia artificial ya lee facturas en PDF y arma cotizaciones. Si en tu trabajo eso se sigue haciendo a mano, la cotización sale tarde y el cierre de mes se va en días. Hay dos formas de cambiarlo.",
   coaching: {
     etiqueta: "Para ti",
     titulo: servicios.coaching,
-    linea: "Construyes tú, con nosotros en la llamada.",
+    linea: "Clases para usar ChatGPT y Claude en tu propio trabajo.",
     puntos: [
-      "Sobre tu propio archivo",
-      "Sales de cada sesión con algo hecho",
-      "Desde cero o desde donde ya estés",
+      "Por videollamada, con tus propios archivos",
+      "Te corregimos mientras lo haces",
+      "Sales de cada sesión con algo resuelto",
       "No es para quien no practica entre sesiones",
     ],
     enlace: "Ver cómo funciona",
@@ -143,29 +149,34 @@ export const dosFormas = {
   consultoria: {
     etiqueta: "Para tu empresa",
     titulo: servicios.consultoria,
-    linea: "Construimos el sistema con tu equipo al lado.",
+    linea: "Automatizamos lo que tu equipo hace a mano.",
     puntos: [
       "Facturas, cotizaciones y datos de PDF",
-      "Discovery pagado antes de escribir código",
-      "Tu equipo queda operándolo",
+      "Lo construimos con quien lo va a usar",
+      "Lo que no cuadra lo revisa tu equipo",
       "No es para un trabajo que haces tú solo",
     ],
     enlace: "Ver cómo trabajamos",
   },
 };
 
+// La regla del sub decide en segundos; la tabla responde en el orden en que
+// pregunta quien compra. Los dos botones de abajo repiten la regla con las
+// mismas palabras ("Lo hago… / Lo hacen…"): si se cambia una, se cambian las
+// dos, para que nadie entre por la puerta equivocada.
 export const comparacion = {
   badge: "Cuál de las dos",
-  titulo: "Quién construye y sobre qué.",
-  sub: "La diferencia está en quién construye y sobre qué trabaja.",
+  titulo: "¿Te sirve el coaching o la consultoría de IA?",
+  sub: "Si el trabajo lo haces tú solo, es coaching. Si lo hacen varias personas, suma sus horas de la semana. Más de 40, lo que trabaja una persona de tiempo completo, es consultoría. Menos, coaching.",
   filas: [
-    { criterio: "Quién construye", coaching: "Tú, con nosotros en la llamada", consultoria: "Nosotros, con tu equipo al lado" },
-    { criterio: "Sobre qué se trabaja", coaching: "Un trabajo que hoy haces tú solo", consultoria: "Un proceso que repiten varias personas" },
-    { criterio: "Qué queda al final", coaching: "Tu trabajo hecho y tú sabiendo repetirlo", consultoria: "Un sistema corriendo dentro de tu empresa" },
-    { criterio: "Quién paga y cómo", coaching: "Tú, por sesión, sin matrícula", consultoria: "La empresa, con precio cerrado" },
-    { criterio: "Cuánto toma", coaching: "Puede bastar una sesión", consultoria: "Semanas, en tres fases" },
-    { criterio: "Cuándo tiene sentido", coaching: "El trabajo lo haces y lo cambias tú", consultoria: "El proceso suma más de 40 horas semanales" },
+    { criterio: "Quién lo resuelve", coaching: "Tú, con nosotros en la llamada", consultoria: "Nosotros, con tu equipo al lado" },
+    { criterio: "Qué necesitas saber", coaching: "Nada técnico: arrancas desde tu nivel", consultoria: "Nada técnico: entrenamos a tu equipo" },
+    { criterio: "Qué te llevas", coaching: "Tu trabajo hecho y tú sabiendo repetirlo", consultoria: "Datos que entran sin que nadie digite" },
+    { criterio: "Cuánto toma", coaching: "Puede bastar una sesión", consultoria: "Semanas, un proceso a la vez" },
+    { criterio: "Cómo se paga", coaching: "Por sesión, sin matrícula ni mensualidad", consultoria: "Pagas el estudio y, si sigues, precio cerrado" },
+    { criterio: "Cuándo tiene sentido", coaching: "Lo repites tú, cada semana o cada mes", consultoria: "Lo repiten varias personas, cada semana" },
   ],
+  botones: { coaching: "Lo hago yo solo", consultoria: "Lo hacen varias personas" },
 };
 
 // ---------------------------------------------------------------- COACHING
@@ -174,33 +185,36 @@ export const coaching = {
   portada: {
     eyebrow: servicios.coaching,
     gigante: ["Para", "ti."],
-    sub: "Traes un trabajo tuyo que hoy te toma horas y lo dejas funcionando antes de colgar. Tú escribes, nosotros corregimos en el momento.",
+    sub: "Traes un trabajo tuyo que hoy te toma horas y lo dejas funcionando antes de colgar. Es una clase de inteligencia artificial por videollamada: tú escribes, nosotros corregimos en el momento.",
   },
+  // El correo sale una sola vez en la página, aquí en el sub: el título del
+  // inicio ya lo usa y repetirlo le quitaba fuerza.
   problema: {
-    titulo: "Abriste ChatGPT, te funcionó una vez y ahí quedó.",
-    sub: "Información sobra. Está toda en internet, y gratis.",
+    titulo: "Con el mismo ChatGPT, hay quien ya entrega antes que tú.",
+    sub: "No sabe más que tú: aprendió a usarlo con su propio trabajo. Tú lo abres para un correo y lo demás lo sigues haciendo a mano.",
+    // Mismo orden que los iconos: claqueta, X, calendario con reloj.
     tarjetas: [
-      { titulo: "El tutorial se rompe en tu excepción", texto: "El video resuelve un ejemplo limpio. Tu archivo tiene excepciones y ahí se acaba." },
-      { titulo: "Nadie te corrige mientras lo haces", texto: "Sale algo aceptable y lo dejas ahí, sin saber por qué sirvió." },
-      { titulo: "Y el viernes vuelve", texto: "Redactas correos más rápido. El informe del viernes lo sigues escribiendo desde cero." },
+      { titulo: "El tutorial usa un ejemplo limpio", texto: "Tu archivo trae facturas sin NIT y nombres mal escritos. Ahí el video se acaba y vuelves a hacerlo a mano." },
+      { titulo: "Nadie te dice qué hiciste mal", texto: "La respuesta sale regular, la arreglas tú y te quedas pensando que la IA no sirve para tu trabajo." },
+      { titulo: "Y el cierre de mes vuelve igual", texto: "Copiar del PDF al Excel y armar el informe del mes te sigue tomando las mismas horas que antes." },
     ],
   },
   sesion: {
-    titulo: "Construyes tú. Nosotros estamos en la llamada.",
-    texto: "Sobre lo tuyo: el informe del viernes, la propuesta pendiente, el archivo que no cuadra.",
+    titulo: "Clases de IA 1 a 1 sobre tu propio trabajo.",
+    texto: "Tú le escribes a ChatGPT o a Claude, otro asistente de IA, en español y sin programar. Nosotros vemos tu pantalla y te corregimos.",
     remate: "Si nadie toca el teclado de tu lado, la sesión no sirve.",
     // Maqueta ilustrativa del método. No es una conversación real de un cliente.
-    ventana: "Sesión 2 · Tu caso",
+    ventana: "Sesión 2 · Tus facturas",
     plan: [
-      { sesion: "Sesión 1", tema: "Fundamentos", estado: "hecha" },
-      { sesion: "Sesión 2", tema: "El informe del viernes", estado: "ahora" },
-      { sesion: "Sesión 3", tema: "Dejarlo automático", estado: "sigue" },
+      { sesion: "Sesión 1", tema: "Cómo pedirle a la IA", estado: "hecha" },
+      { sesion: "Sesión 2", tema: "Tus facturas en PDF", estado: "ahora" },
+      { sesion: "Sesión 3", tema: "Repetirlo sin nosotros", estado: "sigue" },
     ],
     mensajes: [
-      { de: "tu", texto: "Tengo treinta PDF de ventas. Quiero la tabla del viernes sin copiar nada a mano." },
+      { de: "tu", texto: "Me llegan cuarenta facturas en PDF al mes. Las paso a Excel una por una." },
       { de: "daxlo", texto: "Escribe tú la instrucción. Te digo dónde se traba." },
-      { de: "tu", texto: "Lee los treinta archivos y arma una tabla por vendedor y por semana." },
-      { de: "daxlo", texto: "Bien. Ahora dile qué hacer con las filas que no traen fecha." },
+      { de: "tu", texto: "Lee estas facturas y arma una tabla con NIT, fecha, subtotal e IVA." },
+      { de: "daxlo", texto: "Bien. Ahora dile qué hacer cuando una factura no trae el NIT." },
     ],
     placeholder: "Escribe tú la siguiente instrucción…",
   },
@@ -209,18 +223,20 @@ export const coaching = {
     titulo: "Quince minutos, un plan, y a construir.",
     sub: "Pagas por sesión, sin matrícula ni mensualidad.",
     items: [
-      { titulo: "Llamada de quince minutos", texto: "Nos cuentas en qué se te va la semana. Miramos si eso se resuelve con IA hoy y con qué herramienta. Si no se resuelve, te lo decimos ahí mismo y no te vendemos nada." },
-      { titulo: "Definimos con qué arrancas", texto: "Si nunca has usado IA, empiezas por fundamentos. Si ya la usas, vamos directo a tu caso." },
-      { titulo: "Sesiones donde construyes", texto: "Sales con una parte funcionando y las instrucciones para repetirlo el lunes." },
+      { titulo: "Llamada de quince minutos", texto: "Sin costo. Nos cuentas qué se te come las horas y miramos si la IA lo resuelve hoy. Si no, te lo decimos ahí mismo y no te vendemos nada." },
+      { titulo: "Definimos con qué arrancas", texto: "Si nunca has usado IA, empiezas por lo básico: cómo pedirle lo que necesitas. Si ya la usas, vamos directo a tu caso. En los dos casos, te decimos cuántas sesiones necesitas." },
+      { titulo: "Sales con tu trabajo hecho", texto: "Por ejemplo, la tabla de facturas del mes, armada sin copiar a mano. Y las instrucciones para repetirla tú solo." },
     ],
   },
   paraTi: {
     titulo: "¿Esto es para ti?",
-    sub: "El coaching sirve cuando el trabajo lo haces tú y lo vas a repetir. Si entre sesión y sesión no vuelves a abrir la herramienta, no avanzas. Preferimos decirlo antes de cobrarte.",
-    pregunta: "Piensa en lo que más tiempo te quitó esta semana. ¿Lo haces tú solo o pasa por otras personas?",
+    sub: "Sirve si el trabajo es tuyo y se repite. Practicas con ese mismo trabajo, no con ejercicios aparte. Pero si entre sesiones no abres la herramienta, no avanzas. Preferimos decirlo antes de cobrarte.",
+    // Cuenta quién hace el trabajo, no de dónde llegan los documentos: un
+    // contador que recibe facturas de sus clientes trabaja solo.
+    pregunta: "Piensa en lo que más tiempo te quitó esta semana. ¿Lo haces tú solo o lo hacen varias personas de tu equipo?",
     respuesta: [
-      "Si lo haces tú solo, arrancas con una sesión y decides si sigues.",
-      "Si pasa por varias manos y entre todas se van más de 40 horas semanales, eso es un proyecto de consultoría. Te lo decimos en la misma llamada.",
+      "Si lo haces tú solo, aunque los documentos te lleguen de otros, arrancas con una sesión y decides si sigues.",
+      "Si lo hacen varias personas y entre todas suman más de 40 horas semanales, es un proyecto de consultoría. Te lo decimos en la misma llamada.",
     ],
     cta: "Cuéntanos tu caso",
   },
@@ -252,74 +268,80 @@ export const consultoria = {
   portada: {
     eyebrow: servicios.consultoria,
     gigante: ["Para tu", "empresa."],
-    sub: "Un proceso que repiten varias personas y se lleva más de cuarenta horas a la semana. Lo construimos con tu equipo al lado y ellos quedan operándolo.",
+    // El criterio de 40 horas va desde la primera frase: es el mismo de
+    // "¿Esto es para tu empresa?" más abajo (lo vigila copy.test.ts).
+    sub: "Si tu equipo suma más de 40 horas a la semana copiando facturas y datos de PDF a Excel, lo automatizamos con inteligencia artificial. Cuando nos vamos, ellos lo operan.",
   },
   problema: {
-    titulo: "Agencia o curso, el proceso sigue igual.",
-    sub: "Hay dos formas de comprar IA hoy. Las dos terminan así.",
+    titulo: "Copiar a mano te cuesta más que horas.",
+    sub: "La IA ya puede leer una factura y sacar el NIT, la fecha y el valor. En tu empresa, todavía lo hace una persona, una por una.",
+    // Mismo orden que los iconos: salida, libro, reloj.
     tarjetas: [
-      { titulo: "Las agencias construyen y se van", texto: "Cuando algo cambia, nadie adentro sabe tocar el sistema y dependes del proveedor." },
-      { titulo: "Los cursos explican y desaparecen", texto: "Tu equipo entiende el concepto, pero nunca construyó nada con tus datos." },
-      { titulo: "Y el proceso sigue ahí", texto: "Alguien se sienta a las siete a pasar datos del correo a la hoja de cálculo. Termina a las diez. Mañana, lo mismo." },
+      { titulo: "Todo depende de una sola persona", texto: "Solo ella conoce las excepciones. Si se incapacita o renuncia, las facturas se represan." },
+      { titulo: "Licencias pagadas, trabajo a mano", texto: "Compraron ChatGPT para el equipo, o un programa que prometía hacerlo solo. Las facturas y los pedidos se siguen digitando." },
+      { titulo: "Son las diez y sigue copiando", texto: "Empezó a las siete a pasar datos del correo a Excel. La cotización que el cliente pidió temprano todavía no sale, y él ya le pidió precio a otro." },
     ],
   },
   fases: {
     badge: "Cómo trabajamos",
-    titulo: "Construimos al lado de tu equipo. Y les transferimos la operación antes de salir.",
-    sub: "Salir es parte del contrato.",
+    titulo: "Así automatizamos ese trabajo, en tres fases.",
+    sub: "Construimos con tu equipo al lado y no nos vamos hasta que ellos lo manejen solos. Salir es parte del contrato.",
     items: [
       {
         numero: "01",
-        titulo: "Discovery pagado",
-        texto: "Vemos el proceso como funciona de verdad, no como dice el manual. Sin esto no escribimos código.",
-        puntos: ["Levantamos el proceso con quien lo hace", "Contrastamos las reglas contra tus datos", "Sale con alcance y precio cerrado"],
+        titulo: "Estudio del proceso",
+        texto: "Vemos cómo funciona el proceso de verdad, no como dice el manual. Sin esto no construimos nada.",
+        puntos: ["Nos sentamos con quien hace el trabajo", "Buscamos los casos que no cuadran", "Sabes qué se construye y cuánto cuesta"],
       },
       {
         numero: "02",
         titulo: "Construcción",
-        texto: "Tu equipo participa. Cuando el sistema está listo, ya lo conoce.",
-        puntos: ["Cobramos por lo entregado, no por horas", "Alcance diseñado para caber en semanas", "Lo construimos con tus datos reales"],
+        // "El sistema" sin explicar sonaba a otro programa más: aquí se dice
+        // con qué se arma, igual que en /herramientas.
+        texto: "El sistema se arma con herramientas que ya existen, conectadas a lo que tu equipo ya usa, como el correo y las hojas de cálculo. Tu equipo prueba cada parte mientras la armamos.",
+        puntos: ["Cobramos por lo entregado, no por horas", "Hecho con tus documentos reales", "Pensado para quedar listo en semanas"],
       },
       {
         numero: "03",
-        titulo: "Traspaso y operación",
-        texto: "Tu equipo opera el sistema. Acompañamos mientras haga falta.",
-        puntos: ["Entrenamos a quien lo va a operar", "Ajustamos lo que el uso real pida", "Salimos cuando tu equipo lo sostiene solo"],
+        titulo: "Entrega a tu equipo",
+        texto: "Entrenamos a quien lo va a operar. No necesita saber programar, solo conocer el proceso.",
+        puntos: ["Primero lo opera con nosotros al lado", "Aprende a hacer los ajustes", "Salimos cuando lo maneja sin nosotros"],
       },
     ],
   },
   automatizamos: {
     badge: "Qué automatizamos",
     titulo: "Facturas, cotizaciones y datos de PDF.",
-    sub: "Si alguien los copia a mano cada semana, hay algo que automatizar.",
-    lienzo: "Flujo de ejemplo",
+    sub: "Si alguien de tu equipo pasa datos de un documento a otro cada semana, hay algo que automatizar.",
+    // Ejemplo ilustrativo: los campos no son de ningún cliente.
+    lienzo: "Ejemplo: una factura por correo",
     nodos: [
-      { id: "correo", titulo: "Correo nuevo", detalle: "Llega un adjunto" },
-      { id: "leer", titulo: "Leer adjunto", detalle: "PDF, Excel o imagen" },
-      { id: "extraer", titulo: "Extraer datos", detalle: "Campos que definimos juntos" },
-      { id: "validar", titulo: "Validar reglas", detalle: "Las reglas de tu negocio" },
-      { id: "hoja", titulo: "Escribir en la hoja", detalle: "Si todo cuadra" },
-      { id: "borrador", titulo: "Borrador para revisar", detalle: "Si algo no cuadra" },
+      { id: "correo", titulo: "Llega un correo", detalle: "Con la factura adjunta" },
+      { id: "leer", titulo: "Lee el adjunto", detalle: "PDF, Excel o foto" },
+      { id: "extraer", titulo: "Extrae los datos", detalle: "NIT, fecha, valor, pedido" },
+      { id: "validar", titulo: "Revisa que cuadre", detalle: "Con el pedido y tus reglas" },
+      { id: "hoja", titulo: "Lo pasa a tu hoja", detalle: "Si todo cuadra" },
+      { id: "borrador", titulo: "Lo deja en borrador", detalle: "Si algo no cuadra" },
     ],
-    nota: "El sistema deja borradores. Una persona los revisa antes de que algo salga.",
+    nota: "Aquí nadie copia: lo que cuadra pasa solo a la hoja, y lo que no queda en borrador para que alguien de tu equipo lo revise.",
     procesos: [
       "Facturas de proveedor que llegan por correo",
       "Cotizaciones que se arman a mano",
-      "Copiar datos del correo a una hoja",
+      "Pedidos que alguien pasa del correo a Excel",
       "Extracción de datos de PDF",
-      "Conciliación de documentos",
+      "Conciliación de facturas contra pedidos",
       "Reportes que alguien arma cada semana",
-      "Consulta de portales y captura de datos",
-      "Validación de reglas de negocio",
+      "Datos que se copian a mano de portales",
+      "Revisión de documentos contra tus reglas",
     ],
   },
   califica: {
     titulo: "¿Esto es para tu empresa?",
-    sub: "Un proyecto de implementación se justifica cuando el proceso consume cerca de una persona de tiempo completo. Por debajo de eso te sirve más el coaching, y te lo decimos.",
-    pregunta: "Entre todos los que lo tocan, ¿cuántas horas a la semana se lleva el proceso?",
+    sub: "Un proyecto de automatización se justifica cuando un solo proceso ocupa, entre todos, a una persona de tiempo completo. Si es menos, te sirve más el coaching, y te lo decimos.",
+    pregunta: "Piensa en un solo proceso. Sumando a todos, del que lo recibe al que lo revisa, ¿cuántas horas a la semana se lleva?",
     respuesta: [
-      "Si la respuesta pasa de 40 horas semanales, hay un proyecto.",
-      "Si no llegas, te lo decimos en la primera conversación y no te cotizamos nada.",
+      "Si pasa de 40 horas semanales, hay un proyecto. Si nunca lo has medido, un cálculo a ojo sirve para empezar.",
+      "Si no llega, te lo decimos en la primera conversación y no te cotizamos nada. Para ese caso está el coaching: clases 1 a 1 para la persona que hace el trabajo.",
     ],
     cta: "Cuéntanos tu proceso",
   },
@@ -327,10 +349,10 @@ export const consultoria = {
     titulo: "¿Por qué dos socios y no una agencia?",
     admision: "Somos dos personas y no somos los más baratos. Lo que entregamos queda funcionando.",
     items: [
-      { titulo: "Te transferimos la operación", texto: "Tu equipo queda capaz de mantener y ajustar el sistema. No vendemos dependencia." },
-      { titulo: "Discovery pagado, no diagnóstico gratis", texto: "Cobramos desde la primera hora porque el levantamiento es el trabajo, no la venta. Si el proyecto no se justifica, te lo decimos." },
-      { titulo: "Precio cerrado por el sistema", texto: "Sabes cuánto cuesta antes de arrancar. Si el alcance no cambia, el precio tampoco." },
-      { titulo: "Los dos socios, en cada proyecto", texto: "Martín y Santiago, juntos en cada proyecto. Ningún junior aprende con tu operación." },
+      { titulo: "Tu equipo queda a cargo", texto: "Si algo cambia, tu gente sabe ajustar el sistema. No vendemos dependencia." },
+      { titulo: "Cobramos el estudio", texto: "Así no tenemos que venderte un proyecto para cobrar. Si no se justifica, te lo decimos." },
+      { titulo: "Precio cerrado por el sistema", texto: "Sabes cuánto cuesta antes de arrancar. Si lo que se construye no cambia, el precio tampoco." },
+      { titulo: "Los dos socios, en cada proyecto", texto: "Martín Zárate y Santiago Ospina, aquí en Colombia. Ningún practicante aprende con tu operación." },
     ],
   },
 };
@@ -343,7 +365,9 @@ export const nosotros = {
   parrafos: [
     "Somos Martín Zárate y Santiago Ospina, egresados de Administración del CESA. Usamos IA todos los días para leer datos, automatizar procesos y armar sistemas que hacen solos lo que antes tomaba horas.",
     "Fundamos Daxlo por algo que vimos repetido: las empresas compran IA y quedan con un sistema que no entienden, o con un equipo que entendió la teoría y no cambió nada.",
-    "Por eso trabajamos al revés. Construimos adentro, con tu gente al lado, y no cerramos un proyecto hasta que alguien de tu equipo pueda sostenerlo sin nosotros.",
+    // El inicio muestra solo este párrafo: tiene que entenderse sin los dos
+    // de arriba.
+    "Hay quien te vende un programa y desaparece. Nosotros construimos dentro de tu empresa, aquí en Colombia, con tu gente al lado, y no cerramos un proyecto hasta que alguien de tu equipo pueda sostenerlo sin nosotros.",
   ],
   firma: "En todo lo que sale de Daxlo estamos los dos.",
 };
@@ -359,11 +383,11 @@ export const faq = {
       nombre: servicios.coaching,
       tono: "cyan",
       preguntas: [
-        { p: "¿Necesito saber de tecnología?", r: "No. Arrancamos desde tu nivel y con tus propios casos." },
-        { p: "¿Cómo son las sesiones?", r: "Por videollamada, uno a uno. Trabajas sobre algo tuyo y sales con eso avanzado." },
-        { p: "¿Cuántas sesiones necesito?", r: "Una sola o un plan de varias semanas. Lo definimos en la primera conversación." },
-        { p: "¿Puedo elegir cualquier tema?", r: "Sí. Claude, ChatGPT, automatizaciones, análisis de datos, contenido o páginas web. Si tu tema no está en la lista, también." },
-        { p: "¿Cómo se paga?", r: "Nequi, Daviplata, transferencia o tarjeta." },
+        { p: "¿Necesito saber programar?", r: "No. Si sabes escribir un correo, sabes darle instrucciones a ChatGPT o a Claude. Arrancamos desde tu nivel." },
+        { p: "¿Cómo son las clases de IA 1 a 1?", r: "Por videollamada, uno a uno, compartiendo tu pantalla. Trabajas sobre algo tuyo y sales con eso avanzado." },
+        { p: "¿Cuántas sesiones necesito?", r: "Depende del trabajo: a veces basta una, a veces es un plan de varias semanas. Lo definimos en la llamada de quince minutos." },
+        { p: "¿Qué herramientas aprendo a usar?", r: "ChatGPT, Claude y las que te sirvan para automatizar tareas, analizar datos, hacer contenido o páginas web. Si ya usas otra, también." },
+        { p: "¿Cómo se paga?", r: "Por sesión, sin matrícula. Con Nequi, Daviplata, transferencia o tarjeta." },
       ],
     },
     {
@@ -371,11 +395,11 @@ export const faq = {
       tono: "blue",
       preguntas: [
         // [DATO FALTANTE: rango de precio aprobado por Santiago, si se quiere publicar uno.]
-        { p: "¿Cuánto cuesta un proyecto?", r: "Depende del proceso. Cerramos el precio en el discovery y no se mueve mientras el alcance siga igual. Si cambia, lo cotizamos antes." },
-        { p: "¿Por qué el discovery se paga?", r: "Porque es trabajo. Encontramos dónde el manual no coincide con tus datos. De ahí salen el alcance y el precio." },
-        { p: "¿Cuánto se demora un proyecto?", r: "Semanas. Entregamos un proceso funcionando y después ampliamos." },
-        { p: "¿Qué pasa cuando ustedes se van?", r: "Tu equipo opera el sistema. Para eso lo construimos con ellos al lado, y acompañamos mientras haga falta." },
-        { p: "¿El sistema toma decisiones solo?", r: "Solo si tiene sentido. Contigo definimos qué revisa una persona antes de que algo salga." },
+        { p: "¿Cuánto cuesta una consultoría de IA?", r: "Depende del proceso. El precio sale del estudio y queda cerrado antes de construir. Solo cambia si cambias el encargo." },
+        { p: "¿Por qué se paga el estudio del proceso?", r: "Porque es trabajo: de ahí salen qué se construye y cuánto cuesta. La primera conversación, antes del estudio, es sin costo." },
+        { p: "¿Cuánto se demora un proyecto?", r: "Semanas. Entregamos primero un proceso funcionando y después ampliamos." },
+        { p: "¿Qué pasa cuando ustedes se van?", r: "Tu equipo opera el sistema. Lo construimos con ellos al lado para que sepan ajustarlo, y acompañamos mientras haga falta." },
+        { p: "¿El sistema toma decisiones solo?", r: "Únicamente donde lo apruebes. Lo que no cuadra queda en borrador, y contigo definimos qué más revisa una persona antes de que salga." },
         { p: "¿Y si mi proceso no da para un proyecto?", r: "Te lo decimos en la primera conversación y no te cotizamos nada. En ese caso el coaching 1 a 1 suele resolver más por menos." },
       ],
     },
@@ -480,14 +504,14 @@ export const footer = {
 export const otraLinea = {
   consultoria: {
     etiqueta: "Para tu empresa",
-    titulo: "¿El trabajo pasa por varias personas?",
-    texto: "Si entre todos se van más de 40 horas semanales, es un proyecto de consultoría.",
+    titulo: "¿El trabajo lo hacen varias personas?",
+    texto: "Si entre todas suman más de 40 horas semanales, es un proyecto de consultoría: lo construimos con tu equipo.",
     enlace: "Ver la consultoría de implementación",
   },
   coaching: {
     etiqueta: "Para ti",
     titulo: "¿Es un trabajo que haces tú solo?",
-    texto: "Construyes tú, con nosotros en la llamada, y pagas por sesión.",
+    texto: "Aprendes a resolverlo tú con ChatGPT o Claude, en sesiones 1 a 1. Pagas por sesión.",
     enlace: "Ver el coaching 1 a 1",
   },
 };
@@ -506,10 +530,10 @@ export const cierre = {
 };
 
 export const inicioNosotros = {
-  enlace: "Conoce a los dos socios",
+  enlace: "Conoce a Martín y Santiago",
 };
 
-export const franjaEnlace = "Qué hacemos con cada una";
+export const franjaEnlace = "Para qué sirve cada una";
 
 // ------------------------------------------------------------- AGENDA
 

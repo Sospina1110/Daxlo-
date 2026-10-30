@@ -81,7 +81,7 @@ function VisualConstruccion() {
   const pasos = [
     { t: "Leer el correo", i: <Mail size={14} /> },
     { t: "Extraer los datos", i: <ScanText size={14} /> },
-    { t: "Validar las reglas", i: <ShieldCheck size={14} /> },
+    { t: "Revisar que cuadre", i: <ShieldCheck size={14} /> },
   ];
   return (
     <div aria-hidden className="relative flex items-center justify-center px-5 py-10 lg:absolute lg:inset-0 lg:p-6">
@@ -115,12 +115,12 @@ function VisualConstruccion() {
 }
 
 function VisualTraspaso() {
-  const items = ["Entrenamiento con el equipo", "Operación acompañada", "Tu equipo hace los ajustes"];
+  const items = ["Entrenamiento con el equipo", "Opera con nosotros al lado", "Tu equipo hace los ajustes"];
   return (
     <div aria-hidden className="relative flex items-center justify-center px-5 py-10 lg:absolute lg:inset-0 lg:p-6">
       <span className="absolute -right-10 -top-10 h-64 w-64 resplandor" style={glow("61 90 255", 0.4, 1.70)} />
       <PanelVisual className="w-full max-w-[340px]">
-        <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-dim">Traspaso</p>
+        <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-dim">Entrega</p>
         <ul className="mt-4 space-y-3">
           {items.map((t, i) => (
             <li key={t} className="flex items-center gap-3 text-[14px] text-white/85">

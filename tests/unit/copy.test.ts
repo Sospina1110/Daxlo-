@@ -63,6 +63,19 @@ describe("voz de marca", () => {
     expect(consultoria.califica.sub).toContain("te sirve más el coaching, y te lo decimos");
     expect(consultoria.califica.respuesta.join(" ")).toContain("te lo decimos en la primera conversación y no te cotizamos nada");
     expect(consultoria.porQue.items.map((i) => i.texto).join(" ")).toMatch(/No vendemos dependencia\..*te lo decimos\./);
+    // La portada de consultoría pone el límite desde la primera frase, igual
+    // que "¿Esto es para tu empresa?": no le promete el proyecto a cualquiera.
+    expect(consultoria.portada.sub).toMatch(/40 horas/);
+  });
+
+  // La regla de la comparación del inicio y sus dos botones dicen lo mismo con
+  // las mismas palabras: quién hace el trabajo. Si se separan, alguien que
+  // trabaja solo puede entrar por la puerta de la consultoría.
+  it("los botones de la comparación repiten la regla del sub", () => {
+    expect(comparacion.botones.coaching).toMatch(/^Lo hago/);
+    expect(comparacion.botones.consultoria).toMatch(/^Lo hacen/);
+    expect(comparacion.sub).toMatch(/lo haces tú solo.*coaching/);
+    expect(comparacion.sub).toMatch(/lo hacen varias personas.*consultoría/);
   });
 
   it("toda pregunta frecuente abre y cierra con signos de interrogación", () => {
@@ -160,13 +173,20 @@ describe("títulos y descripciones para buscadores", () => {
     });
   }
 
-  // El h1 de cada línea nombra el servicio con "IA". "Inteligencia artificial"
-  // va en los metadatos y en los datos estructurados, no metido a la fuerza en
-  // los subtítulos (ver "frases de referencia de la voz", abajo).
-  it("las portadas nombran el servicio con 'IA'", () => {
+  // El eyebrow de cada portada nombra el servicio con "IA" (servicios.*).
+  // Desde octubre de 2026 (pedido de SEO de Santiago), "inteligencia artificial"
+  // también va escrita completa donde se lee: en los subtítulos de las
+  // portadas de /coaching y /consultoria y en dosFormas.sub. Siempre en una
+  // frase natural, una vez por bloque y sin repetirla. Además sigue en los
+  // metadatos y en los datos estructurados (src/lib/sitio.ts). Las frases de
+  // referencia de la voz están arriba.
+  it("las portadas nombran el servicio con 'IA' y dicen 'inteligencia artificial' una vez", () => {
     expect(coaching.portada.eyebrow).toBe(servicios.coaching);
     expect(consultoria.portada.eyebrow).toBe(servicios.consultoria);
     for (const s of Object.values(servicios)) expect(s).toMatch(/\bIA\b/);
+    for (const sub of [coaching.portada.sub, consultoria.portada.sub, dosFormas.sub]) {
+      expect(sub.match(/inteligencia artificial/gi), sub).toHaveLength(1);
+    }
   });
 
   it("no hay dos páginas con el mismo título ni la misma descripción", () => {
