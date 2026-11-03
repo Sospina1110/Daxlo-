@@ -1,7 +1,8 @@
-import { ArrowRight } from "lucide-react";
-import { Badge, GlowButton, IconTile } from "@/components/ui/primitives";
-import { SectionHeading } from "@/components/ui/blocks";
-import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
+import Link from "next/link";
+import { ArrowRight, Check, Minus } from "lucide-react";
+import { inicioNosotros, rutas } from "@/content/copy";
+import { enLineas, SectionHeading } from "@/components/ui/blocks";
+import { Reveal } from "@/components/ui/reveal";
 import { cn, glow } from "@/lib/utils";
 
 type TonoZona = "cyan" | "blue";
@@ -11,24 +12,21 @@ type TonoZona = "cyan" | "blue";
 // sitio oscuro, el cambio de ambiente es lo que marca la frontera.
 // Con `arriba` la zona abre la página: sin la línea de luz del borde, que
 // quedaría pegada a la barra de navegación.
+// Un solo resplandor, arriba, detrás de la portada: la contención es el sello
+// (DESIGN.md). La luz de la segunda mitad de la página la pone el cierre.
+// La zona de consultoría (#08090E) termina fundiéndose en el casi negro del
+// resto de la página: antes acababa en un borde horizontal duro.
 export function Zona({ tono, arriba = false, children }: { tono: TonoZona; arriba?: boolean; children: React.ReactNode }) {
   const cyan = tono === "cyan";
   return (
     <div className={cn("relative isolate", !cyan && "bg-[#08090e]")}>
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden [mask-image:linear-gradient(to_bottom,#000_calc(100%-240px),transparent)]">
         <span
           className={cn("resplandor animate-deriva absolute top-0 h-[760px] w-[760px]", cyan ? "-left-[22%]" : "-right-[22%]")}
           style={cyan ? glow("41 196 245", 0.14, 1.39) : glow("27 53 208", 0.35, 1.39)}
         />
-        <span
-          className={cn("resplandor animate-deriva absolute top-[38%] h-[620px] w-[620px] [animation-delay:-8s]", cyan ? "-right-[26%]" : "-left-[26%]")}
-          style={cyan ? glow("41 196 245", 0.06, 1.48) : glow("61 90 255", 0.12, 1.48)}
-        />
-        <span
-          className={cn("resplandor animate-deriva absolute bottom-0 h-[680px] w-[680px] [animation-delay:-16s]", cyan ? "-left-[24%]" : "-right-[24%]")}
-          style={cyan ? glow("41 196 245", 0.1, 1.44) : glow("27 53 208", 0.3, 1.44)}
-        />
       </div>
+      {!cyan && <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[140px] bg-gradient-to-b from-transparent to-ink" />}
       {!arriba && (
         <div
           aria-hidden
@@ -40,91 +38,201 @@ export function Zona({ tono, arriba = false, children }: { tono: TonoZona; arrib
   );
 }
 
+type Escena = { titulo: string; texto: string };
 
-// Tres tarjetas de problema, compartidas por las dos zonas.
+// Las escenas del problema, compartidas por las dos zonas. Filas abiertas, sin
+// caja ni icono, separadas por una regla de 1 px con un tramo corto del tono de
+// la línea. Es la sección que continúa la portada, con el ritmo corto
+// (DESIGN.md, Layout). Sin regla abajo: la sección siguiente abre con su línea
+// de capítulo y las dos juntas se leían como un divisor doble.
+// Dos formas: escena con título (consultoría: el título a la izquierda en
+// `headline-sm`/`headline-md` y la línea a la derecha desde 1024 px) o escena
+// de una sola línea (coaching: Outfit 500 de 22/28 px, hasta 60 caracteres por
+// línea). El titular lleva la idea completa: sin bajada.
 export function TarjetasProblema({
   titulo,
   sub,
-  tarjetas,
-  iconos,
+  escenas,
   tono,
 }: {
   titulo: string;
-  sub: string;
-  tarjetas: readonly { titulo: string; texto: string }[];
-  iconos: React.ReactNode[];
+  sub?: string;
+  escenas: readonly Escena[] | readonly string[];
   tono: TonoZona;
 }) {
+  const tramo = tono === "cyan" ? "bg-cyan" : "bg-blue-soft";
   return (
-    <section className="relative py-14 md:py-28">
+    <section className="relative py-12 md:pb-20 md:pt-16">
       <div className="container-page">
-        <SectionHeading titulo={titulo} sub={sub} tono={tono} alineacion="izquierda" />
-        <Stagger className="mt-10 grid gap-4 md:mt-12 md:gap-5 lg:grid-cols-3">
-          {tarjetas.map((t, i) => (
-            <StaggerItem key={t.titulo} className="h-full">
-              <article className="glass flex h-full flex-col rounded-[22px] p-7">
-                <IconTile tono={tono}>{iconos[i]}</IconTile>
-                <h3 className="mt-6 text-[22px] leading-snug text-white">{t.titulo}</h3>
-                <p className="mt-3 text-[18px] leading-relaxed text-muted">{t.texto}</p>
-              </article>
-            </StaggerItem>
-          ))}
-        </Stagger>
+        <SectionHeading titulo={enLineas(titulo)} sub={sub} tono={tono} alineacion="izquierda" />
+        <Reveal className="mt-10 md:mt-14">
+          <ul>
+            {escenas.map((e) =>
+              typeof e === "string" ? (
+                <li key={e} className="relative border-t border-line py-6 md:py-8">
+                  <span aria-hidden className={cn("absolute -top-px left-0 h-px w-10", tramo)} />
+                  <p className="max-w-[60ch] font-display text-[22px] font-medium leading-snug text-white/85 md:text-[28px] md:leading-tight">{e}</p>
+                </li>
+              ) : (
+                <li key={e.titulo} className="relative grid gap-3 border-t border-line py-7 md:py-9 lg:grid-cols-[0.9fr_1.1fr] lg:items-baseline lg:gap-12">
+                  <span aria-hidden className={cn("absolute -top-px left-0 h-px w-10", tramo)} />
+                  <h3 className="text-[22px] leading-snug text-white md:text-[32px] md:leading-tight">{e.titulo}</h3>
+                  <p className="max-w-[60ch] text-[18px] leading-relaxed text-muted">{e.texto}</p>
+                </li>
+              ),
+            )}
+          </ul>
+        </Reveal>
       </div>
     </section>
   );
 }
 
-// Bloque de calificación: la pregunta que filtra antes de la llamada.
-export function TarjetaCalifica({
-  titulo,
-  sub,
-  pregunta,
-  respuesta,
-  cta,
-  href,
+// ------------------------------------------------ ¿Esto es para…?
+
+type ListaPara = { titulo: string; items: readonly string[] };
+
+// ¿Es para mí? El filtro honesto, compartido por las dos líneas, en filas
+// abiertas: sin tarjeta, sin botón propio y sin resplandor (el único botón de
+// la segunda mitad es el del cierre). La última línea de "No es para… si"
+// termina en el enlace a la otra línea, en el tono de la zona: ese es el
+// puente para quien entró por la puerta equivocada.
+// - Consultoría (`cita`): a la izquierda el titular, la pregunta que filtra
+//   como cita y la respuesta; a la derecha "No es para tu empresa si".
+// - Coaching (`es`): dos columnas, "Es para ti si" y "No es para ti si".
+// En las dos, abajo y a todo lo ancho, los dos socios (`socios`): quién está
+// detrás, con el enlace a /nosotros.
+export function ParaQuien({
+  id,
   tono,
+  titulo,
+  cita,
+  respuesta,
+  es,
+  noEs,
+  enlace,
+  socios,
 }: {
-  titulo: string;
-  sub: string;
-  pregunta: string;
-  respuesta: readonly string[];
-  cta: string;
-  href: string;
+  id: string;
   tono: TonoZona;
+  titulo: string;
+  cita?: string;
+  respuesta?: string;
+  es?: ListaPara;
+  noEs: ListaPara;
+  enlace: { texto: string; href: string };
+  socios?: { texto: string };
 }) {
-  const cyan = tono === "cyan";
+  const noEsLista = <ListaFiltro lista={noEs} tono={tono} si={false} enlace={enlace} />;
   return (
-    <section className="relative py-14 md:py-28">
-      <div className="container-page grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
-        <SectionHeading titulo={titulo} sub={sub} tono={tono} alineacion="izquierda" />
-        <Reveal delay={0.1}>
-          <div
-            className={cn(
-              "relative overflow-hidden rounded-[26px] border p-6 sm:p-8 md:p-10",
-              cyan ? "border-cyan/30 bg-gradient-to-br from-cyan-deep/40 via-ink-2 to-ink-2" : "border-blue-bright/35 bg-gradient-to-br from-blue/45 via-ink-2 to-ink-2",
-            )}
-          >
-            <span aria-hidden className="resplandor absolute -right-20 -top-24 h-64 w-64" style={cyan ? glow("41 196 245", 0.3, 1.7) : glow("61 90 255", 0.35, 1.7)} />
-            <Badge tono={tono} className="relative">
-              La pregunta
-            </Badge>
-            <p className="relative mt-6 font-display text-[clamp(1.4rem,2.4vw,1.85rem)] font-medium leading-snug text-white">{pregunta}</p>
-            <div className="relative mt-6 space-y-3 border-t border-white/10 pt-6">
-              {respuesta.map((r) => (
-                <p key={r} className="text-[18px] leading-relaxed text-white/80">
-                  {r}
+    <section id={id} className="relative py-12 md:py-20">
+      <div className="container-page">
+        {cita ? (
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
+            <div>
+              <SectionHeading titulo={titulo} tono={tono} alineacion="izquierda" escala="apoyo" />
+              <Reveal delay={0.08}>
+                <p className="mt-7 max-w-[600px] border-t border-line-2 pt-6 font-display text-[22px] font-medium leading-snug text-white md:text-[28px] md:leading-[1.25]">
+                  {cita}
                 </p>
-              ))}
+                {respuesta && <p className="mt-4 max-w-[560px] text-[18px] leading-relaxed text-white/80">{respuesta}</p>}
+              </Reveal>
             </div>
-            <div className="relative mt-8">
-              <GlowButton href={href} tono={tono} className="w-full sm:w-auto">
-                {cta} <ArrowRight size={16} />
-              </GlowButton>
-            </div>
+            <Reveal delay={0.12} className="lg:pt-3">
+              {noEsLista}
+            </Reveal>
           </div>
-        </Reveal>
+        ) : (
+          <>
+            <SectionHeading titulo={titulo} tono={tono} alineacion="izquierda" escala="apoyo" />
+            {/* Una pista que puede encogerse (minmax(0, 1fr)): con la pista
+                implícita, un enlace largo ensanchaba la columna más allá de la
+                pantalla en 320 px. */}
+            <Reveal delay={0.08} className="mt-8 grid grid-cols-[minmax(0,1fr)] gap-10 md:mt-10 md:grid-cols-2 md:gap-12">
+              {es && <ListaFiltro lista={es} tono={tono} si />}
+              {noEsLista}
+            </Reveal>
+          </>
+        )}
+        {socios && <FranjaSocios texto={socios.texto} tono={tono} />}
       </div>
     </section>
+  );
+}
+
+// Una columna de "Es para… si" / "No es para… si": título en `headline-sm` y
+// filas abiertas con regla de 1 px. El sí lleva el chulo del tono; el no, un
+// guion blanco al 50 %. Con `enlace`, la última fila termina en él: en una
+// línea desde 640 px; en celular se parte si no cabe (en 320 px "Ver la
+// consultoría para empresas" no cabe con la flecha), y la flecha conserva su
+// ancho.
+function ListaFiltro({ lista, tono, si, enlace }: { lista: ListaPara; tono: TonoZona; si: boolean; enlace?: { texto: string; href: string } }) {
+  const cyan = tono === "cyan";
+  const ultima = lista.items.length - 1;
+  return (
+    <div>
+      <h3 className="text-[22px] leading-snug text-white">{lista.titulo}</h3>
+      <ul className="mt-4">
+        {lista.items.map((t, i) => (
+          <li key={t} className="flex items-start gap-3 border-t border-line py-5 text-[17px] leading-snug text-white/85">
+            {si ? (
+              <Check aria-hidden size={16} className={cn("mt-[3px] shrink-0", cyan ? "text-cyan" : "text-blue-soft")} />
+            ) : (
+              <Minus aria-hidden size={16} className="mt-[3px] shrink-0 text-white/50" />
+            )}
+            <span className="flex flex-col items-start">
+              {t}
+              {enlace && i === ultima && (
+                <Link
+                  href={enlace.href}
+                  className={cn(
+                    "group -mb-2.5 mt-1 inline-flex min-h-[44px] items-center gap-2 text-[16px] font-medium transition-colors hover:text-white sm:whitespace-nowrap",
+                    cyan ? "text-cyan" : "text-blue-soft",
+                  )}
+                >
+                  {enlace.texto}
+                  <ArrowRight aria-hidden size={16} className="shrink-0 transition-transform motion-safe:group-hover:translate-x-1" />
+                </Link>
+              )}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+// Los dos socios, a todo lo ancho bajo una regla: la foto chica (96 × 96, con
+// ancho y alto fijos para no mover nada al cargar), la firma conjunta y el
+// enlace a /nosotros, para quien quiere saber quiénes son antes de agendar.
+// La foto es un recorte cuadrado de 240 × 240 (equipo-cuadro.webp, ~8 KB, el
+// mismo encuadre que se veía): la completa (equipo.webp, 54 KB) queda para el
+// inicio y /nosotros, que la muestran grande.
+function FranjaSocios({ texto, tono }: { texto: string; tono: TonoZona }) {
+  return (
+    <Reveal className="mt-12 flex items-center gap-5 border-t border-line pt-8 md:mt-16 md:gap-6">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/img/equipo-cuadro.webp"
+        alt="Martín Zárate y Santiago Ospina, socios de Daxlo"
+        width={96}
+        height={96}
+        loading="lazy"
+        className="h-[72px] w-[72px] shrink-0 rounded-2xl border border-line-2 object-cover sm:h-24 sm:w-24"
+      />
+      <div className="min-w-0">
+        <p className="max-w-[720px] font-display text-[19px] font-medium leading-snug text-white sm:text-[22px]">{texto}</p>
+        <Link
+          href={rutas.nosotros}
+          className={cn(
+            "group -mb-2.5 mt-1 inline-flex min-h-[44px] items-center gap-2 text-[16px] font-medium transition-colors hover:text-white",
+            tono === "cyan" ? "text-cyan" : "text-blue-soft",
+          )}
+        >
+          {inicioNosotros.enlace}
+          <ArrowRight aria-hidden size={16} className="shrink-0 transition-transform motion-safe:group-hover:translate-x-1" />
+        </Link>
+      </div>
+    </Reveal>
   );
 }

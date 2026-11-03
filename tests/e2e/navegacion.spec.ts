@@ -74,8 +74,10 @@ test.describe("barra en celular", () => {
 
   test("tocar fuera del panel cierra el menú y no activa lo que hay debajo", async ({ page }) => {
     await irA(page, "/coaching");
-    // El puente a la consultoría es una tarjeta-enlace grande: se deja en la
-    // franja de abajo de la pantalla, la que el panel del menú no tapa.
+    // El puente a la consultoría es un enlace de texto (en "No es para ti
+    // si"): se deja en la franja de abajo de la pantalla, la que el panel del
+    // menú no tapa, y el dedo cae en el centro del enlace, no en el centro de
+    // la pantalla.
     const puente = page.getByRole("link", { name: new RegExp(otraLinea.consultoria.enlace) });
     await quieto(puente);
     await puente.evaluate((a) => {
@@ -86,7 +88,10 @@ test.describe("barra en celular", () => {
 
     await botonMenu(page).tap();
     await expect(menuDe(page)).toBeVisible();
-    const punto = await page.evaluate(() => ({ x: Math.round(innerWidth / 2), y: innerHeight - 15 }));
+    const punto = await puente.evaluate((a) => {
+      const r = a.getBoundingClientRect();
+      return { x: Math.round(r.left + r.width / 2), y: Math.round(Math.min(innerHeight - 15, r.top + r.height / 2)) };
+    });
     // Debajo del punto, tapado por el fondo del menú, está el enlace a /consultoria.
     const debajo = await page.evaluate(({ x, y }) => {
       const pila = document.elementsFromPoint(x, y);

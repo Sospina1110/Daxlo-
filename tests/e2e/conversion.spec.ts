@@ -1,6 +1,6 @@
-import { agendar, coaching, comparacion, consultoria, dosFormas, hero, otraLinea, preguntasLinea, privacidad } from "../../src/content/copy";
+import { agendar, cierre as textoCierre, contacto, dosFormas, hero, otraLinea, preguntasLinea, privacidad } from "../../src/content/copy";
 import { hayAgenda } from "../../src/lib/agenda";
-import { APPS_SCRIPT, esperarArriba, esperarEnAncla, expect, H1, interceptarAppsScript, irA, marcarDocumento, tocar, test, type Page, type Vigilancia } from "./apoyo";
+import { APPS_SCRIPT, esperarArriba, esperarEnAncla, expect, H1, interceptarAppsScript, irA, marcarDocumento, quieto, tocar, test, type Page, type Vigilancia } from "./apoyo";
 
 // Los caminos que terminan en una conversación agendada: cada llamado a la
 // acción lleva a /agendar (con la línea ya elegida cuando corresponde) y el
@@ -31,17 +31,39 @@ test.describe("llamados a la acción", () => {
     expect(await mismoDocumento()).toBe(marca);
   });
 
-  test("en /coaching, el llamado de '¿Esto es para ti?' lleva a /agendar con coaching elegido", async ({ page, isMobile }) => {
-    await irA(page, "/coaching");
-    await tocar(page.getByRole("link", { name: coaching.paraTi.cta }), isMobile);
-    await llegarAAgendar(page, "coaching");
-  });
+  // Desde noviembre de 2026 cada página de línea tiene un solo llamado a
+  // agendar en el cuerpo (la portada) y uno al final (el cierre): el bloque
+  // "¿Esto es para…?" ya no lleva botón propio.
+  for (const linea of ["coaching", "consultoria"] as const) {
+    test(`en /${linea}, el cuerpo de la página no repite botones de agendar: solo la portada y el cierre`, async ({ page }) => {
+      await irA(page, `/${linea}`);
+      const agendar = page.locator(`main a[href="/agendar?linea=${linea}"]`);
+      await expect(agendar).toHaveCount(2);
+      await expect(cierre(page).locator(`a[href="/agendar?linea=${linea}"]`)).toHaveCount(1);
+    });
+  }
 
-  test("en /consultoria, 'Cuéntanos tu proceso' lleva a /agendar con consultoría elegida", async ({ page, isMobile }) => {
-    await irA(page, "/consultoria");
-    await tocar(page.getByRole("link", { name: consultoria.califica.cta }), isMobile);
-    await llegarAAgendar(page, "consultoria");
-  });
+  // La portada de cada línea lleva la acción en la primera pantalla: antes, el
+  // primer botón del contenido aparecía a varias pantallas de distancia.
+  for (const linea of ["coaching", "consultoria"] as const) {
+    test(`en /${linea}, el botón de la portada llega a /agendar con ${linea} elegido`, async ({ page, isMobile }) => {
+      await irA(page, `/${linea}`);
+      await tocar(page.locator("main").getByRole("link", { name: hero.cta }).first(), isMobile);
+      await llegarAAgendar(page, linea);
+    });
+
+    test(`en /${linea}, el botón de la portada se ve sin bajar`, async ({ page }) => {
+      test.skip((page.viewportSize()?.height ?? 0) < 800, "en pantallas bajas el titular gigante ocupa la primera pantalla");
+      await irA(page, `/${linea}`);
+      const boton = page.locator("main").getByRole("link", { name: hero.cta }).first();
+      await expect(boton).toBeVisible();
+      await expect
+        .poll(() => boton.evaluate((b) => Math.round(b.getBoundingClientRect().bottom - innerHeight)), {
+          message: "píxeles que el botón queda por debajo del borde de la pantalla (debe ser 0 o menos)",
+        })
+        .toBeLessThanOrEqual(0);
+    });
+  }
 
   for (const linea of ["coaching", "consultoria"] as const) {
     test(`el cierre de /${linea} también llega con ${linea} elegido`, async ({ page, isMobile }) => {
@@ -74,18 +96,34 @@ test.describe("llamados a la acción", () => {
     await esperarArriba(page);
   });
 
-  test("los botones bajo la comparación separan a quien trabaja solo de un proceso de varias personas", async ({ page, isMobile }) => {
+  // Cada puerta del inicio se puede tocar entera (el enlace se estira sobre la
+  // tarjeta) y dice su regla: quién hace el trabajo.
+  test("cada puerta del inicio se toca entera y muestra su regla", async ({ page, isMobile }) => {
     await irA(page, "/");
-    await tocar(page.getByRole("link", { name: comparacion.botones.coaching }), isMobile);
-    await expect(page).toHaveURL("/coaching");
-    await esperarArriba(page);
-    await irA(page, "/");
-    await tocar(page.getByRole("link", { name: comparacion.botones.consultoria }), isMobile);
-    await expect(page).toHaveURL("/consultoria");
-    await esperarArriba(page);
+    for (const [d, destino] of [[dosFormas.coaching, "/coaching"], [dosFormas.consultoria, "/consultoria"]] as const) {
+      const tarjeta = page.locator("article").filter({ hasText: d.regla });
+      await expect(tarjeta).toHaveCount(1);
+      const regla = tarjeta.getByText(d.regla, { exact: true });
+      await expect(regla).toBeVisible();
+      await quieto(regla);
+      // Lo que queda bajo el dedo en la regla (texto, no el enlace) es el
+      // enlace estirado de la tarjeta, y un toque ahí abre la línea.
+      const punto = await regla.evaluate((el) => {
+        const r = el.getBoundingClientRect();
+        const x = Math.round(r.left + Math.min(r.width / 2, 60));
+        const y = Math.round(r.top + r.height / 2);
+        return { x, y, href: document.elementFromPoint(x, y)?.closest("a")?.getAttribute("href") ?? null };
+      });
+      expect(punto.href).toBe(destino);
+      if (isMobile) await page.touchscreen.tap(punto.x, punto.y);
+      else await page.mouse.click(punto.x, punto.y);
+      await expect(page).toHaveURL(destino);
+      await esperarArriba(page);
+      await irA(page, "/");
+    }
   });
 
-  test("el puente de cada línea, al final de la página, lleva a la otra y la abre arriba", async ({ page, isMobile }) => {
+  test("el puente de cada línea, en 'No es para… si', lleva a la otra y la abre arriba", async ({ page, isMobile }) => {
     await irA(page, "/coaching");
     await tocar(page.getByRole("link", { name: new RegExp(otraLinea.consultoria.enlace) }), isMobile);
     await expect(page).toHaveURL("/consultoria");
@@ -103,6 +141,37 @@ test.describe("llamados a la acción", () => {
     await expect(page).toHaveURL("/preguntas#coaching");
     await esperarEnAncla(page, "coaching");
   });
+
+  // Bajo el botón del cierre del inicio y de cada línea, un enlace de texto a
+  // WhatsApp (nunca flotante), que abre en otra pestaña. No se toca: es un
+  // destino externo.
+  for (const ruta of ["/", "/coaching", "/consultoria"]) {
+    test(`${ruta}: el cierre ofrece escribir por WhatsApp, en otra pestaña y sin pasar la página de origen`, async ({ page }) => {
+      await irA(page, ruta);
+      const enlace = cierre(page).getByRole("link", { name: textoCierre.whatsapp });
+      await expect(enlace).toHaveCount(1);
+      await expect(enlace).toHaveAttribute("href", contacto.whatsapp);
+      await expect(enlace).toHaveAttribute("target", "_blank");
+      await expect(enlace).toHaveAttribute("rel", /noopener/);
+      await expect(enlace).toHaveAttribute("rel", /noreferrer/);
+      // Y no hay ningún botón flotante de WhatsApp en la página.
+      const flotantes = await page.evaluate(() =>
+        [...document.querySelectorAll('a[href*="wa.me"]')].filter((a) => getComputedStyle(a).position === "fixed" || getComputedStyle(a.parentElement as Element).position === "fixed").length,
+      );
+      expect(flotantes).toBe(0);
+    });
+  }
+
+  // Las páginas generales conservan su cierre como estaba: /preguntas ya
+  // ofrece WhatsApp en su recuadro de ayuda, y /herramientas y /nosotros no
+  // cambiaron en esta pasada.
+  for (const ruta of ["/herramientas", "/nosotros", "/preguntas"]) {
+    test(`${ruta}: el cierre no repite el enlace de WhatsApp`, async ({ page }) => {
+      await irA(page, ruta);
+      await expect(cierre(page).getByRole("link", { name: /Agendar una conversación/ })).toHaveCount(1);
+      await expect(cierre(page).getByRole("link", { name: textoCierre.whatsapp })).toHaveCount(0);
+    });
+  }
 });
 
 test.describe("formulario de /agendar", () => {

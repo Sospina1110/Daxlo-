@@ -9,3 +9,6 @@ next-env.d.ts
 # Resultados de las pruebas de punta a punta (Playwright)
 test-results/
 playwright-report/
+
+# Solo local, nunca al repo público
+integraciones/

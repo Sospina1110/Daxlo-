@@ -47,6 +47,13 @@ export const idServicio = (clave: Linea) => `${URL_SITIO}${rutas[clave]}#servici
 // Lo que el sitio dice de los dos socios: egresados de Administración del CESA.
 const CESA = { "@type": "CollegeOrUniversity", name: "Colegio de Estudios Superiores de Administración", alternateName: "CESA" };
 
+// El tipo de cada servicio, el mismo en su bloque Service y en lo que la
+// organización dice que sabe hacer (knowsAbout): así no se separan.
+const TIPO_SERVICIO = {
+  coaching: "Coaching en inteligencia artificial",
+  consultoria: "Consultoría de implementación de inteligencia artificial",
+} as const;
+
 export const ldOrganizacion = {
   "@context": "https://schema.org",
   "@type": "Organization",
@@ -59,7 +66,9 @@ export const ldOrganizacion = {
   slogan: "Implementamos la IA. Transferimos la capacidad.",
   areaServed: { "@type": "Country", name: "Colombia" },
   knowsLanguage: "es",
-  knowsAbout: ["Inteligencia artificial", "Automatización de procesos con inteligencia artificial", "Extracción de datos de PDF", "Claude", "ChatGPT", "n8n"],
+  // Sin "Extracción de datos de PDF" ni automatización de procesos: la
+  // consultoría habla de la empresa, no de tareas sueltas (octubre de 2026).
+  knowsAbout: ["Inteligencia artificial", TIPO_SERVICIO.consultoria, TIPO_SERVICIO.coaching, "Claude", "ChatGPT", "n8n"],
   // Los dos socios van juntos, siempre en este orden.
   founder: [
     { "@type": "Person", name: "Martín Zárate", jobTitle: "Socio fundador", alumniOf: CESA },
@@ -107,7 +116,7 @@ export function ldServicio(clave: Linea) {
     "@type": "Service",
     "@id": idServicio(clave),
     name: servicios[clave],
-    serviceType: clave === "coaching" ? "Coaching en inteligencia artificial" : "Consultoría de implementación de inteligencia artificial",
+    serviceType: TIPO_SERVICIO[clave],
     category: "Inteligencia artificial",
     description: p.descripcion,
     url: `${URL_SITIO}${rutas[clave]}`,

@@ -1,4 +1,4 @@
-import { hero, nav } from "../../src/content/copy";
+import { cierre, coaching, consultoria, dosFormas, faq, hero, inicioNosotros, nav, otraLinea, preguntasLinea } from "../../src/content/copy";
 import { bordeBarra, caja, esperarHidratacion, expect, irA, quieto, recorrer, RUTAS, test, type Page } from "./apoyo";
 
 // Lo que hace que el sitio se pueda usar con el pulgar: áreas táctiles de al
@@ -42,6 +42,72 @@ test.describe("ergonomía en celular", () => {
     // También con la barra compacta (al bajar por la página).
     await page.evaluate(() => window.scrollTo({ top: 600, behavior: "instant" }));
     await expect.poll(() => cta.evaluate((a) => a.getBoundingClientRect().height)).toBeGreaterThanOrEqual(MIN_TACTIL);
+  });
+
+  // Medía 35 × 44: el área táctil solo había crecido hacia arriba y abajo.
+  for (const ruta of ["/coaching", "/consultoria"]) {
+    test(`${ruta}: 'Inicio' de las migas mide al menos 44×44`, async ({ page }) => {
+      await irA(page, ruta);
+      await medirTactil(page, "migas: Inicio", page.getByRole("navigation", { name: "Migas de pan" }).getByRole("link", { name: "Inicio" }));
+    });
+  }
+
+  // Los enlaces de texto sueltos que entraron en noviembre de 2026: el atajo
+  // de la portada, el puente a la otra línea en "No es para… si", "Conoce a
+  // Martín y Santiago" (bajo los socios en cada línea y en el inicio), "Ver
+  // todas las preguntas", el WhatsApp del cierre y, en el inicio, las dos
+  // puertas.
+  const ENLACES_SUELTOS: { ruta: string; nombres: (string | RegExp)[] }[] = [
+    { ruta: "/coaching", nombres: [coaching.portada.accion.enlace, otraLinea.consultoria.enlace, inicioNosotros.enlace, preguntasLinea.todas, cierre.whatsapp] },
+    { ruta: "/consultoria", nombres: [consultoria.portada.accion.enlace, otraLinea.coaching.enlace, inicioNosotros.enlace, preguntasLinea.todas, cierre.whatsapp] },
+    { ruta: "/", nombres: [new RegExp(`^${dosFormas.coaching.enlace}\\b`), new RegExp(`^${dosFormas.consultoria.enlace}\\b`), inicioNosotros.enlace, cierre.whatsapp] },
+  ];
+  for (const { ruta, nombres } of ENLACES_SUELTOS) {
+    test(`${ruta}: los enlaces de texto sueltos miden al menos 44×44`, async ({ page }) => {
+      await irA(page, ruta);
+      for (const nombre of nombres) {
+        await medirTactil(page, String(nombre), page.locator("main").getByRole("link", { name: nombre }).first());
+      }
+    });
+  }
+
+  // En 320 px, "¿Esto es para…?" no se sale de su contenedor. El enlace a la
+  // otra línea iba sin partirse dentro de una rejilla de una pista implícita:
+  // la pista crecía al ancho del enlace (~303 px de 280), la flecha quedaba
+  // cortada y todo el bloque perdía el margen derecho. Se mide solo dentro de
+  // la sección: las bandas a todo lo ancho y los resplandores salen a
+  // propósito.
+  for (const { ruta, id } of [
+    { ruta: "/coaching", id: "para-ti" },
+    { ruta: "/consultoria", id: "para-tu-empresa" },
+  ]) {
+    test(`${ruta}: en 320 px, '¿Esto es para…?' respeta el margen derecho`, async ({ page }) => {
+      await page.setViewportSize({ width: 320, height: 800 });
+      await irA(page, ruta);
+      const seccion = page.locator(`#${id}`);
+      await seccion.scrollIntoViewIfNeeded();
+      await quieto(seccion.locator("h2").first());
+      const fuera = await seccion.evaluate((s) => {
+        const cont = s.querySelector(".container-page") as HTMLElement;
+        const borde = cont.getBoundingClientRect().right - parseFloat(getComputedStyle(cont).paddingRight);
+        return [...s.querySelectorAll("h2, h3, li, a, p")]
+          .map((el) => ({ texto: (el.textContent ?? "").trim().slice(0, 40), derecha: Math.round(el.getBoundingClientRect().right) }))
+          .filter((x) => x.derecha > Math.ceil(borde) + 1)
+          .map((x) => `${x.texto} (${x.derecha} > ${Math.round(borde)})`);
+      });
+      expect(fuera).toEqual([]);
+    });
+  }
+
+  test("el enlace dentro de una respuesta abierta ('Para qué sirve cada una') mide al menos 44×44", async ({ page }) => {
+    await irA(page, "/coaching");
+    const q = faq.grupos[0].preguntas.find((x) => x.enlace)!;
+    const boton = page.getByRole("button", { name: q.p, exact: true });
+    await quieto(boton);
+    await boton.tap();
+    const enlace = page.getByRole("region", { name: q.p }).getByRole("link", { name: q.enlace!.t });
+    await expect(enlace).toBeVisible();
+    await medirTactil(page, q.enlace!.t, enlace);
   });
 
   test("cada pregunta frecuente y el botón de WhatsApp de la ayuda se pueden tocar con el pulgar (al menos 44×44)", async ({ page }) => {
@@ -157,7 +223,7 @@ test.describe("ergonomía en celular", () => {
   // con su titular debajo de la barra fija (scroll-padding-top en globals.css).
   const ANCLAS = [
     { ruta: "/coaching", id: "como-funciona", enlacePie: "Cómo funciona" },
-    { ruta: "/consultoria", id: "que-automatizamos", enlacePie: "Qué automatizamos" },
+    { ruta: "/consultoria", id: "que-automatizamos", enlacePie: "Qué cambia en tu empresa" },
   ];
 
   async function titularBajoLaBarra(page: Page, id: string) {

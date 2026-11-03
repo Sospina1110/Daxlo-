@@ -1,4 +1,4 @@
-import { hero, rutas } from "../../src/content/copy";
+import { consultoria, hero, rutas } from "../../src/content/copy";
 import { expect, irA, irAlFinal, RUTAS, test, textosInvisibles, type Page } from "./apoyo";
 
 // Movimiento y consumo: las animaciones infinitas se pausan fuera de pantalla,
@@ -85,33 +85,78 @@ test.describe("animaciones caras en celular", () => {
     await page.locator(selector).first().evaluate((el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
   }
 
-  test("debajo de 768 px no corre ninguna animación de líneas punteadas ni de deriva, aunque estén a la vista", async ({ page }) => {
-    const ancho = page.viewportSize()?.width ?? 0;
-    test.skip(ancho >= 768, "solo pantallas de celular");
-    await irA(page, "/");
-    let estados = await flujoYRespirar(page);
-    expect(estados.length).toBeGreaterThan(0);
-    expect(estados.filter((e) => e.corriendo > 0)).toEqual([]);
-    // Las líneas del visual de consultoría, ya en pantalla.
-    await llevarALaVista(page, ".animate-flow");
-    await page.waitForTimeout(300);
-    estados = await flujoYRespirar(page);
-    expect(estados.filter((e) => e.corriendo > 0)).toEqual([]);
-    // Y la deriva del resplandor de "quiénes somos", ya en pantalla.
-    await llevarALaVista(page, ".animate-deriva");
-    await page.waitForTimeout(300);
-    estados = await flujoYRespirar(page);
-    expect(estados.filter((e) => e.corriendo > 0)).toEqual([]);
-  });
+  // Desde noviembre de 2026 ninguna página usa líneas punteadas (el diagrama
+  // de consultoría del inicio salió): la regla de CSS sigue, por si vuelven, y
+  // aquí se revisan las que haya. La deriva sí está: el resplandor de la zona
+  // de cada línea y los del cierre.
+  for (const ruta of ["/", "/consultoria"]) {
+    test(`${ruta}: debajo de 768 px no corre ninguna animación de líneas punteadas ni de deriva, aunque estén a la vista`, async ({ page }) => {
+      const ancho = page.viewportSize()?.width ?? 0;
+      test.skip(ancho >= 768, "solo pantallas de celular");
+      await irA(page, ruta);
+      let estados = await flujoYRespirar(page);
+      expect(estados.length).toBeGreaterThan(0);
+      expect(estados.filter((e) => e.corriendo > 0)).toEqual([]);
+      // Cada una, ya en pantalla.
+      for (const clase of [".animate-flow", ".animate-deriva"]) {
+        if ((await page.locator(clase).count()) === 0) continue;
+        await llevarALaVista(page, clase);
+        await page.waitForTimeout(300);
+        estados = await flujoYRespirar(page);
+        expect(estados.filter((e) => e.corriendo > 0)).toEqual([]);
+      }
+    });
+  }
 
-  test("control en escritorio: las mismas animaciones sí corren a la vista (la prueba de arriba no pasa por no ver nada)", async ({ page }) => {
+  test("control en escritorio: la deriva sí corre a la vista (la prueba de arriba no pasa por no ver nada)", async ({ page }) => {
     const ancho = page.viewportSize()?.width ?? 0;
     test.skip(ancho < 768, "solo pantallas anchas");
     await irA(page, "/");
     await llevarALaVista(page, ".animate-deriva");
     await expect.poll(async () => (await flujoYRespirar(page)).filter((e) => e.clase === "animate-deriva" && e.corriendo > 0).length).toBeGreaterThan(0);
-    await llevarALaVista(page, ".animate-flow");
-    await expect.poll(async () => (await flujoYRespirar(page)).filter((e) => e.clase === "animate-flow" && e.corriendo > 0).length).toBeGreaterThan(0);
+  });
+});
+
+// Lo que salió por pesado o por envejecer el sitio (noviembre de 2026): la
+// marquesina de logos del inicio y de /coaching, y el pulso de la maqueta de la
+// sesión (se leía como una sesión real en vivo).
+test("el inicio y /coaching no tienen marquesina, y la sesión de ejemplo no late", async ({ page }) => {
+  for (const ruta of ["/", "/coaching"]) {
+    await irA(page, ruta);
+    await expect(page.locator("main .animate-marquee, main .animate-marquee-reverse")).toHaveCount(0);
+  }
+  await expect(page.locator("#como-funciona .animate-ping")).toHaveCount(0);
+});
+
+// El momento de autor de /consultoria: desde 1024 px, cada "Hoy" se tacha al
+// entrar en pantalla (la raya crece con transform); antes, sin tachar.
+test.describe("tachado del 'Hoy' en /consultoria", () => {
+  const rayas = (page: Page) => page.locator("#que-automatizamos .tachado-linea");
+  const FILAS = consultoria.cambios.filas.length;
+  const escala = (page: Page) =>
+    rayas(page).evaluateAll((els) =>
+      els.map((e) => {
+        const m = getComputedStyle(e).transform;
+        return m === "none" ? 1 : new DOMMatrixReadOnly(m).a;
+      }),
+    );
+
+  test("desde 1024 px: sin tachar fuera de pantalla, tachado al llegar", async ({ page }) => {
+    test.skip((page.viewportSize()?.width ?? 0) < 1024, "la raya animada es solo desde 1024 px");
+    await irA(page, "/consultoria");
+    await expect(rayas(page)).toHaveCount(FILAS);
+    expect(await escala(page)).toEqual(Array(FILAS).fill(0));
+    await rayas(page).last().evaluate((e) => e.scrollIntoView({ block: "center", behavior: "instant" }));
+    await expect.poll(() => escala(page), { timeout: 5_000 }).toEqual(Array(FILAS).fill(1));
+  });
+
+  test("por debajo de 1024 px el tachado es fijo, con line-through", async ({ page }) => {
+    test.skip((page.viewportSize()?.width ?? 0) >= 1024, "solo pantallas angostas");
+    await irA(page, "/consultoria");
+    const hoy = page.locator("#que-automatizamos li span.line-through");
+    await expect(hoy).toHaveCount(FILAS);
+    for (const d of await hoy.evaluateAll((els) => els.map((e) => getComputedStyle(e).textDecorationLine))) expect(d).toContain("line-through");
+    await expect(rayas(page).first()).toBeHidden();
   });
 });
 
@@ -226,9 +271,9 @@ test.describe("con 'reducir movimiento'", () => {
       // el respaldo del script revela lo que quedó arriba.
       await irAlFinal(page);
       await expect.poll(() => page.evaluate(() => document.querySelectorAll("[data-revelar]:not([data-visible])").length)).toBe(0);
-      // Lo que anima Motion al entrar en pantalla ([data-motion-oculto], el
-      // lienzo de /consultoria en escritorio) aparece cuando se lo mira: se
-      // revisa aparte, llevándolo a la vista.
+      // Lo que Motion deja oculto al arrancar se marca con [data-motion-oculto]
+      // y se revisa aparte, llevándolo a la vista. Hoy ninguna sección lo usa;
+      // la revisión queda por si vuelve uno.
       await expect.poll(() => textosInvisibles(page, "[data-motion-oculto]")).toEqual([]);
       for (const zona of await page.locator("[data-motion-oculto]:visible").all()) {
         await zona.evaluate((z) => z.scrollIntoView({ block: "center", behavior: "instant" }));
@@ -237,6 +282,20 @@ test.describe("con 'reducir movimiento'", () => {
       expect(await infinitasCorriendo(page)).toEqual([]);
     });
   }
+
+  test("/consultoria: el 'Hoy' ya está tachado y quieto, también antes de llegar a él", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await irA(page, "/consultoria");
+    const rayas = page.locator("#que-automatizamos .tachado-linea");
+    await expect(rayas).toHaveCount(consultoria.cambios.filas.length);
+    const estado = () =>
+      rayas.evaluateAll((els) => els.map((e) => ({ transform: getComputedStyle(e).transform, transicion: getComputedStyle(e).transitionDuration })));
+    // Fuera de pantalla todavía (sus filas no han aparecido): ya tachado.
+    for (const e of await estado()) expect(e).toEqual({ transform: "none", transicion: "0s" });
+    await rayas.last().evaluate((e) => e.scrollIntoView({ block: "center", behavior: "instant" }));
+    await page.waitForTimeout(400);
+    for (const e of await estado()) expect(e).toEqual({ transform: "none", transicion: "0s" });
+  });
 
   test("el hero muestra la primera tarea completa y quieta", async ({ page, vigilancia }) => {
     vigilancia.tolerar(ERROR_HIDRATACION);

@@ -20,13 +20,17 @@ const prioridad: Record<keyof typeof rutas, number> = {
 // cuando cambia el texto de esa página, y no con la fecha del build: Google
 // deja de creerle a un lastmod que cambia en cada publicación. El cierre es
 // compartido, así que un cambio ahí toca todas las páginas que lo muestran.
+// /herramientas, /nosotros, /agendar y /privacidad no cambian en la pasada del
+// 3 de noviembre de 2026: su único cambio es el texto de un enlace del pie
+// (mismo destino), que es compartido y no cuenta como contenido.
+// Si esta pasada se publica otro día, se pone aquí la fecha de publicación.
 const ultimoCambio: Record<keyof typeof rutas, string> = {
-  inicio: "2026-10-30",
-  coaching: "2026-10-30",
-  consultoria: "2026-10-30",
+  inicio: "2026-11-03",
+  coaching: "2026-11-03",
+  consultoria: "2026-11-03",
   herramientas: "2026-10-30",
   nosotros: "2026-10-30",
-  preguntas: "2026-10-30",
+  preguntas: "2026-11-03",
   agendar: "2026-10-30",
   privacidad: "2026-10-26",
 };

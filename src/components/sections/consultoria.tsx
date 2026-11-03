@@ -1,225 +1,145 @@
-import { AlertTriangle, BookOpen, Check, Clock, LogOut, Mail, ScanText, ShieldCheck, Timer, Users } from "lucide-react";
-import { agendarCon, consultoria } from "@/content/copy";
-import { SectionHeading } from "@/components/ui/blocks";
-import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
-import { cn, glow } from "@/lib/utils";
-import { TarjetaCalifica, TarjetasProblema, Zona } from "./zona";
+import { ArrowRight } from "lucide-react";
+import { consultoria, otraLinea, rutas } from "@/content/copy";
+import { LineaCapitulo, SectionHeading } from "@/components/ui/blocks";
+import { cn } from "@/lib/utils";
+import { ParaQuien, TarjetasProblema, Zona } from "./zona";
 import { ZonaPortada } from "./zona-portada";
-import { Apilado } from "./apilado";
-import { Lienzo } from "./lienzo";
 
-const AZUL_CLARO = "#8ea0ff";
-
+// La página contesta en orden: ¿qué es? (portada), ¿me pasa a mí? (escenas),
+// ¿qué cambia? (hoy → después), ¿cómo lo hacen? (recorrido) y ¿es para mi
+// empresa y con quién hablo? (para quién). Cómo elegimos el primer proceso va
+// en las preguntas. Las preguntas y el cierre los pone la página.
 export function ZonaConsultoria({ migas }: { migas?: React.ReactNode }) {
   const c = consultoria;
+  const p = c.paraQuien;
   return (
     <Zona tono="blue" arriba>
       <ZonaPortada tono="blue" {...c.portada} migas={migas} />
-      <TarjetasProblema
+      <TarjetasProblema tono="blue" titulo={c.problema.titulo} escenas={c.problema.escenas} />
+      <CambiosEmpresa />
+      <Recorrido />
+      <ParaQuien
+        id="para-tu-empresa"
         tono="blue"
-        titulo={c.problema.titulo}
-        sub={c.problema.sub}
-        tarjetas={c.problema.tarjetas}
-        iconos={[<LogOut key="a" size={22} />, <BookOpen key="b" size={22} />, <Clock key="c" size={22} />]}
+        titulo={p.titulo}
+        cita={p.cita}
+        respuesta={p.respuesta}
+        noEs={p.noEs}
+        enlace={{ texto: otraLinea.coaching.enlace, href: rutas.coaching }}
+        socios={p.socios}
       />
-      <Fases />
-      <Automatizamos />
-      <TarjetaCalifica tono="blue" {...c.califica} href={agendarCon("consultoria")} />
-      <PorQue />
     </Zona>
   );
 }
 
-// ------------------------------------------------ Fases: tarjetas apiladas
+// ------------------------------------------------ Qué cambia
 
-
-
-function PanelVisual({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <div className={cn("relative rounded-2xl border border-line-2 bg-ink/95 p-5 shadow-2xl", className)}>{children}</div>;
-}
-
-function VisualDiscovery() {
-  const manual = ["Toda factura trae orden de compra", "El proveedor manda un solo archivo", "El total cuadra con el pedido"];
-  const real = ["Algunas llegan sin orden", "A veces manda tres archivos", "El total no siempre cuadra"];
+// Hoy → después, en filas con regla. El peso cae en el resultado: "Hoy" en
+// Inter de 18 px blanco al 75 % con la raya al 40 % (al 66 % con la raya al
+// 45 % costaba leerlo), "Después" en Outfit 500 de 22 px blanco.
+// Es el momento de autor de la página (DESIGN.md, Motion): desde 1024 px, cada
+// "Hoy" se tacha al entrar en pantalla con una raya de 1 px que crece de
+// izquierda a derecha (solo transform). Por debajo de 1024 px el tachado es
+// fijo (line-through). Sin JavaScript o con "reducir movimiento", tachado y
+// quieto. El id sigue siendo que-automatizamos: lo usan la redirección
+// #automatizamos, los enlaces viejos, el pie y las pruebas.
+function CambiosEmpresa() {
+  const a = consultoria.cambios;
   return (
-    <div aria-hidden className="relative flex items-center justify-center px-5 py-10 lg:absolute lg:inset-0 lg:p-6">
-      <span className="absolute -right-16 -top-16 h-64 w-64 resplandor" style={glow("61 90 255", 0.4, 1.70)} />
-      <div className="relative grid w-full max-w-[460px] gap-3 sm:grid-cols-2">
-        <PanelVisual className="p-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-dim">Lo que dice el manual</p>
-          <ul className="mt-3 space-y-2.5">
-            {manual.map((m) => (
-              <li key={m} className="flex gap-2 text-[12.5px] leading-snug text-white/75">
-                <Check size={13} className="mt-0.5 shrink-0 text-white/40" />
-                {m}
-              </li>
-            ))}
-          </ul>
-        </PanelVisual>
-        <PanelVisual className="border-blue-bright/40 p-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: AZUL_CLARO }}>
-            Lo que pasa de verdad
-          </p>
-          <ul className="mt-3 space-y-2.5">
-            {real.map((m, i) => (
-              <li key={m} className={cn("flex gap-2 rounded-md text-[12.5px] leading-snug", i === 0 ? "bg-cyan/10 p-1.5 text-white ring-1 ring-cyan/35" : "text-white/75")}>
-                <AlertTriangle size={13} className={cn("mt-0.5 shrink-0", i === 0 ? "text-cyan" : "text-white/40")} />
-                {m}
-              </li>
-            ))}
-          </ul>
-        </PanelVisual>
-        <span className="mx-auto inline-flex sm:col-span-2 items-center gap-2 whitespace-nowrap rounded-full border border-cyan/35 bg-cyan/10 px-3 py-1.5 text-[12px] text-cyan">
-          <AlertTriangle size={13} /> Contradicción encontrada
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function VisualConstruccion() {
-  const pasos = [
-    { t: "Leer el correo", i: <Mail size={14} /> },
-    { t: "Extraer los datos", i: <ScanText size={14} /> },
-    { t: "Revisar que cuadre", i: <ShieldCheck size={14} /> },
-  ];
-  return (
-    <div aria-hidden className="relative flex items-center justify-center px-5 py-10 lg:absolute lg:inset-0 lg:p-6">
-      <span className="absolute -bottom-16 -left-10 h-64 w-64 resplandor" style={glow("27 53 208", 0.5, 1.70)} />
-      <PanelVisual className="w-full max-w-[340px]">
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-dim">Construcción</p>
-          <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-[12px]" style={{ color: AZUL_CLARO }}>
-            <Timer size={13} /> Precio cerrado
-          </span>
+    <section id="que-automatizamos" className="relative py-16 md:py-24">
+      <LineaCapitulo tono="blue" />
+      <div className="container-page">
+        <SectionHeading titulo={a.titulo} tono="blue" alineacion="izquierda" />
+        <div aria-hidden className="mt-10 hidden grid-cols-[1fr_48px_1fr] gap-x-4 md:mt-14 lg:grid">
+          <Rotulo>{a.hoy}</Rotulo>
+          <span />
+          <Rotulo azul>{a.despues}</Rotulo>
         </div>
-        <ol className="mt-4">
-          {pasos.map((p, i) => (
-            <li key={p.t} className="relative flex items-center gap-3 pb-4 last:pb-0">
-              {i < pasos.length - 1 && <span className="absolute left-[15px] top-8 h-[calc(100%-20px)] w-px bg-gradient-to-b from-blue-bright/60 to-transparent" />}
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-blue-bright/40 bg-blue/25" style={{ color: AZUL_CLARO }}>
-                {p.i}
-              </span>
-              <span className="text-[14px] text-white/85">{p.t}</span>
-              <Check size={14} className="ml-auto text-mint" />
-            </li>
-          ))}
-        </ol>
-        <div className="mt-5 flex items-center gap-2 rounded-xl border border-line px-3 py-2.5 text-[12.5px] text-white/70">
-          <Users size={14} style={{ color: AZUL_CLARO }} />
-          Tu equipo prueba cada parte
-        </div>
-      </PanelVisual>
-    </div>
-  );
-}
-
-function VisualTraspaso() {
-  const items = ["Entrenamiento con el equipo", "Opera con nosotros al lado", "Tu equipo hace los ajustes"];
-  return (
-    <div aria-hidden className="relative flex items-center justify-center px-5 py-10 lg:absolute lg:inset-0 lg:p-6">
-      <span className="absolute -right-10 -top-10 h-64 w-64 resplandor" style={glow("61 90 255", 0.4, 1.70)} />
-      <PanelVisual className="w-full max-w-[340px]">
-        <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-dim">Entrega</p>
-        <ul className="mt-4 space-y-3">
-          {items.map((t, i) => (
-            <li key={t} className="flex items-center gap-3 text-[14px] text-white/85">
-              <span
-                data-revelar=""
-                style={{ ["--retraso" as string]: `${0.4 + i * 0.35}s`, ["--y" as string]: "6px" } as React.CSSProperties}
-                className="flex h-6 w-6 items-center justify-center rounded-md bg-mint/15 text-mint"
-              >
-                <Check size={14} />
-              </span>
-              {t}
+        <p aria-hidden className="mt-10 flex items-center gap-2 md:mt-14 lg:hidden">
+          <Rotulo as="span">{a.hoy}</Rotulo>
+          <ArrowRight size={14} className="text-blue-soft" />
+          <Rotulo as="span" azul>
+            {a.despues}
+          </Rotulo>
+        </p>
+        <ul className="mt-3 border-b border-line">
+          {a.filas.map((c, i) => (
+            <li
+              key={c.despues}
+              data-revelar=""
+              style={{ ["--retraso" as string]: `${Math.min(0.32, i * 0.08)}s`, ["--y" as string]: "12px" } as React.CSSProperties}
+              className="grid gap-2 border-t border-line py-4 lg:grid-cols-[1fr_48px_1fr] lg:items-center lg:gap-x-4 lg:py-5"
+            >
+              <p className="text-[18px] leading-snug text-white/75">
+                <span className="sr-only">{a.hoy}: </span>
+                <span className="relative line-through decoration-white/40 lg:inline-block lg:whitespace-nowrap lg:no-underline">
+                  {c.hoy}
+                  <span aria-hidden className="tachado-linea absolute inset-x-0 top-1/2 hidden h-px bg-white/40 lg:block" />
+                </span>
+              </p>
+              <ArrowRight aria-hidden size={18} className="hidden text-blue-soft lg:block" />
+              <p className="flex items-start gap-3 font-display text-[22px] font-medium leading-snug text-white">
+                <span aria-hidden className="mt-[14px] h-[2px] w-2.5 shrink-0 rounded-full bg-blue-soft lg:hidden" />
+                <span>
+                  <span className="sr-only">{a.despues}: </span>
+                  {c.despues}
+                </span>
+              </p>
             </li>
           ))}
         </ul>
-        <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-white/10">
-          <div
-            data-revelar=""
-            style={{ ["--retraso" as string]: "0.4s" } as React.CSSProperties}
-            className="crecer h-full rounded-full bg-gradient-to-r from-blue-bright to-cyan"
-          />
-        </div>
-        <p className="mt-4 text-center text-[13px] text-white/70">Lo opera tu equipo</p>
-      </PanelVisual>
-    </div>
-  );
-}
-
-// ------------------------------------------------ Qué automatizamos: el lienzo
-
-
-
-
-function Fases() {
-  const f = consultoria.fases;
-  return (
-    <section id="como-trabajamos" className="relative py-14 md:py-28">
-      <div className="container-page">
-        <SectionHeading badge={f.badge} titulo={f.titulo} sub={f.sub} tono="blue" />
-        <Apilado items={f.items} visuales={[<VisualDiscovery key="a" />, <VisualConstruccion key="b" />, <VisualTraspaso key="c" />]} />
       </div>
     </section>
   );
 }
 
-function Automatizamos() {
-  const a = consultoria.automatizamos;
-  return (
-    <section id="que-automatizamos" className="relative py-14 md:py-28">
-      <div className="container-page">
-        <SectionHeading badge={a.badge} titulo={a.titulo} sub={a.sub} tono="blue" />
-        <Reveal className="mt-12" y={40}>
-          <Lienzo />
-        </Reveal>
-        <Reveal className="mx-auto mt-8 max-w-[680px] text-center">
-          <p className="text-[17px] leading-relaxed text-white/75">{a.nota}</p>
-        </Reveal>
-        {/* En celular, lista a lo ancho: como píldoras centradas, las frases
-            largas partían en dos líneas y la fila quedaba desigual. */}
-        <Stagger as="ul" className="mt-10 grid gap-2 sm:flex sm:flex-wrap sm:justify-center sm:gap-2.5" escalon={0.04}>
-          {a.procesos.map((p) => (
-            <StaggerItem as="li" key={p}>
-              <span className="flex items-center gap-3 rounded-xl border border-line-2 bg-white/[0.03] px-4 py-3 text-[16px] text-white/85 sm:inline-flex sm:rounded-full sm:py-2 sm:text-[15px]">
-                <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-blue-bright sm:hidden" />
-                {p}
-              </span>
-            </StaggerItem>
-          ))}
-        </Stagger>
-      </div>
-    </section>
-  );
+// Rótulo de los únicos microrrótulos de la página ("Hoy" y "Después"):
+// `caption` (Inter de 13 px) en mayúsculas, peso 500, 0.1em; blanco al 66 % o
+// azul claro.
+function Rotulo({ children, azul = false, as = "p" }: { children: React.ReactNode; azul?: boolean; as?: "p" | "span" }) {
+  const Comp = as;
+  return <Comp className={cn("text-[13px] font-medium uppercase leading-snug tracking-[0.1em]", azul ? "text-blue-soft" : "text-white/66")}>{children}</Comp>;
 }
 
+// ------------------------------------------------ Cómo trabajamos
 
-
-// ------------------------------------------------ Por qué nosotros
-
-function PorQue() {
-  const p = consultoria.porQue;
+// El proceso como línea de tiempo: cuatro pasos en un <ol>, cada uno con lo
+// que te llevas. En escritorio, cuatro columnas unidas por una línea de 1 px
+// entre nodos; en celular, lista vertical con la línea a la izquierda. Todos
+// los nodos iguales. Sin figura debajo: cómo elegimos el primer proceso (lo
+// que se dice en la reunión contra lo que muestran los documentos, y las
+// cuatro preguntas que lo filtran) va en la pregunta "¿Cómo identifican qué
+// proceso cambiar primero?"; en el cuerpo queda una cláusula del paso 02.
+function Recorrido() {
+  const r = consultoria.recorrido;
+  const ultimo = r.pasos.length - 1;
   return (
-    <section className="relative py-14 md:py-28">
-      <div className="container-page grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-        <div>
-          <SectionHeading titulo={p.titulo} tono="blue" alineacion="izquierda" />
-          <Reveal delay={0.15}>
-            <p className="mt-8 border-l-2 border-blue-bright pl-5 font-display text-[22px] leading-snug text-white">{p.admision}</p>
-          </Reveal>
-        </div>
-        <Stagger className="grid gap-4 sm:grid-cols-2">
-          {p.items.map((it, i) => (
-            <StaggerItem key={it.titulo} className="h-full">
-              <article className="glass h-full rounded-[22px] p-7">
-                <span className="text-gradient-blue font-display text-[34px] font-medium leading-none">0{i + 1}</span>
-                <h3 className="mt-4 text-[21px] leading-snug text-white">{it.titulo}</h3>
-                <p className="mt-2.5 text-[17px] leading-relaxed text-muted">{it.texto}</p>
-              </article>
-            </StaggerItem>
+    <section id="como-trabajamos" className="relative py-16 md:py-24">
+      <LineaCapitulo tono="blue" />
+      <div className="container-page">
+        <SectionHeading titulo={r.titulo} tono="blue" alineacion="izquierda" />
+        <ol data-escalonar="0.08" className="mt-10 grid gap-8 md:mt-14 lg:grid-cols-4 lg:gap-8">
+          {r.pasos.map((p, i) => (
+            <li key={p.numero} data-revelar="" className="relative pl-10 lg:pl-0 lg:pt-8">
+              {/* La línea que une los nodos: vertical en celular, horizontal
+                  hasta el nodo siguiente en escritorio. */}
+              {i < ultimo && (
+                <span
+                  aria-hidden
+                  className="absolute bottom-[-44px] left-[15px] top-3 w-px bg-blue-soft/40 lg:bottom-auto lg:left-3 lg:right-[-32px] lg:top-[5.5px] lg:h-px lg:w-auto"
+                />
+              )}
+              <span aria-hidden className="absolute left-[9.5px] top-1.5 h-3 w-3 rounded-full border border-blue-soft bg-[#08090e] lg:left-0 lg:top-0" />
+              <p className="font-display text-[15px] font-medium tracking-[0.1em] text-blue-soft">{p.numero}</p>
+              <h3 className="mt-2 text-[22px] leading-snug text-white">{p.titulo}</h3>
+              <p className="mt-2 text-[17px] leading-relaxed text-muted">{p.texto}</p>
+              {/* "Te llevas" en minúscula y 15 px: repetido cuatro veces en
+                  mayúsculas espaciadas gritaba más que el entregable. */}
+              <p className="mt-4 text-[15px] font-medium leading-snug text-blue-soft">{p.rotulo}</p>
+              <p className="mt-1 text-[17px] leading-snug text-white">{p.llevas}</p>
+            </li>
           ))}
-        </Stagger>
+        </ol>
       </div>
     </section>
   );

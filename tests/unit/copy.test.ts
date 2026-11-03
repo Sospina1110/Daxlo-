@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import * as copy from "@/content/copy";
-import { agendar, agendarCon, comparacion, consultoria, coaching, contacto, dosFormas, faq, footer, hero, herramientas, nav, paginas, preguntasLinea, rutas, servicios } from "@/content/copy";
+import { agendar, agendarCon, cierre, consultoria, coaching, contacto, dosFormas, faq, footer, hero, herramientas, inicioNosotros, nav, otraLinea, paginas, preguntasLinea, rutas, servicios } from "@/content/copy";
 import { toolLogos } from "@/lib/logos";
 
 // Reglas que el texto del sitio tiene que cumplir siempre. Todo el texto vive
@@ -45,37 +45,75 @@ describe("voz de marca", () => {
   // "reutilizar" o "potencia" dentro de otra palabra no cuenten.
   it("ninguna frase usa palabras o fórmulas vetadas", () => {
     const vetadas =
-      /\b(utiliz|realiz|adquir|potenci|empoder|revolucion)\w*|implementación de soluciones|desbloquear el potencial|en la era de la ia|no se trata de|soluciones integrales|transformación digital/i;
+      /\b(utiliz|realiz|adquir|potenci|empoder|revolucion)\w*|implementación de soluciones|desbloquear el potencial|en la era de la ia|no se trata de|soluciones integrales|transformación digital|\batrás\b|ya es tarde|no te quedes fuera/i;
     const mal = TODAS.filter(([, t]) => vetadas.test(t)).map(([d, t]) => `${d}: ${t}`);
     expect(mal).toEqual([]);
   });
 
   // Frases que voz-daxlo.md da como referencia, y las que reconocen límites
-  // ("te lo decimos", "no te vendemos nada"): la regla de la voz que más
-  // confianza genera. Si un recorte o un ajuste de SEO las toca, falla aquí.
+  // ("te lo decimos", "no te cotizamos nada"): la regla de la voz que más
+  // confianza genera. Se pueden acortar, no desaparecer: si un recorte o un
+  // ajuste de SEO las toca, falla aquí.
+  // Desde noviembre de 2026 (pedido de Santiago: páginas más cortas) cada
+  // límite va donde se decide: en el primer paso de cada línea (la sesión de
+  // coaching y la primera conversación de consultoría), en la respuesta a
+  // "¿quién lo va a operar?", en "No es para… si" y en el cierre. Bajo el
+  // botón de la portada van datos, no el límite completo: repetido arriba y en
+  // el cierre perdía fuerza. Lo largo (las 40 horas) pasó a las preguntas.
+  const respuesta = (p: string) => faq.grupos.flatMap((g) => g.preguntas).find((q) => q.p === p)?.r ?? "";
+
   it("frases de referencia de la voz: el hero, la portada de coaching y los límites", () => {
     expect(hero.sub).toContain("Te enseñamos a resolver tu propio trabajo con IA, o construimos el sistema que lo resuelve");
     expect(coaching.portada.sub).toContain("Traes un trabajo tuyo que hoy te toma horas y lo dejas funcionando antes de colgar");
-    expect(coaching.pasos.items[0].texto).toContain("te lo decimos ahí mismo y no te vendemos nada");
-    // El mismo criterio de 40 horas en las dos páginas: cada una dice cuándo
-    // le sirve más la otra.
-    expect(coaching.paraTi.respuesta.join(" ")).toMatch(/40 horas semanales.*Te lo decimos/);
-    expect(consultoria.califica.sub).toContain("te sirve más el coaching, y te lo decimos");
-    expect(consultoria.califica.respuesta.join(" ")).toContain("te lo decimos en la primera conversación y no te cotizamos nada");
-    expect(consultoria.porQue.items.map((i) => i.texto).join(" ")).toMatch(/No vendemos dependencia\..*te lo decimos\./);
-    // La portada de consultoría pone el límite desde la primera frase, igual
-    // que "¿Esto es para tu empresa?": no le promete el proyecto a cualquiera.
-    expect(consultoria.portada.sub).toMatch(/40 horas/);
+    // Coaching: el límite en el primer paso, y quien trabaja con otros va a
+    // la consultoría desde "No es para ti si".
+    expect(coaching.sesion.pasos[0].texto).toMatch(/Si la IA no te sirve, te lo decimos ahí mismo/);
+    expect(coaching.paraTi.noEs.items.at(-1)).toMatch(/^Lo hacen varias personas de tu equipo/);
+    expect(otraLinea.consultoria.enlace).toMatch(/consultoría/);
+    // Consultoría: bajo el botón, lo que cuesta empezar; el límite en el
+    // primer paso, la pregunta que filtra y a quién no le servimos (con el
+    // puente al coaching).
+    expect(consultoria.portada.nota).toContain("Conversación y diagnóstico sin costo");
+    expect(consultoria.recorrido.pasos[0].llevas).toMatch(/Un sí o un no/);
+    expect(consultoria.paraQuien.respuesta).toMatch(/«ustedes lo manejan», ahí te decimos que no/);
+    expect(consultoria.paraQuien.noEs.items.at(-1)).toMatch(/una sola persona/);
+    expect(otraLinea.coaching.enlace).toMatch(/coaching/);
+    expect(consultoria.paraQuien.socios.texto).toMatch(/No vendemos dependencia/);
+    // Las 40 horas son referencia, no filtro, y si no da no se cotiza.
+    const noDa = respuesta("¿Y si mi proceso no da para un proyecto?");
+    expect(noDa).toMatch(/te lo decimos en la primera conversación y no te cotizamos nada/i);
+    expect(noDa).toMatch(/40 horas/);
+    // Aliado (Santiago, 2026-11-03): el hero lo dice arriba y la portada de
+    // consultoría lo cumple. Tu equipo opera cada proceso (sin dependencia) y
+    // Daxlo sigue contigo con el siguiente; ya no se promete "salir".
+    expect(hero.aliado).toBe("Tu aliado de IA");
+    expect(consultoria.portada.sub).toMatch(/Tu equipo lo opera y seguimos contigo con el siguiente proceso\.$/);
+    const todo = TODAS.map(([, t]) => t).join(" ");
+    expect(todo).not.toMatch(/\bsalimos\b|salir es parte del contrato/i);
+    // El diagnóstico no se cobra (Santiago, 2026-11-03), y se dice donde se
+    // describe: bajo el botón, en el paso 02 y en lo que cuesta.
+    expect(consultoria.recorrido.pasos[1].texto).toMatch(/^Sin costo\./);
+    expect(respuesta("¿Cuánto cuesta una consultoría de IA?")).toMatch(/diagnóstico de una semana, sin costo/);
+    // El cierre de todas las páginas.
+    expect(cierre.sub).toMatch(/Si no te servimos, te lo decimos/);
   });
 
-  // La regla de la comparación del inicio y sus dos botones dicen lo mismo con
-  // las mismas palabras: quién hace el trabajo. Si se separan, alguien que
-  // trabaja solo puede entrar por la puerta de la consultoría.
-  it("los botones de la comparación repiten la regla del sub", () => {
-    expect(comparacion.botones.coaching).toMatch(/^Lo hago/);
-    expect(comparacion.botones.consultoria).toMatch(/^Lo hacen/);
-    expect(comparacion.sub).toMatch(/lo haces tú solo.*coaching/);
-    expect(comparacion.sub).toMatch(/lo hacen varias personas.*consultoría/);
+  // Las dos puertas del inicio y la pregunta de /preguntas#elegir dicen lo
+  // mismo con las mismas palabras: quién hace el trabajo. Si se separan,
+  // alguien que trabaja solo puede entrar por la puerta de la consultoría.
+  it("las dos puertas del inicio y la pregunta para elegir usan la misma regla", () => {
+    expect(dosFormas.coaching.regla).toMatch(/^Lo haces tú solo/);
+    expect(dosFormas.consultoria.regla).toMatch(/^Lo hacen varias personas/);
+    const elegir = respuesta("¿Te sirve el coaching o la consultoría de IA?");
+    expect(elegir).toMatch(/lo haces tú solo.*es coaching/i);
+    expect(elegir).toMatch(/lo hacen varias personas de tu equipo, es consultoría/i);
+  });
+
+  // Sin cifras de precio ni medios de pago (se hablan en la propuesta,
+  // Santiago 2026-11-03), ni el "plan B manual", que no tiene fuente.
+  it("sin precios, medios de pago ni promesas sin fuente", () => {
+    const todo = TODAS.map(([, t]) => t).join(" ");
+    expect(todo).not.toMatch(/\$\s?\d|\bCOP\b|\bnequi\b|\bdaviplata\b|\bllave\b|\btarjeta\b|\btransferencia\b|plan b/i);
   });
 
   it("toda pregunta frecuente abre y cierra con signos de interrogación", () => {
@@ -207,16 +245,17 @@ describe("listas que el sitio pinta con key de React", () => {
 
   unicas("hero.tareas (texto que se escribe)", hero.tareas);
   unicas("hero.historial", hero.historial);
-  unicas("dosFormas.coaching.puntos", dosFormas.coaching.puntos);
-  unicas("dosFormas.consultoria.puntos", dosFormas.consultoria.puntos);
-  unicas("comparacion.filas (criterio)", comparacion.filas.map((f) => f.criterio));
-  unicas("coaching.pasos", coaching.pasos.items.map((i) => i.titulo));
-  unicas("coaching.problema", coaching.problema.tarjetas.map((t) => t.titulo));
-  unicas("consultoria.problema", consultoria.problema.tarjetas.map((t) => t.titulo));
-  unicas("consultoria.fases (número)", consultoria.fases.items.map((i) => i.numero));
-  unicas("consultoria.automatizamos.procesos", consultoria.automatizamos.procesos);
-  unicas("consultoria.automatizamos.nodos (id)", consultoria.automatizamos.nodos.map((n) => n.id));
-  unicas("consultoria.porQue", consultoria.porQue.items.map((i) => i.titulo));
+  unicas("coaching.portada.nota", coaching.portada.nota);
+  unicas("coaching.problema.escenas", coaching.problema.escenas);
+  unicas("coaching.sesion.pasos (número)", coaching.sesion.pasos.map((p) => p.numero));
+  unicas("coaching.sesion.ventana.mensajes", coaching.sesion.ventana.mensajes.map((m) => m.texto));
+  unicas("coaching.paraTi.es", coaching.paraTi.es.items);
+  unicas("coaching.paraTi.noEs", coaching.paraTi.noEs.items);
+  unicas("consultoria.problema.escenas", consultoria.problema.escenas.map((e) => e.titulo));
+  unicas("consultoria.cambios.filas (después)", consultoria.cambios.filas.map((c) => c.despues));
+  unicas("consultoria.portada.nota", consultoria.portada.nota);
+  unicas("consultoria.recorrido.pasos (número)", consultoria.recorrido.pasos.map((p) => p.numero));
+  unicas("consultoria.paraQuien.noEs", consultoria.paraQuien.noEs.items);
   unicas("faq (todas las preguntas)", faq.grupos.flatMap((g) => g.preguntas.map((q) => q.p)));
   unicas("herramientas.lista (id)", herramientas.lista.map((h) => h.id));
   unicas("agendar.campos.lineaOpciones (valor)", agendar.campos.lineaOpciones.map((o) => o.valor));
@@ -229,8 +268,27 @@ describe("coherencia entre bloques", () => {
   });
 
   it("las preguntas de cada línea apuntan a su grupo de faq", () => {
-    expect(faq.grupos[preguntasLinea.coaching.grupo].nombre).toMatch(/coaching/i);
-    expect(faq.grupos[preguntasLinea.consultoria.grupo].nombre).toMatch(/consultor/i);
+    expect(faq.grupos[preguntasLinea.coaching.grupo].nombre).toBe(servicios.coaching);
+    expect(faq.grupos[preguntasLinea.consultoria.grupo].nombre).toBe(servicios.consultoria);
+  });
+
+  it("los enlaces dentro de las respuestas van a rutas del sitio", () => {
+    const enlaces = faq.grupos.flatMap((g) => g.preguntas).flatMap((q) => (q.enlace ? [q.enlace] : []));
+    expect(enlaces.length).toBeGreaterThan(0);
+    for (const e of enlaces) {
+      expect(RUTAS, e.h).toContain(separar(e.h).ruta);
+      expect(e.t.length).toBeGreaterThan(5);
+    }
+  });
+
+  // Juntos y con el país: /consultoria y /coaching apuntan a búsquedas "en
+  // Colombia" y la palabra tiene que verse en el cuerpo, no solo en las
+  // preguntas cerradas.
+  it("los dos socios van juntos, en Colombia, en el inicio, /coaching y /consultoria", () => {
+    for (const t of [inicioNosotros.linea, consultoria.paraQuien.socios.texto, coaching.paraTi.socios.texto]) {
+      expect(t).toMatch(/Martín Zárate y Santiago Ospina/);
+      expect(t).toMatch(/Colombia/);
+    }
   });
 
   it("el formulario ofrece coaching, consultoría y 'todavía no sé'", () => {

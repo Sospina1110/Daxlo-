@@ -1,6 +1,6 @@
 import { ArrowRight, ArrowUp, BarChart3, Check, ChevronDown, Globe, MessageSquare, Paperclip, Workflow } from "lucide-react";
 import { hero, rutas } from "@/content/copy";
-import { Badge, GlowButton, WindowDots } from "@/components/ui/primitives";
+import { GlowButton, WindowDots } from "@/components/ui/primitives";
 import { ToolLogo } from "@/components/ui/blocks";
 import { TextoQueSeEscribe } from "@/components/ui/escritura";
 import { CintaHero } from "@/components/ui/cinta-hero";
@@ -24,11 +24,13 @@ export function Hero() {
     <section id="top" className="relative isolate overflow-hidden pb-8 pt-28 max-[359px]:pt-24 md:pt-44">
       <FondoHero />
       <div className="container-page relative">
+        {/* El posicionamiento va arriba del titular, en frase y no en
+            microrrótulo: es lo primero que se lee. */}
         <Entrada>
-          <Badge>
-            <span className="sm:hidden">{hero.badgeCorto}</span>
-            <span className="hidden sm:inline">{hero.badge}</span>
-          </Badge>
+          <p data-cinta-tope="0.16" className="flex items-center gap-3 text-[18px] font-medium tracking-[-0.01em] text-white md:text-[22px]">
+            <span aria-hidden className="h-px w-8 shrink-0 bg-gradient-to-r from-cyan to-blue-bright md:w-10" />
+            {hero.aliado}
+          </p>
         </Entrada>
 
         {/* data-cinta-tope: luminancia máxima que puede tener el fondo en

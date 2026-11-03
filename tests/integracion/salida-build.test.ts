@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { JSDOM } from "jsdom";
 import { describe, expect, it } from "vitest";
-import { agendar, faq, nav, paginas, rutas, servicios } from "@/content/copy";
+import { agendar, faq, nav, paginas, preguntasLinea, rutas, servicios } from "@/content/copy";
 import { OUT } from "../apoyo/proyecto";
 
 // Revisa el sitio tal como sale del build (out/): lo que publica Cloudflare y
@@ -142,6 +142,25 @@ describe.skipIf(!HAY_BUILD)(HAY_BUILD ? "salida del build (out/)" : "salida del 
     // Cada respuesta del JSON-LD está en el HTML (dentro de su panel).
     const texto = textoVisible(doc);
     for (const q of ld.mainEntity) expect(texto).toContain(q.acceptedAnswer.text);
+  });
+
+  // Lo largo de cada línea vive en sus preguntas: botones a la vista y
+  // respuestas cerradas pero en el HTML del servidor, con el mismo texto que
+  // publica el FAQPage de /preguntas.
+  it("/coaching y /consultoria traen sus preguntas en el HTML, con la respuesta completa del FAQPage", () => {
+    const ld = datosEstructurados(pagina("preguntas")).find((d) => d["@type"] === "FAQPage") as { mainEntity: { name: string; acceptedAnswer: { text: string } }[] };
+    for (const clave of ["coaching", "consultoria"] as const) {
+      const doc = pagina(clave);
+      const grupo = faq.grupos[preguntasLinea[clave].grupo];
+      const botones = [...doc.querySelectorAll("main button[aria-controls]")].map((b) => b.textContent?.trim());
+      expect(botones, clave).toEqual(grupo.preguntas.map((q) => q.p));
+      const texto = textoVisible(doc);
+      for (const q of grupo.preguntas) {
+        const publicada = ld.mainEntity.find((m) => m.name === q.p);
+        expect(publicada?.acceptedAnswer.text, q.p).toBe(q.r);
+        expect(texto, q.p).toContain(q.r);
+      }
+    }
   });
 
   it("Service de /coaching y /consultoria: el nombre del servicio es el de las migas, con su @id fijo", () => {

@@ -7,6 +7,11 @@ export const EASE = [0.22, 1, 0.36, 1] as const;
 
 export type Tono = "cyan" | "blue" | "dual";
 
+// "1 a 1" sin corte de línea ("sesiones 1 a / 1."). Solo para el texto que se
+// pinta: los metadatos, los datos estructurados y los nombres accesibles que
+// buscan las pruebas conservan los espacios normales.
+export const sinCorte = (texto: string) => texto.replace(/\b1 a 1\b/g, "1 a 1");
+
 // Resplandor sin filtro. Antes cada resplandor era un círculo con
 // filter: blur(150px): se ve bien, pero desenfocar un círculo de 700 px es de
 // lo más caro que se le puede pedir a la tarjeta gráfica de un celular. Un

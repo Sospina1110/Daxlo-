@@ -185,6 +185,14 @@ describe("datos estructurados (JSON-LD)", () => {
     expect(ldServicio("coaching")["@id"]).not.toBe(ldServicio("consultoria")["@id"]);
   });
 
+  // Lo que la organización dice saber hacer son sus dos servicios, con el
+  // mismo nombre que su bloque Service, y nada que el sitio ya no diga (la
+  // extracción de datos de PDF salió de /consultoria en octubre de 2026).
+  it("knowsAbout nombra los dos servicios tal como los declara cada Service", () => {
+    for (const clave of ["coaching", "consultoria"] as const) expect(ldOrganizacion.knowsAbout).toContain(ldServicio(clave).serviceType);
+    expect(ldOrganizacion.knowsAbout.join(" ")).not.toMatch(/PDF/);
+  });
+
   it("la organización enlaza los dos servicios por su @id", () => {
     const ids = ldOrganizacion.hasOfferCatalog.itemListElement.map((o) => o.itemOffered["@id"]);
     expect(ids).toEqual([idServicio("coaching"), idServicio("consultoria")]);

@@ -7,7 +7,9 @@ const bordePorTono: Record<Tono, React.CSSProperties> = {
   blue: { ["--from" as string]: "#6f86ff", ["--to" as string]: "#1b35d0" },
 };
 
-// Píldora con borde degradado: la etiqueta sobre cada titular de sección.
+// Píldora con borde degradado: marca la audiencia dentro de una tarjeta ("Para
+// ti", "Para tu empresa"), la línea del hero y el h1 de las páginas sin
+// portada. No va encima de los titulares de sección.
 export function Badge({ children, tono = "dual", className }: { children: React.ReactNode; tono?: Tono; className?: string }) {
   return (
     <span
@@ -135,28 +137,14 @@ export function Orb({ tamano = 240, tono = "dual", className }: { tamano?: numbe
   );
 }
 
-// Los tres puntos de ventana de macOS que usan todas las maquetas.
+// Los tres puntos de ventana: solo en las maquetas de pantalla (el hero y la
+// sesión en vivo), no en diagramas.
 export function WindowDots({ className }: { className?: string }) {
   return (
     <span aria-hidden className={cn("flex items-center gap-1.5", className)}>
       <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
       <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
       <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
-    </span>
-  );
-}
-
-const tejaPorTono: Record<Tono, string> = {
-  cyan: "border-cyan/25 bg-cyan/10 text-cyan",
-  blue: "border-blue-bright/30 bg-blue-bright/12 text-[#8ea0ff]",
-  dual: "border-line-2 bg-white/5 text-white",
-};
-
-// Teja de icono: el recuadro redondeado que va sobre los titulares de tarjeta.
-export function IconTile({ children, tono = "dual", className }: { children: React.ReactNode; tono?: Tono; className?: string }) {
-  return (
-    <span className={cn("inline-flex h-12 w-12 items-center justify-center rounded-xl border", tejaPorTono[tono], className)}>
-      {children}
     </span>
   );
 }

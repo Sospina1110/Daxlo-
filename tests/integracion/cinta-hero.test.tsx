@@ -62,6 +62,7 @@ describe("Hero: fondo en movimiento", () => {
     const { container } = render(<Hero />);
     const topes = [...container.querySelectorAll<HTMLElement>("[data-cinta-tope]")].map((e) => [e.textContent?.trim(), e.dataset.cintaTope]);
     expect(topes).toEqual([
+      [hero.aliado, "0.16"],
       [hero.titulo[0], "0.16"],
       [hero.titulo[1], "degradado"],
       [hero.sub, "0.055"],

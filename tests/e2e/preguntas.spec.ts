@@ -1,4 +1,4 @@
-import { faq, preguntasLinea } from "../../src/content/copy";
+import { faq, preguntasLinea, type PreguntaFaq } from "../../src/content/copy";
 import { expect, irA, quieto, test, type Page } from "./apoyo";
 
 // Preguntas frecuentes: un toque abre la respuesta (se ve, tiene alto y deja
@@ -20,6 +20,10 @@ async function estado(page: Page, pregunta: string): Promise<Estado> {
     };
   });
 }
+
+// Lo que se lee en la respuesta abierta: el texto y, si la lleva, el enlace del
+// final en su propio renglón.
+const textoRespuesta = (q: PreguntaFaq) => [q.r, q.enlace?.t].filter(Boolean).join(" ");
 
 async function abrirYCerrar(page: Page, pregunta: string, respuesta: string, esCelular: boolean) {
   const boton = page.getByRole("button", { name: pregunta, exact: true });
@@ -54,7 +58,7 @@ test("en /preguntas cada pregunta abre con un toque y cierra con otro", async ({
   test.slow();
   await irA(page, "/preguntas");
   for (const g of faq.grupos) {
-    for (const q of g.preguntas) await abrirYCerrar(page, q.p, q.r, isMobile);
+    for (const q of g.preguntas) await abrirYCerrar(page, q.p, textoRespuesta(q), isMobile);
   }
 });
 
@@ -75,7 +79,34 @@ test("en /coaching las preguntas de la línea abren y cierran", async ({ page, i
   await irA(page, "/coaching");
   const grupo = faq.grupos[preguntasLinea.coaching.grupo];
   await expect(page.getByRole("heading", { name: preguntasLinea.coaching.titulo })).toHaveCount(1);
-  for (const q of [grupo.preguntas[0], grupo.preguntas.at(-1)!]) await abrirYCerrar(page, q.p, q.r, isMobile);
+  for (const q of [grupo.preguntas[0], grupo.preguntas.at(-1)!]) await abrirYCerrar(page, q.p, textoRespuesta(q), isMobile);
+});
+
+// El enlace del final de una respuesta lleva a su página y no es parte del
+// texto de la respuesta (los datos estructurados publican solo el texto).
+test("en /coaching, el enlace al final de una respuesta abierta lleva a su página", async ({ page, isMobile }) => {
+  await irA(page, "/coaching");
+  const q = faq.grupos[preguntasLinea.coaching.grupo].preguntas.find((x) => x.enlace)!;
+  const boton = page.getByRole("button", { name: q.p, exact: true });
+  await quieto(boton);
+  if (isMobile) await boton.tap();
+  else await boton.click();
+  const region = page.getByRole("region", { name: q.p });
+  await expect(region.locator("p").first()).toHaveText(q.r);
+  const enlace = region.getByRole("link", { name: q.enlace!.t });
+  await quieto(enlace);
+  if (isMobile) await enlace.tap();
+  else await enlace.click();
+  await expect(page).toHaveURL(q.enlace!.h);
+});
+
+// El grupo para decidir entre las dos líneas existe solo en /preguntas, con
+// su ancla.
+test("/preguntas tiene los grupos #coaching, #consultoria y #elegir, en ese orden", async ({ page }) => {
+  await irA(page, "/preguntas");
+  const ids = await page.locator("main [id]").evaluateAll((els) => els.map((e) => e.id).filter((id) => ["coaching", "consultoria", "elegir"].includes(id)));
+  expect(ids).toEqual(["coaching", "consultoria", "elegir"]);
+  await expect(page.locator("#elegir h2")).toHaveText(faq.grupos[2].nombre);
 });
 
 test("la ayuda por WhatsApp va después de las preguntas en celular, y en la columna izquierda en escritorio", async ({ page, isMobile }) => {

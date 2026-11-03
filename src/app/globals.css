@@ -13,6 +13,9 @@
   --color-ink-3: #1a1d28;
   --color-blue: #1b35d0;
   --color-blue-bright: #3d5aff;
+  /* Azul claro de marca (primary-soft): texto e iconos de acento de la línea
+     de consultoría sobre oscuro. */
+  --color-blue-soft: #8ea0ff;
   --color-cyan: #29c4f5;
   --color-cyan-deep: #0b7ea6;
   --color-mint: #e2f3ee;
@@ -122,6 +125,13 @@
     font-weight: 500;
     letter-spacing: -0.02em;
     text-wrap: balance;
+  }
+  /* Sin palabras sueltas al final de un párrafo o de un punto de lista
+     ("IVA." o "precio" solos en su línea). El hero aprobado (#top) conserva
+     sus cortes de línea originales. Especificidad 0: cualquier clase la
+     reemplaza. */
+  :where(p, li):not(:where(#top) *) {
+    text-wrap: pretty;
   }
   ::selection {
     background: rgb(41 196 245 / 0.35);
@@ -234,14 +244,22 @@
     transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--retraso, 0s);
 }
 
-/* Barra que crece de izquierda a derecha al entrar en pantalla. */
-.crecer {
+/* Tachado del "Hoy" en /consultoria (el momento de autor de la página): desde
+   1024 px, una raya de 1 px crece de izquierda a derecha cuando su fila entra
+   en pantalla, un poco después de que la fila aparece. Solo transform: no
+   mueve nada alrededor. Sin JavaScript no hay .js y queda tachado. */
+.tachado-linea {
   transform-origin: left;
-  transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1) var(--retraso, 0s);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--retraso, 0s) + 0.35s);
 }
-.js .crecer[data-revelar]:not([data-visible]) {
-  opacity: 1;
+.js [data-revelar]:not([data-visible]) .tachado-linea {
   transform: scaleX(0);
+}
+/* Con colores forzados (alto contraste de Windows) el fondo de la raya pasa a
+   Canvas y desaparecía: se pinta con el color del texto. Fuera de @layer para
+   ganarle a bg-white/40 de utilities. */
+@media (forced-colors: active) {
+  .tachado-linea { background-color: CanvasText; }
 }
 
 /* Resplandor sin filtro: el fondo lo pone glow() en src/lib/utils.ts. */
@@ -397,16 +415,6 @@
   transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Tarjetas de las dos líneas: con mouse suben 4 px además de encender el borde. */
-@media (hover: hover) and (pointer: fine) {
-  .tarjeta-sube {
-    transition:
-      border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .tarjeta-sube:hover { transform: translate3d(0, -4px, 0); }
-}
-
 @media (max-width: 767px) {
   /* En celular estas no corren. Las líneas punteadas animan
      stroke-dashoffset, que se repinta en el hilo principal en cada frame. La
@@ -444,5 +452,8 @@
   .cinta-respaldo,
   .boton-principal::before { transition: none !important; }
   .boton-barrido { display: none; }
-  .tarjeta-sube:hover { transform: none; }
+  /* El tachado del "Hoy" queda puesto y quieto, también antes de aparecer su
+     fila (misma especificidad que la regla de arriba, y va después). */
+  .tachado-linea { transition: none; }
+  .js [data-revelar]:not([data-visible]) .tachado-linea { transform: none; }
 }

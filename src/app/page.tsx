@@ -1,5 +1,5 @@
 import { Hero } from "@/components/sections/hero";
-import { Comparacion, DosFormas, FranjaHerramientas } from "@/components/sections/intro";
+import { DosPuertas } from "@/components/sections/intro";
 import { CtaFinal, NosotrosResumen } from "@/components/sections/entre-paginas";
 import { JsonLd } from "@/components/ui/json-ld";
 import { ldSitioWeb, metadatosPagina } from "@/lib/sitio";
@@ -11,17 +11,15 @@ export const metadata = metadatosPagina("inicio");
 // varios elementos sueltos (el primero, un script sin caja) la página nueva
 // abría a mitad de camino.
 //
-// El inicio es el índice: presenta las dos líneas y manda a cada visitante a
-// la página de la que le interesa. El detalle de cada una vive en su ruta.
+// El inicio es el índice: debajo del hero solo reparte (dos puertas), muestra
+// quiénes somos y cierra. El detalle de cada línea vive en su ruta.
 export default function Inicio() {
   return (
     <div>
       <Hero />
-      <FranjaHerramientas conEnlace />
-      <DosFormas />
-      <Comparacion />
+      <DosPuertas />
       <NosotrosResumen />
-      <CtaFinal />
+      <CtaFinal whatsapp />
       <JsonLd datos={ldSitioWeb} />
     </div>
   );

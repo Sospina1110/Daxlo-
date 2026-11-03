@@ -57,11 +57,16 @@ export function Nosotros({ migas }: { migas?: React.ReactNode }) {
 
 // ------------------------------------------------ Preguntas frecuentes
 
-// Página /preguntas. Cada grupo lleva su ancla (#coaching, #consultoria) para
-// que las páginas de cada línea enlacen directo a sus preguntas.
+// Página /preguntas. Cada grupo lleva su ancla (#coaching, #consultoria,
+// #elegir) para que las páginas de cada línea enlacen directo a sus
+// preguntas. El grupo "Coaching o consultoría" no es de ninguna línea: su
+// título va en blanco, sin cian ni azul.
+const tituloGrupo = { cyan: "text-cyan", blue: "text-blue-soft", dual: "text-white/70" } as const;
+const puntoGrupo = { cyan: "bg-cyan", blue: "bg-blue-bright", dual: "bg-white/50" } as const;
+
 export function Faq({ migas }: { migas?: React.ReactNode }) {
   const f = faq;
-  const anclas = ["coaching", "consultoria"];
+  const anclas = ["coaching", "consultoria", "elegir"];
   return (
     <section className="relative pb-20 pt-28 md:pb-32 md:pt-36">
       {migas && <div className="container-page">{migas}</div>}
@@ -77,15 +82,15 @@ export function Faq({ migas }: { migas?: React.ReactNode }) {
           {f.grupos.map((g, gi) => (
             <div key={g.nombre} id={anclas[gi]}>
               <Reveal>
-                <h2 className={cn("flex items-center gap-2.5 font-display text-[15px] font-medium uppercase tracking-[0.12em]", g.tono === "cyan" ? "text-cyan" : "text-[#8ea0ff]")}>
-                  <span aria-hidden className={cn("h-2 w-2 rounded-full", g.tono === "cyan" ? "bg-cyan" : "bg-blue-bright")} />
+                <h2 className={cn("flex items-center gap-2.5 font-display text-[15px] font-medium uppercase tracking-[0.12em]", tituloGrupo[g.tono])}>
+                  <span aria-hidden className={cn("h-2 w-2 rounded-full", puntoGrupo[g.tono])} />
                   {g.nombre}
                 </h2>
               </Reveal>
               <div className="mt-4 space-y-3">
                 {g.preguntas.map((q, i) => (
                   <Reveal key={q.p} delay={0.04 * i}>
-                    <Pregunta pregunta={q.p} respuesta={q.r} />
+                    <Pregunta pregunta={q.p} respuesta={q.r} enlace={q.enlace} />
                   </Reveal>
                 ))}
               </div>
