@@ -56,7 +56,7 @@ describe("voz de marca", () => {
   // ajuste de SEO las toca, falla aquí.
   // Desde noviembre de 2026 (pedido de Santiago: páginas más cortas) cada
   // límite va donde se decide: en el primer paso de cada línea (la sesión de
-  // coaching y la primera conversación de consultoría), en la respuesta a
+  // coaching y el paso 01 de consultoría, la primera conversación), en la respuesta a
   // "¿quién lo va a operar?", en "No es para… si" y en el cierre. Bajo el
   // botón de la portada van datos, no el límite completo: repetido arriba y en
   // el cierre perdía fuerza. Lo largo (las 40 horas) pasó a las preguntas.
@@ -107,6 +107,36 @@ describe("voz de marca", () => {
     const elegir = respuesta("¿Te sirve el coaching o la consultoría de IA?");
     expect(elegir).toMatch(/lo haces tú solo.*es coaching/i);
     expect(elegir).toMatch(/lo hacen varias personas de tu equipo, es consultoría/i);
+  });
+
+  // Las herramientas no son la propuesta de valor (Santiago, 2026-11-03:
+  // "Clases… con ChatGPT y Claude" no le agrega valor a nadie). Donde se dice
+  // qué hacemos y cómo trabajamos (las puertas del inicio, los subtítulos de
+  // las portadas, los titulares, las escenas y las filas de /consultoria y los
+  // pasos de las dos líneas) no va ningún nombre de herramienta. Sí pueden ir
+  // en /herramientas, en las preguntas, en los metadatos y en la maqueta de
+  // la sesión.
+  it("las herramientas no aparecen como propuesta de valor", () => {
+    const escapar = (n: string) => n.replace(/[.*+?^$()|[\]\\{}]/g, "\\$&");
+    const nombres = [...herramientas.lista.map((h) => h.nombre), "Excel"].map(escapar);
+    const marca = new RegExp(`\\b(${nombres.join("|")})\\b`, "i");
+    const donde = [
+      ...cadenas(dosFormas, "dosFormas"),
+      ["coaching.portada.sub", coaching.portada.sub],
+      ["coaching.sesion.titulo", coaching.sesion.titulo],
+      ...cadenas(coaching.sesion.pasos, "coaching.sesion.pasos"),
+      ["coaching.problema.titulo", coaching.problema.titulo],
+      ["consultoria.portada.sub", consultoria.portada.sub],
+      ...cadenas(consultoria.problema, "consultoria.problema"),
+      ...cadenas(consultoria.cambios, "consultoria.cambios"),
+      ...cadenas(consultoria.recorrido, "consultoria.recorrido"),
+      ...cadenas(otraLinea, "otraLinea"),
+    ] as [string, string][];
+    // Que la lista revise lo que dice revisar: las dos puertas y los pasos.
+    expect(donde.map(([d]) => d)).toEqual(expect.arrayContaining(["dosFormas.coaching.linea", "dosFormas.consultoria.linea", "consultoria.recorrido.pasos[2].texto", "coaching.sesion.pasos[1].texto"]));
+    expect(marca.test("Tú le escribes a ChatGPT o a Claude")).toBe(true);
+    const mal = donde.filter(([, t]) => marca.test(t)).map(([d, t]) => `${d}: ${t}`);
+    expect(mal).toEqual([]);
   });
 
   // Sin cifras de precio ni medios de pago (se hablan en la propuesta,
