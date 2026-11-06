@@ -4,7 +4,9 @@ import { expect, irA, irAlFinal, irArriba, test, type Page } from "./apoyo";
 
 // La cinta de luz del hero: un lienzo WebGL decorativo que ondula solo, se
 // inclina hacia el mouse, se detiene fuera de vista, queda quieto con
-// "reducir movimiento" y nunca deja el texto sin contraste.
+// "reducir movimiento" y nunca deja el texto sin contraste. Sin GPU (WebGL por
+// software) se queda la banda CSS. La misma cinta va detrás de la portada de
+// /coaching y /consultoria (al final).
 //
 // Solo Chromium: es el que trae WebGL sin ventana con las banderas de
 // playwright.config.ts. Si el equipo no da WebGL (o lo da tan lento que la
@@ -30,10 +32,10 @@ test.beforeEach(async ({ page }) => {
 
 const dibujos = (page: Page) => page.evaluate(() => (window as unknown as { __dibujos: number }).__dibujos);
 
-// Espera a que el motor arranque y devuelve en qué quedó.
-async function estadoFinal(page: Page) {
-  await expect.poll(() => capa(page).getAttribute("data-cinta"), { message: "el motor de la cinta no arrancó" }).not.toBe("carga");
-  return (await capa(page).getAttribute("data-cinta")) ?? "";
+// Espera a que el motor arranque y devuelve en qué quedó. Sin `c`, la cinta del hero.
+async function estadoFinal(page: Page, c = capa(page)) {
+  await expect.poll(() => c.getAttribute("data-cinta"), { message: "el motor de la cinta no arrancó" }).not.toBe("carga");
+  return (await c.getAttribute("data-cinta")) ?? "";
 }
 
 test("el fondo es un lienzo decorativo que arranca después del texto y no mueve nada", async ({ page }) => {
@@ -257,9 +259,11 @@ for (const ancho of [280, 320]) {
 
 // Rectángulos de cada línea de texto marcada (y los enlaces de la barra, el
 // logo y el ícono del menú), con su tope. Para el titular en degradado, la
-// caja del degradado.
-async function lineas(page: Page) {
-  return page.evaluate(() => {
+// caja del degradado. `sel`: la sección (el hero, o la portada de una línea).
+// Sin `barra`, la barra queda fuera: con la página corrida, la barra fija
+// tapa el texto que pasa por debajo y su botón "Agendar" se leería como fondo.
+async function lineas(page: Page, sel: string, barra: boolean) {
+  return page.evaluate(({ sel, barra }) => {
     const filasDe = (el: Element) => {
       const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
       const rg = document.createRange();
@@ -281,7 +285,7 @@ async function lineas(page: Page) {
     };
     const salida: { nombre: string; tope: number | null; left: number; right: number; top: number; bottom: number }[] = [];
     let grad = { x: 0, y: 0, w: 1, h: 1 };
-    for (const el of document.querySelectorAll<HTMLElement>("#top [data-cinta-tope]")) {
+    for (const el of document.querySelectorAll<HTMLElement>(`${sel} [data-cinta-tope]`)) {
       const t = el.dataset.cintaTope ?? "";
       if (t === "degradado") {
         const c = el.getBoundingClientRect();
@@ -289,6 +293,7 @@ async function lineas(page: Page) {
       }
       for (const f of filasDe(el)) salida.push({ nombre: (el.textContent ?? "").trim().slice(0, 24), tope: t === "degradado" ? null : Number(t), ...f });
     }
+    if (!barra) return { salida, grad };
     const ul = document.querySelector('nav[aria-label="Principal"] ul');
     if (ul && ul.getClientRects().length) for (const f of filasDe(ul)) salida.push({ nombre: "barra", tope: 0.06, ...f });
     // El logo y el ícono del menú: 3:1 (tope 0,16), como el titular.
@@ -298,7 +303,7 @@ async function lineas(page: Page) {
       salida.push({ nombre: e.tagName === "IMG" ? "logo" : "menú", tope: 0.16, left: c.left, right: c.right, top: c.top, bottom: c.bottom });
     }
     return { salida, grad };
-  });
+  }, { sel, barra });
 }
 
 type Exceso = Record<string, number>;
@@ -306,11 +311,12 @@ type Exceso = Record<string, number>;
 // Oculta el texto, captura y busca el peor punto del fondo detrás de cada
 // línea: la luminancia no puede pasar del tope (en el degradado, el límite
 // de 3:1 contra el color del degradado en ese punto).
-async function medir(page: Page, peor: Exceso) {
-  const { salida, grad } = await lineas(page);
+async function medir(page: Page, peor: Exceso, sel = "#top", barra = true) {
+  const { salida, grad } = await lineas(page, sel, barra);
   const estilo = await page.addStyleTag({
-    content:
-      "#top [data-cinta-tope], #top [data-cinta-tope] *, nav[aria-label='Principal'] ul, nav[aria-label='Principal'] a > img, nav[aria-label='Principal'] button[aria-controls] svg { visibility: hidden !important; }",
+    content: barra
+      ? `${sel} [data-cinta-tope], ${sel} [data-cinta-tope] *, nav[aria-label='Principal'] ul, nav[aria-label='Principal'] a > img, nav[aria-label='Principal'] button[aria-controls] svg { visibility: hidden !important; }`
+      : `${sel} [data-cinta-tope], ${sel} [data-cinta-tope] *, nav[aria-label='Principal'] { visibility: hidden !important; }`,
   });
   await page.waitForTimeout(50);
   const png = (await page.screenshot({ scale: "css" })).toString("base64");
@@ -490,3 +496,167 @@ test("con el teclado, el foco del botón principal se distingue de su halo y de 
   expect(r.veces, `cambio en la banda: ${JSON.stringify(r)}`).toBeGreaterThanOrEqual(1);
   for (const [lado, parte] of Object.entries(r.lados)) expect.soft(parte, `lado ${lado}: ${JSON.stringify(r)}`).toBeGreaterThanOrEqual(0.2);
 });
+
+// ------------------------------------------------------------------ Sin GPU
+
+// El Chromium sin GPU (Lighthouse, PageSpeed) dibuja WebGL en el procesador y
+// cada cuadro bloquea el hilo principal. El motor lo reconoce por el nombre
+// del renderizador y se queda con la banda sin compilar el shader ni dibujar.
+// Aquí el contexto dice ser SwiftShader.
+test("con WebGL por software se queda la banda: sin compilar el shader ni dibujar un cuadro", async ({ page }) => {
+  await page.addInitScript(() => {
+    const leer = WebGLRenderingContext.prototype.getParameter;
+    WebGLRenderingContext.prototype.getParameter = function (this: WebGLRenderingContext, p: number) {
+      // UNMASKED_RENDERER_WEBGL, de WEBGL_debug_renderer_info.
+      if (p === 0x9246) return "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)";
+      return leer.call(this, p);
+    } as typeof leer;
+    const w = window as unknown as { __compilados: number };
+    w.__compilados = 0;
+    const compilar = WebGLRenderingContext.prototype.compileShader;
+    WebGLRenderingContext.prototype.compileShader = function (this: WebGLRenderingContext, ...a: Parameters<typeof compilar>) {
+      w.__compilados++;
+      return compilar.apply(this, a);
+    };
+  });
+  await irA(page, "/");
+  expect(await estadoFinal(page)).toBe("respaldo");
+  await page.waitForTimeout(800);
+  expect(await dibujos(page)).toBe(0);
+  expect(await page.evaluate(() => (window as unknown as { __compilados: number }).__compilados)).toBe(0);
+  // La banda CSS sigue a la vista; el lienzo no aparece.
+  await expect.poll(() => capa(page).locator(".cinta-respaldo").evaluate((e) => getComputedStyle(e).opacity)).toBe("1");
+  expect(await capa(page).locator("canvas").evaluate((e) => getComputedStyle(e).opacity)).toBe("0");
+});
+
+// Si los primeros cuadros bloquean el hilo principal más de 50 ms (un
+// renderizador por software que no se dejó reconocer, un equipo que no da),
+// el guardián apaga la cinta y vuelve la banda, con los resplandores CSS del
+// hero. Se simula con 70 ms de trabajo después de cada cuadro de la cinta.
+test("si los primeros cuadros bloquean el hilo principal, el guardián deja la banda", async ({ page }) => {
+  await page.addInitScript(() => {
+    let dibujo = false;
+    const dibujar = WebGLRenderingContext.prototype.drawArrays;
+    WebGLRenderingContext.prototype.drawArrays = function (this: WebGLRenderingContext, ...a: Parameters<typeof dibujar>) {
+      dibujo = true;
+      return dibujar.apply(this, a);
+    };
+    const pedir = window.requestAnimationFrame.bind(window);
+    window.requestAnimationFrame = (cb: FrameRequestCallback) =>
+      pedir((t) => {
+        dibujo = false;
+        cb(t);
+        if (!dibujo) return;
+        const fin = performance.now() + 70;
+        while (performance.now() < fin) {
+          // Hilo principal ocupado, como con WebGL por software.
+        }
+      });
+  });
+  await irA(page, "/");
+  await estadoFinal(page);
+  await expect(capa(page)).toHaveAttribute("data-cinta", "respaldo");
+  const n = await dibujos(page);
+  await page.waitForTimeout(800);
+  expect(await dibujos(page), "siguió dibujando").toBe(n);
+  expect(await capa(page).getAttribute("data-puntero")).toBeNull();
+  await expect.poll(() => capa(page).locator(".cinta-respaldo").evaluate((e) => getComputedStyle(e).opacity)).toBe("1");
+  await expect.poll(() => capa(page).locator("canvas").evaluate((e) => getComputedStyle(e).opacity)).toBe("0");
+  // Los resplandores de esquina, que con WebGL pinta el shader, vuelven al CSS.
+  expect(await page.locator("#top [data-cinta-resplandor]").evaluateAll((es) => es.map((e) => (e as HTMLElement).style.opacity))).toEqual(["", ""]);
+});
+
+// ------------------------------------------------------------------ Portadas
+
+// La misma cinta va detrás de la portada de /coaching y /consultoria, con el
+// tinte de la línea y una trayectoria que sube pasado el titular gigante.
+const PORTADA = ".portada-paralaje";
+const capaPortada = (page: Page) => page.locator(`${PORTADA} .cinta`);
+
+for (const ruta of ["/coaching", "/consultoria"]) {
+  test.describe(`portada de ${ruta}`, () => {
+    test("la cinta arranca detrás del texto, decorativa y sin mover nada; fuera de vista deja de dibujar", async ({ page }) => {
+      await page.addInitScript((sel: string) => {
+        const w = window as unknown as { __cls: number };
+        w.__cls = 0;
+        new PerformanceObserver((l) => {
+          for (const e of l.getEntries() as (PerformanceEntry & { value: number; hadRecentInput: boolean; sources?: { node?: Node }[] })[]) {
+            const enPortada = e.sources?.some((s) => s.node instanceof Element && s.node.closest(sel));
+            if (!e.hadRecentInput && enPortada) w.__cls += e.value;
+          }
+        }).observe({ type: "layout-shift", buffered: true });
+      }, PORTADA);
+      await irA(page, ruta);
+      const estado = await estadoFinal(page, capaPortada(page));
+      expect(["lista", "quieta", "respaldo"]).toContain(estado);
+      const lienzo = capaPortada(page).locator("canvas");
+      expect(await lienzo.evaluate((c) => ({ eventos: getComputedStyle(c).pointerEvents, posicion: getComputedStyle(c).position, oculto: !!c.closest("[aria-hidden='true']") }))).toEqual({
+        eventos: "none",
+        posicion: "absolute",
+        oculto: true,
+      });
+      await page.waitForTimeout(1_500);
+      expect(await page.evaluate(() => (window as unknown as { __cls: number }).__cls)).toBeLessThan(0.001);
+      test.skip(estado !== "lista", `sin bucle en este equipo (${estado})`);
+      const antes = await dibujos(page);
+      await page.waitForTimeout(500);
+      expect(await dibujos(page)).toBeGreaterThan(antes);
+      await irAlFinal(page);
+      await expect(capaPortada(page)).toHaveAttribute("data-cinta", "pausa");
+      const quieto = await dibujos(page);
+      await page.waitForTimeout(800);
+      expect(await dibujos(page), "siguió dibujando fuera de vista").toBe(quieto);
+      await irArriba(page);
+      await expect(capaPortada(page)).toHaveAttribute("data-cinta", "lista");
+    });
+
+    test("el texto no pierde contraste con el fondo en movimiento, tampoco con el titular corrido por el scroll", async ({ page, isMobile }) => {
+      test.setTimeout(240_000);
+      await irA(page, ruta);
+      await estadoFinal(page, capaPortada(page));
+      await page.waitForTimeout(1_500);
+      const peor: Exceso = {};
+      // El puntero sobre el titular, el sub y el hueco de la derecha: la seda
+      // se inclina hacia él.
+      const puntos = [
+        [700, 450],
+        [380, 720],
+        [1000, 300],
+        [900, 650],
+      ];
+      for (const [x, y] of puntos) {
+        if (!isMobile) await page.mouse.move(x, y, { steps: 6 });
+        await page.waitForTimeout(1_100);
+        await medir(page, peor, PORTADA);
+      }
+      // El paralaje corre el titular gigante a lo ancho con el scroll: el
+      // motor vuelve a medir las zonas, y la protección sigue al texto. La
+      // barra, ya fija sobre el contenido, se oculta para ver lo que tapa.
+      for (const y of [150, 300]) {
+        await page.evaluate((y) => scrollTo({ top: y, behavior: "instant" }), y);
+        await page.waitForTimeout(900);
+        await medir(page, peor, PORTADA, false);
+      }
+      for (const [linea, exceso] of Object.entries(peor)) expect.soft(exceso, `fondo demasiado claro detrás de "${linea}"`).toBeLessThanOrEqual(0.004);
+    });
+
+    test.describe("con 'reducir movimiento'", () => {
+      test.use({ reducedMotion: "reduce" });
+
+      test("un solo cuadro quieto, sin bucle", async ({ page, isMobile }) => {
+        await irA(page, ruta);
+        const estado = await estadoFinal(page, capaPortada(page));
+        expect(["quieta", "respaldo"]).toContain(estado);
+        test.skip(estado === "respaldo", "sin WebGL en este equipo");
+        await expect(capaPortada(page)).toHaveAttribute("data-modo", "quieto");
+        // Al terminar las entradas (transiciones del sub y la acción) el motor
+        // vuelve a medir y redibuja ese cuadro: se cuenta después.
+        await page.waitForTimeout(1_500);
+        const n = await dibujos(page);
+        if (!isMobile) await page.mouse.move(700, 400, { steps: 8 });
+        await page.waitForTimeout(800);
+        expect(await dibujos(page)).toBe(n);
+      });
+    });
+  });
+}

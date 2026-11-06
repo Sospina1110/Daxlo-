@@ -7,6 +7,16 @@ import { cn, glow } from "@/lib/utils";
 
 type TonoZona = "cyan" | "blue";
 
+// El resplandor de arriba de cada zona (color y alfa de glow()) y el fondo
+// de la zona, en sRGB. La cinta de la portada los usa para calcular el
+// contraste contra lo que queda debajo de ella (zona-portada.tsx). El fondo
+// de consultoría es el mismo bg-[#08090e] de Zona.
+export const RESPLANDOR_ZONA = {
+  cyan: { rgb: "41 196 245", alfa: 0.14 },
+  blue: { rgb: "27 53 208", alfa: 0.35 },
+} as const;
+export const FONDO_ZONA = { cyan: "13 14 20", blue: "8 9 14" } as const;
+
 // Cada línea de servicio vive en su propio territorio: coaching con aire cian
 // sobre el casi negro, consultoría más oscura y con resplandor azul. Sobre un
 // sitio oscuro, el cambio de ambiente es lo que marca la frontera.
@@ -18,12 +28,13 @@ type TonoZona = "cyan" | "blue";
 // resto de la página: antes acababa en un borde horizontal duro.
 export function Zona({ tono, arriba = false, children }: { tono: TonoZona; arriba?: boolean; children: React.ReactNode }) {
   const cyan = tono === "cyan";
+  const r = RESPLANDOR_ZONA[tono];
   return (
     <div className={cn("relative isolate", !cyan && "bg-[#08090e]")}>
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden [mask-image:linear-gradient(to_bottom,#000_calc(100%-240px),transparent)]">
         <span
           className={cn("resplandor animate-deriva absolute top-0 h-[760px] w-[760px]", cyan ? "-left-[22%]" : "-right-[22%]")}
-          style={cyan ? glow("41 196 245", 0.14, 1.39) : glow("27 53 208", 0.35, 1.39)}
+          style={glow(r.rgb, r.alfa, 1.39)}
         />
       </div>
       {!cyan && <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[140px] bg-gradient-to-b from-transparent to-ink" />}

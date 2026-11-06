@@ -1,4 +1,4 @@
-// GLSL de la cinta de luz del hero (WebGL 1, sin librerías).
+// GLSL de la cinta de luz del hero y de las portadas (WebGL 1, sin librerías).
 //
 // Un triángulo que cubre todo el lienzo y este fragment shader. Todo se mide
 // en px CSS con la y hacia abajo, igual que el DOM: así los rectángulos de
@@ -14,7 +14,7 @@
 // 3. La luz del puntero sobre la seda, grano fino y estrellas en lo oscuro.
 //
 // Zonas de lectura: el motor pasa hasta MAX_ZONAS rectángulos (cada línea de
-// texto del hero y la barra; si no caben, líneas vecinas del mismo texto
+// texto del hero o de la portada y la barra; si no caben, líneas vecinas del mismo texto
 // fusionadas en una caja) con el tope de luminancia que puede tener el fondo
 // detrás. Cerca del texto la cinta pierde los brillos cian y menta (queda en
 // azul) y la alfa se recorta por bisección hasta no pasar el tope. El
@@ -24,7 +24,7 @@
 // no tiene costura y la precisión no se degrada con el tiempo.
 
 // Cuántas zonas de lectura recibe el shader. El motor y el GLSL leen este
-// mismo valor, así que no se desincronizan. Con 12, el shader usa unos 19
+// mismo valor, así que no se desincronizan. Con 12, el shader usa unos 20
 // vectores de uniformes de fragmento; WebGL 1 garantiza 16 y los teléfonos
 // reportan 64 o más, así que hay margen, pero no conviene subirlo sin medir.
 export const MAX_ZONAS = 12;
@@ -51,16 +51,22 @@ uniform vec4 uGrad;     // caja del titular en degradado (x, y, ancho, alto)
 uniform vec4 uGlowA;    // resplandor cian: cx, cy, radio, alfa
 uniform vec4 uGlowB;    // resplandor azul
 uniform float uFalda;   // ancho del borde suave de las zonas de lectura (px)
+uniform float uTinte;   // 1 hacia el cian (coaching), -1 hacia el azul (consultoría), 0 el hero
+uniform vec3 uFondo;    // lo más claro debajo del lienzo en la portada (< 0: el hero, FONDO)
 
 const vec3 INK = vec3(13., 14., 20.) / 255.;
 // Fondo para calcular el tope: el casi negro con un cruce de la rejilla
 // encima (dos líneas de blanco al 3,5 %), el peor caso de lo que queda
-// debajo del lienzo.
+// debajo del lienzo del hero. En la portada no hay rejilla, pero sí el
+// resplandor de la zona en CSS (fuera del lienzo), que en coaching es más
+// claro: el motor pasa su centro en uFondo.
 const vec3 FONDO = vec3(29.7, 30.6, 36.3) / 255.;
 const vec3 AZUL = vec3(27., 53., 208.) / 255.;
 const vec3 AZULV = vec3(61., 90., 255.) / 255.;
+const vec3 AZULS = vec3(142., 160., 255.) / 255.;
 const vec3 CIAN = vec3(41., 196., 245.) / 255.;
 const vec3 CIANC = vec3(122., 215., 255.) / 255.;
+const vec3 CIANP = vec3(11., 126., 166.) / 255.;
 const vec3 MENTA = vec3(226., 243., 238.) / 255.;
 const float TAU = 6.2831853;
 
@@ -179,9 +185,16 @@ void main() {
   I *= mix(1., 0.62, prox);
 
   // Color por intensidad: azul de marca, azul vivo, cian y menta en el pico.
-  vec3 col = mix(AZUL, AZULV, smoothstep(0.15, 0.55, I));
-  col = mix(col, CIAN, smoothstep(0.5, 0.95, I) * lejos);
-  col = mix(col, MENTA, smoothstep(1., 1.45, I) * 0.85 * lejos);
+  // Tinte de la portada de cada línea, solo con colores de la paleta: hacia
+  // el cian (coaching), el cuerpo va del cian profundo al cian; hacia el azul
+  // (consultoría), el pico es el azul suave y la menta casi no aparece. Con
+  // uTinte en 0 (el hero) cada mix queda en su primer color: el mismo
+  // resultado de siempre.
+  float tc = max(uTinte, 0.);
+  float ta = max(-uTinte, 0.);
+  vec3 col = mix(mix(AZUL, CIANP, 0.6 * tc), mix(AZULV, CIAN, 0.45 * tc), smoothstep(0.15, 0.55, I));
+  col = mix(col, mix(CIAN, AZULS, 0.8 * ta), smoothstep(0.5, 0.95, I) * lejos);
+  col = mix(col, MENTA, smoothstep(1., 1.45, I) * 0.85 * lejos * (1. - 0.7 * ta));
   float a = clamp(I * 1.05, 0., 1.);
   float gr = h21(floor(p));
   a = clamp(a + (gr - 0.5) * 0.08 * a, 0., 1.);
@@ -202,11 +215,13 @@ void main() {
   // entre 1 y m, que nunca pasa de m.
   float m = 1.;
   if (tope < 0.999) {
+    // En el hero (uFondo negativo) la constante tal cual: el mismo resultado de siempre.
+    vec3 fondo = uFondo.r < 0. ? FONDO : uFondo;
     float lo = 0.;
     float hi = 2.;
     for (int k = 0; k < 9; k++) {
       float mm = 0.5 * (lo + hi);
-      if (lum(rc * mm + FONDO * (1. - ra * mm)) > tope) hi = mm; else lo = mm;
+      if (lum(rc * mm + fondo * (1. - ra * mm)) > tope) hi = mm; else lo = mm;
     }
     float kk = 0.06;
     m = min(1., lo) - kk * log(1. + exp(-abs(1. - lo) / kk));

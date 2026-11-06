@@ -17,8 +17,9 @@ if (!fs.existsSync("out/index.html")) {
 // WebGL para la cinta de luz del hero. Chromium sin ventana no lo da por su
 // cuenta: en Windows se usa la tarjeta gráfica de verdad (D3D11); en otros
 // sistemas (una máquina de CI sin GPU), SwiftShader, que dibuja en el
-// procesador. Ahí la calidad adaptativa suele dejar un cuadro quieto y las
-// pruebas del bucle de tests/e2e/cinta.spec.ts se saltan solas.
+// procesador. Ahí el motor reconoce el render por software y deja la banda
+// CSS (como en Lighthouse), y las pruebas del bucle de tests/e2e/cinta.spec.ts
+// se saltan solas.
 const WEBGL =
   process.platform === "win32"
     ? ["--use-angle=d3d11", "--enable-gpu", "--ignore-gpu-blocklist"]

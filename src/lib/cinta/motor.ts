@@ -1,16 +1,23 @@
-// Motor de la cinta de luz del hero: contexto WebGL, bucle, puntero, toque,
-// pausas y calidad adaptativa. Sin dependencias. Lo carga CintaHero
+// Motor de la cinta de luz: contexto WebGL, bucle, puntero, toque, pausas y
+// calidad adaptativa. Sin dependencias. Lo carga CintaHero
 // (src/components/ui/cinta-hero.tsx) con un import dinámico, después de
 // hidratar y en tiempo ocioso: no pesa en la carga inicial ni en el LCP.
+// Va detrás del hero del inicio y de la portada de cada línea (/coaching,
+// /consultoria): la variante cambia la trayectoria y el tinte, no el motor.
 //
 // Nunca escribe en la consola: la suite E2E falla con cualquier
-// console.error. Si algo sale mal, devuelve null y queda la banda CSS.
+// console.error. Si algo sale mal, devuelve null y queda la banda CSS. Con
+// WebGL por software (sin GPU) también: ver esRenderSoftware.
 
 import { FRAGMENTO, MAX_ZONAS, VERTICE } from "./shader";
 
 export { MAX_ZONAS };
 
 export type EstadoCinta = "lista" | "pausa" | "quieta";
+
+// Dónde va la cinta: el hero del inicio o la portada de una línea. Cambia la
+// trayectoria y, en la portada, cuándo se vuelve a medir (ver crearMotor).
+export type Variante = "hero" | "portada";
 
 export type Modo = {
   // Bucle continuo. Sin él, un solo cuadro quieto.
@@ -69,9 +76,25 @@ export function acercar(actual: number, objetivo: number, dt: number, tau: numbe
 }
 
 // Trayectoria de la cinta (x0, x1, y0, y1 en px CSS): plana a la izquierda y
-// subiendo a la derecha. En escritorio pasa por debajo de la fila del botón y
-// sube por la derecha, lejos del titular; en celular cruza en diagonal.
-export function trayectoria(ancho: number, alto: number, movil: boolean): [number, number, number, number] {
+// subiendo a la derecha.
+// - Hero: en escritorio pasa por debajo de la fila del botón y sube por la
+//   derecha, lejos del titular; en celular cruza en diagonal.
+// - Portada: plana por debajo del titular gigante (en escritorio, por el hueco
+//   a la izquierda del sub) y sube pasado su borde derecho (`derecha`, medido
+//   en el motor). La subida no puede ser fija: "ti." termina antes de la mitad
+//   y "empresa." llega casi al borde. El margen (8 % del ancho) cubre lo que la
+//   segunda línea se corre con el scroll (+8 %). Así no pasa detrás del
+//   gigante; detrás del sub sí puede pasar, sin brillos, por su tope.
+export function trayectoria(ancho: number, alto: number, movil: boolean, variante: Variante = "hero", derecha = 0): [number, number, number, number] {
+  if (variante === "portada") {
+    const entre = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
+    if (movil) {
+      const x0 = entre(derecha + 0.08 * ancho, 0.3 * ancho, 0.9 * ancho);
+      return [x0, x0 + 0.7 * ancho, 0.72 * alto, 0];
+    }
+    const x0 = entre(derecha + 0.08 * ancho, 0.4 * ancho, 0.72 * ancho);
+    return [x0, x0 + 0.55 * ancho, 0.78 * alto, -0.1 * alto];
+  }
   return movil ? [0, 1.25 * ancho, 0.71 * alto, 0.02 * alto] : [0.5 * ancho, 1.12 * ancho, 0.715 * alto, -0.06 * alto];
 }
 
@@ -192,6 +215,70 @@ export function subirCalidad(calidad: number) {
   return [...CALIDADES].reverse().find((c) => c > calidad + 1e-6) ?? 1;
 }
 
+// Guardián de los primeros cuadros, la primera ventana de la calidad
+// adaptativa. siguienteNivel mide el ritmo después de 1,5 s y baja de a un
+// escalón: con WebGL por software eso son decenas de tareas largas antes del
+// cuadro quieto (en PageSpeed, unos 3,7 s de bloqueo). Aquí se mide lo que
+// tarda el hilo principal en cada cuadro, desde que arranca el callback hasta
+// la tarea siguiente (dibujar, pintar y entregar el lienzo): con GPU, de 2 a
+// 12 ms; por software, de 35 a 125 ms, casi todo fuera del callback (medir
+// solo el callback no lo ve). Si los GUARDIA_CUADROS primeros pasan todos de
+// GUARDIA_MS, el motor se apaga y queda la banda. Todos, no el promedio: un
+// cuadro lento suelto por la carga de la página no cuenta. null: faltan
+// cuadros para decidir.
+export const GUARDIA_CUADROS = 4;
+export const GUARDIA_MS = 50;
+export function cuadrosPesados(costos: readonly number[]): boolean | null {
+  if (costos.length < GUARDIA_CUADROS) return null;
+  return Math.min(...costos.slice(0, GUARDIA_CUADROS)) > GUARDIA_MS;
+}
+
+// Corre `fn` en la tarea siguiente, cuando el navegador ya pintó el cuadro.
+// Con scheduler.postTask (Chromium, el de Lighthouse) va con prioridad alta:
+// pasa antes que las tareas en cola de la página (la hidratación de React
+// también va en mensajes), así que mide el cuadro y no la carga. Sin él, un
+// mensaje.
+function tareaSiguiente(fn: () => void) {
+  const s = (globalThis as { scheduler?: { postTask?: (f: () => void, o: { priority: string }) => unknown } }).scheduler;
+  if (s?.postTask) {
+    s.postTask(fn, { priority: "user-blocking" });
+    return;
+  }
+  const c = new MessageChannel();
+  c.port1.onmessage = () => {
+    c.port1.close();
+    fn();
+  };
+  c.port2.postMessage(0);
+}
+
+// ------------------------------------------------------------ Render por software
+
+// El Chromium sin GPU (Lighthouse y PageSpeed, máquinas virtuales, equipos sin
+// controlador) dibuja WebGL en el procesador (SwiftShader, llvmpipe): cada
+// cuadro bloquea el hilo principal. Ahí se queda la banda CSS, igual que sin
+// WebGL. El contexto se pide con failIfMajorPerformanceCaveat (el navegador lo
+// niega si iría por software) y, si aun así llega, se lee el renderizador.
+export const RENDER_SOFTWARE = /swiftshader|llvmpipe|softpipe|software|basic render/i;
+export function esRenderSoftware(renderer: string | null | undefined) {
+  return !!renderer && RENDER_SOFTWARE.test(renderer);
+}
+
+// Chrome y Safari dan "WebKit WebGL" en RENDERER y el nombre real solo con
+// WEBGL_debug_renderer_info. Firefox da el real en RENDERER y avisa en la
+// consola si se pide la extensión (allá está obsoleta): solo se pide cuando
+// RENDERER viene enmascarado.
+export function leerRenderer(g: WebGLRenderingContext): string {
+  try {
+    const basico = String(g.getParameter(g.RENDERER) ?? "");
+    if (basico && !/^webkit webgl$/i.test(basico.trim())) return basico;
+    const ext = g.getExtension("WEBGL_debug_renderer_info");
+    return ext ? String(g.getParameter(ext.UNMASKED_RENDERER_WEBGL) ?? basico) : basico;
+  } catch {
+    return "";
+  }
+}
+
 // Cada línea de texto de un elemento, con los nodos de texto (no la caja del
 // bloque, que va a todo lo ancho y dejaba rectángulos visibles sobre la seda).
 export function lineasDeTexto(el: Element): Rect[] {
@@ -222,9 +309,17 @@ type Opciones = {
   capa: HTMLElement;
   seccion: HTMLElement;
   modo: Modo;
+  variante?: Variante;
+  // Tinte de la seda: 1 hacia el cian (coaching), -1 hacia el azul
+  // (consultoría), 0 los colores del hero.
+  tinte?: number;
+  // Lo más claro que queda debajo del lienzo (sRGB de 0 a 255), contra lo que
+  // se calculan los topes de contraste. En la portada, el centro del
+  // resplandor de su zona; sin valor, el del hero (FONDO en el shader).
+  fondo?: readonly number[];
 };
 
-export function crearMotor({ lienzo, capa, seccion, modo: modoInicial }: Opciones): Motor | null {
+export function crearMotor({ lienzo, capa, seccion, modo: modoInicial, variante = "hero", tinte = 0, fondo }: Opciones): Motor | null {
   let modo = modoInicial;
   let gl: WebGLRenderingContext | null = null;
   try {
@@ -235,11 +330,18 @@ export function crearMotor({ lienzo, capa, seccion, modo: modoInicial }: Opcione
       depth: false,
       stencil: false,
       powerPreference: "low-power",
+      failIfMajorPerformanceCaveat: true,
     }) as WebGLRenderingContext | null;
   } catch {
     gl = null;
   }
   if (!gl) return null;
+  // Por software: se suelta el contexto antes de compilar nada (compilar ya
+  // es una tarea larga ahí) y queda la banda.
+  if (esRenderSoftware(leerRenderer(gl))) {
+    gl.getExtension("WEBGL_lose_context")?.loseContext();
+    return null;
+  }
 
   type Uniformes = Record<string, WebGLUniformLocation | null>;
   let U: Uniformes = {};
@@ -268,7 +370,7 @@ export function crearMotor({ lienzo, capa, seccion, modo: modoInicial }: Opcione
     g.enableVertexAttribArray(0);
     g.vertexAttribPointer(0, 2, g.FLOAT, false, 0, 0);
     U = {};
-    for (const n of ["uRes", "uEsc", "uLinea", "uFase", "uFaseB", "uPtr", "uMov", "uDesp", "uR", "uC", "uGrad", "uGlowA", "uGlowB", "uFalda"]) {
+    for (const n of ["uRes", "uEsc", "uLinea", "uFase", "uFaseB", "uPtr", "uMov", "uDesp", "uR", "uC", "uGrad", "uGlowA", "uGlowB", "uFalda", "uTinte", "uFondo"]) {
       U[n] = g.getUniformLocation(p, n);
     }
     g.clearColor(0, 0, 0, 0);
@@ -289,9 +391,21 @@ export function crearMotor({ lienzo, capa, seccion, modo: modoInicial }: Opcione
   const glowA = new Float32Array(4);
   const glowB = new Float32Array(4);
   const resplandoresCss = [...seccion.querySelectorAll<HTMLElement>("[data-cinta-resplandor]")];
+  // Portada: borde derecho del titular gigante ([data-cinta-esquivar]), en px
+  // CSS de la sección. De él sale la trayectoria (ver trayectoria).
+  let derecha = 0;
 
-  function medir() {
+  // `borde`: también vuelve a medir el borde del titular. Las medidas que
+  // dispara el scroll no lo tocan: la trayectoria sale del titular en reposo
+  // y no sigue al paralaje (su margen ya lo cubre).
+  function medir(borde = true) {
     const r = seccion.getBoundingClientRect();
+    if (borde) {
+      derecha = 0;
+      for (const el of seccion.querySelectorAll("[data-cinta-esquivar]")) {
+        for (const q of lineasDeTexto(el)) derecha = Math.max(derecha, q.right - r.left);
+      }
+    }
     W = Math.max(1, r.width);
     H = Math.max(1, r.height);
     arribaDoc = r.top + scrollY;
@@ -417,7 +531,7 @@ export function crearMotor({ lienzo, capa, seccion, modo: modoInicial }: Opcione
     const despertar = modo.animar ? 0.6 + 0.4 * (1 - Math.pow(1 - Math.min(1, t / 1.6), 3)) : 1;
     const fa = fases(tiempo, 1, sc * 1.1);
     const fb = fases(tiempo, TRASERA, sc * 1.1);
-    const [x0, x1, y0, y1] = trayectoria(W, H, modo.movil);
+    const [x0, x1, y0, y1] = trayectoria(W, H, modo.movil, variante, derecha);
     g.uniform2f(U.uRes, W, H);
     g.uniform1f(U.uEsc, escala);
     g.uniform4f(U.uLinea, x0, x1, y0, y1);
@@ -433,6 +547,9 @@ export function crearMotor({ lienzo, capa, seccion, modo: modoInicial }: Opcione
     g.uniform4fv(U.uGlowA, glowA);
     g.uniform4fv(U.uGlowB, glowB);
     g.uniform1f(U.uFalda, modo.movil ? 90 : 130);
+    g.uniform1f(U.uTinte, tinte);
+    if (fondo && fondo.length === 3) g.uniform3f(U.uFondo, fondo[0] / 255, fondo[1] / 255, fondo[2] / 255);
+    else g.uniform3f(U.uFondo, -1, -1, -1);
     g.clear(g.COLOR_BUFFER_BIT);
     g.drawArrays(g.TRIANGLES, 0, 3);
   }
@@ -464,6 +581,22 @@ export function crearMotor({ lienzo, capa, seccion, modo: modoInicial }: Opcione
   // sistema), el modo con el que se vuelve a probar, y desde cuándo.
   let quietoPorRitmo: Modo | null = null;
   let quietoDesde = 0;
+  // Guardián (cuadrosPesados): lo que tardó el hilo principal en cada uno de
+  // los primeros cuadros, hasta la tarea siguiente (tareaSiguiente). null: ya
+  // decidió.
+  let costos: number[] | null = [];
+
+  function vigilar(inicio: number) {
+    if (!costos) return;
+    tareaSiguiente(() => {
+      if (!costos || destruido) return;
+      costos.push(performance.now() - inicio);
+      const pesados = cuadrosPesados(costos);
+      if (pesados === null) return;
+      costos = null;
+      if (pesados) abandonar();
+    });
+  }
 
   function cuadro(ahora: number) {
     raf = 0;
@@ -471,6 +604,7 @@ export function crearMotor({ lienzo, capa, seccion, modo: modoInicial }: Opcione
     raf = requestAnimationFrame(cuadro);
     const intervalo = 1000 / modo.fps;
     if (!primero && ahora - ultimo < intervalo - 4) return;
+    const inicio = performance.now();
     const dt = primero ? 0 : Math.min(0.05, (ahora - ultimo) / 1000);
     if (!primero && ahora - arranque > 1500) {
       suma += ahora - ultimo;
@@ -480,10 +614,12 @@ export function crearMotor({ lienzo, capa, seccion, modo: modoInicial }: Opcione
     actualizar(dt, ahora);
     dibujar();
     if (primero) {
+      // El primer cuadro no cuenta para el guardián: lleva el encendido y,
+      // en algunos controladores, la compilación diferida del shader.
       primero = false;
       arranque = ahora;
       encender();
-    }
+    } else vigilar(inicio);
   }
 
   // Empieza a medir de nuevo, sin contar el primer segundo y medio.
@@ -681,22 +817,50 @@ export function crearMotor({ lienzo, capa, seccion, modo: modoInicial }: Opcione
   document.addEventListener("visibilitychange", alCambiarPestana);
   addEventListener("focus", sondear);
 
+  // Una medida por cuadro como mucho. Si en el mismo cuadro la pide algo que
+  // no es el scroll, se mide también el borde del titular.
   let pendiente = 0;
-  const remedir = () => {
+  let conBorde = false;
+  const programar = (borde: boolean) => {
+    conBorde ||= borde;
     if (pendiente) return;
     pendiente = requestAnimationFrame(() => {
       pendiente = 0;
+      const b = conBorde;
+      conBorde = false;
       if (destruido) return;
-      medir();
+      medir(b);
       if (!modo.animar) dibujar();
     });
   };
+  const remedir = () => programar(true);
   const ro = new ResizeObserver(remedir);
   ro.observe(seccion);
   // Las líneas del titular suben desde una máscara al cargar: se vuelven a
   // medir cuando termina cada entrada, y cuando llegan las fuentes.
   seccion.addEventListener("animationend", remedir);
   document.fonts?.ready.then(remedir).catch(() => {});
+
+  // Portada: el titular gigante se corre a lo ancho con el scroll (paralaje
+  // de CSS, globals.css) y las zonas de lectura quedarían viejas. Se vuelven
+  // a medir con el scroll, una vez por cuadro como mucho y solo con la cinta a
+  // la vista. Es barato: medir solo lee (los rectángulos de unas quince líneas
+  // y la caja de la sección), no escribe en el DOM ni cambia el lienzo. Se
+  // eligió esto y no zonas infladas porque el corrimiento depende del ancho
+  // (de 28 a 90 px) y unas cajas de ese tamaño en un titular de 168 px
+  // apagarían la seda en un área mucho mayor que el texto. La trayectoria, en
+  // cambio, no se mueve: sale del titular en reposo con un margen que cubre el
+  // corrimiento, así que la seda no cruza por donde pasa el titular (llega, a
+  // lo sumo, su halo tenue, que las zonas recortan).
+  // Las entradas del sub y la acción son transiciones (Reveal): también se
+  // mide al terminar cada una. El hero no escucha nada de esto.
+  const alScroll = () => {
+    if (visible) programar(false);
+  };
+  if (variante === "portada") {
+    addEventListener("scroll", alScroll, { passive: true });
+    seccion.addEventListener("transitionend", remedir);
+  }
 
   const mqReducir = matchMedia("(prefers-reduced-motion: reduce)");
   const alCambiarPreferencia = () => {
@@ -736,30 +900,50 @@ export function crearMotor({ lienzo, capa, seccion, modo: modoInicial }: Opcione
   if (modo.animar) reanudar();
   else cuadroQuieto();
 
+  // Detiene todo y suelta los oyentes. Los resplandores CSS vuelven a verse.
+  // Con `perderContexto`, también el contexto WebGL, sin esperar a la
+  // recolección: el navegador admite pocos a la vez.
+  function soltar(perderContexto: boolean) {
+    if (destruido) return;
+    destruido = true;
+    detener();
+    if (pendiente) cancelAnimationFrame(pendiente);
+    escucharPuntero(false);
+    io.disconnect();
+    ro.disconnect();
+    seccion.removeEventListener("pointerdown", alTocar);
+    seccion.removeEventListener("animationend", remedir);
+    seccion.removeEventListener("transitionend", remedir);
+    removeEventListener("scroll", alScroll);
+    document.removeEventListener("visibilitychange", alCambiarPestana);
+    removeEventListener("focus", sondear);
+    mqReducir.removeEventListener?.("change", alCambiarPreferencia);
+    lienzo.removeEventListener("webglcontextlost", alPerder);
+    lienzo.removeEventListener("webglcontextrestored", alRecuperar);
+    for (const e of resplandoresCss) {
+      e.style.opacity = "";
+      e.style.transition = "";
+    }
+    if (perderContexto) gl?.getExtension("WEBGL_lose_context")?.loseContext();
+    gl = null;
+  }
+
+  // Guardián: los primeros cuadros bloquean el hilo principal (WebGL por
+  // software que la detección no vio, o un equipo que no da). Se apaga del
+  // todo y queda la banda CSS, como sin WebGL; el lienzo funde a 0 y la banda
+  // vuelve (globals.css). No se vuelve a probar.
+  function abandonar() {
+    soltar(true);
+    capa.removeAttribute("data-modo");
+    capa.removeAttribute("data-puntero");
+    marcar("cinta", "respaldo");
+  }
+
   return {
     destruir() {
-      destruido = true;
-      detener();
-      if (pendiente) cancelAnimationFrame(pendiente);
-      escucharPuntero(false);
-      io.disconnect();
-      ro.disconnect();
-      seccion.removeEventListener("pointerdown", alTocar);
-      seccion.removeEventListener("animationend", remedir);
-      document.removeEventListener("visibilitychange", alCambiarPestana);
-      removeEventListener("focus", sondear);
-      mqReducir.removeEventListener?.("change", alCambiarPreferencia);
-      lienzo.removeEventListener("webglcontextlost", alPerder);
-      lienzo.removeEventListener("webglcontextrestored", alRecuperar);
-      for (const e of resplandoresCss) {
-        e.style.opacity = "";
-        e.style.transition = "";
-      }
-      // Al desmontar el hero (cambio de página) se suelta el contexto ya, sin
-      // esperar a la recolección: el navegador admite pocos a la vez. Si el
-      // lienzo sigue en la página (React en desarrollo monta dos veces), no.
-      if (!lienzo.isConnected) gl?.getExtension("WEBGL_lose_context")?.loseContext();
-      gl = null;
+      // Al desmontar (cambio de página) se suelta el contexto ya. Si el lienzo
+      // sigue en la página (React en desarrollo monta dos veces), no.
+      soltar(!lienzo.isConnected);
     },
   };
 }

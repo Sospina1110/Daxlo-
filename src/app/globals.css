@@ -478,9 +478,13 @@
    - La línea de tiempo es de la portada, con nombre, y no view() en cada
      línea: la portada recorta (overflow-hidden) y sería su propio scroll.
    - view-timeline-inset en 0: por defecto toma el scroll-padding de <html>
-     (96 px, por la barra fija) y el titular arrancaba ya corrido. */
+     (96 px, por la barra fija) y el titular arrancaba ya corrido.
+   - La primera línea arranca al ras del contenedor (ya no lleva el orbe
+     delante): el −6 % no la deja a menos de 12 px del borde de la pantalla.
+     (100vw − 100%) / 2 es lo que hay entre el borde y la línea. En 1440 px
+     manda el −6 % (68 px de 152); en celular, 8 px de 20. */
 @keyframes paralaje-izquierda {
-  to { transform: translateX(-6%); }
+  to { transform: translateX(max(-6%, calc(12px - (100vw - 100%) / 2))); }
 }
 @keyframes paralaje-derecha {
   to { transform: translateX(8%); }
@@ -556,6 +560,46 @@
   height: 100%;
   background: radial-gradient(ellipse 21% 54% at 50% 50%, rgb(41 196 245 / 0.28), rgb(61 90 255 / 0.22) 42%, rgb(27 53 208 / 0.08) 68%, transparent 80%);
   transform: rotate(38deg);
+}
+
+/* La banda de la portada de cada línea (CintaHero variante="portada"): imita
+   su pose de reposo, la cola baja bajo el titular gigante, a la izquierda, y
+   la subida por la derecha, pasado el titular. Con el tinte de la línea:
+   cian profundo y cian en coaching, azul de marca y azul suave en
+   consultoría. La subida de consultoría va más a la derecha, como la de la
+   cinta: "empresa." llega casi al borde. */
+.cinta-quieta-portada::before,
+.cinta-quieta-portada::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+.cinta-cian {
+  --banda-a: rgb(11 126 166 / 0.36);
+  --banda-b: rgb(41 196 245 / 0.26);
+  --banda-c: rgb(11 126 166 / 0.1);
+  --banda-derecha: 0%;
+}
+.cinta-azul {
+  --banda-a: rgb(61 90 255 / 0.34);
+  --banda-b: rgb(142 160 255 / 0.2);
+  --banda-c: rgb(27 53 208 / 0.12);
+  --banda-derecha: -14%;
+}
+.cinta-quieta-portada::before {
+  left: -10%;
+  width: 74%;
+  top: 58%;
+  height: 18%;
+  background: radial-gradient(ellipse 55% 42% at 50% 50%, var(--banda-a), var(--banda-c) 55%, transparent 78%);
+}
+.cinta-quieta-portada::after {
+  right: var(--banda-derecha);
+  top: -20%;
+  width: 40%;
+  height: 100%;
+  background: radial-gradient(ellipse 21% 54% at 50% 50%, var(--banda-b), var(--banda-a) 42%, var(--banda-c) 68%, transparent 80%);
+  transform: rotate(42deg);
 }
 
 /* ------------------------------------------------------------------
@@ -764,10 +808,14 @@
   /* En celular la banda de respaldo cruza detrás del texto: más tenue. La
      opacidad sola no basta (la animación .fundir la deja en 1): el fundido
      termina en el mismo valor. */
-  .cinta-quieta {
+  .cinta-quieta,
+  .cinta-quieta-portada {
     opacity: 0.55;
     --fundir-hasta: 0.55;
   }
+  /* En la portada, la subida pegada al borde derecho, como la de la cinta:
+     el titular ocupa casi todo el ancho. */
+  .cinta-quieta-portada::after { --banda-derecha: -24%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

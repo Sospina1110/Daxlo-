@@ -327,13 +327,16 @@ muchos de más de 45 años: se lee primero, se admira después.
   entra de los bordes, superficies de vidrio, bordes con degradado. Nada de neón saturado
   ni de colores fuera de la paleta.
 - **Firma en movimiento:** la cinta de luz del hero, una seda translúcida azul y cian que
-  ondula lenta y responde al mouse. Es el único fondo vivo de la primera pantalla.
+  ondula lenta y responde al mouse. Es el único fondo vivo de la primera pantalla. La
+  misma cinta, con el tinte de cada línea, va detrás de la portada de /coaching y
+  /consultoria.
 - **Jerarquía:** texto blanco sobre oscuro, un solo llamado principal por pantalla, el
   resto en botones oscuros con borde degradado.
 - **Ritmo:** cada página se lee como un argumento (afirmación, dolor, proceso, criterio,
   cierre). Esas partes las separa el aire y una línea de luz fina, no las cajas. Cada
   página tiene un solo momento de movimiento con autoría: la cinta en el inicio, la
-  ventana de la sesión en /coaching y el tachado del "Hoy" en /consultoria.
+  ventana de la sesión en /coaching y el tachado del "Hoy" en /consultoria. (En las
+  portadas la cinta es fondo, no el momento de autor.)
 - **Brevedad:** cada página contesta en orden las preguntas de quien lee, un h2 por
   pregunta y una idea por sección; se entiende leyendo solo los h2 y mirando el objeto
   visual de cada sección. Lo largo (lo que sirve a buscadores y a las objeciones) va en
@@ -475,8 +478,9 @@ titular solo suben desde una máscara al cargar.
   Santiago, sin aplicar: una banda en #12141C (`surface-container`) detrás del hoy →
   después. Nunca una banda clara ni menta.
 - **Portada de cada línea** (/coaching, /consultoria): migas, nombre del servicio,
-  titular gigante, sub de una o dos frases (en consultoría, con dos procesos de
-  ejemplo) y, en la primera pantalla, la acción: el botón de luz grande "Agendar una
+  titular gigante (sin orbe: la primera línea arranca al ras del contenedor y la
+  segunda conserva su sangría), sub de una o dos frases (en consultoría, con dos
+  procesos de ejemplo) y, en la primera pantalla, la acción: el botón de luz grande "Agendar una
   conversación" con la línea ya elegida, la nota de la línea bajo el botón y el enlace
   "Ver cómo es una sesión" / "Ver cómo trabajamos" hacia su sección. La nota va en
   `body-xs`, en tramos: el primero (lo que cuesta empezar: "Llamada de 15 minutos sin
@@ -486,7 +490,8 @@ titular solo suben desde una máscara al cargar.
   Ningún renglón empieza con el separador. El límite completo ("Si no te servimos, te lo
   decimos") no va aquí: va una vez, en el cierre. Orden en el DOM: botón, nota, enlace;
   en celular se ven así, con el botón a lo ancho; desde 640 px una rejilla pone el
-  botón y el enlace en una fila y la nota debajo.
+  botón y el enlace en una fila y la nota debajo. Detrás, la cinta de luz con el
+  tinte de la línea (ver Motion).
 - **Densidad:** como máximo un párrafo de dos líneas por sección y ninguna bajada si el
   h2 se entiende solo. Cada sección cabe en un pantallazo de 1440 × 900 y en 1,5 de
   celular.
@@ -534,8 +539,9 @@ La profundidad viene de la luz y de capas translúcidas, no de sombras grises.
   (máscara) y la zona de consultoría (#08090E) se funde en 140 px al casi negro: nada
   termina en un borde horizontal duro. El cierre de cada página hace lo mismo con sus
   resplandores (`mask-b`) antes del pie.
-- **La cinta de luz** es la capa más profunda del hero: queda detrás del texto y de las
-  ventanas de la maqueta, y se oscurece sola donde hay texto.
+- **La cinta de luz** es la capa más profunda del hero y de la portada de cada línea:
+  queda detrás del texto (y de las ventanas de la maqueta del hero), encima del
+  resplandor de la zona, y se oscurece sola donde hay texto.
 
 ## Shapes
 
@@ -783,10 +789,10 @@ que entraban igual, un halo que respiraba sin fin, un barrido de brillo).
 | Flecha del hoy → después | llega con el tachado: 0,55 s después de su fila (0,2 s después de que arranca la raya), se corre 8 px hacia "Después" en 300 ms (`--dur-mover`) y funde en 200 ms; solo desde 1024 px; quieta con "reducir movimiento" y sin JavaScript | `.flecha-cambio` en /consultoria |
 | Línea del recorrido | se traza desde su nodo con `scale` (origen en el nodo). Por debajo de 1024 px baja 0,12 s después de su paso, en 0,6 s; desde 1024 px los tres tramos van seguidos como un solo trazo de 01 a 04: 300 ms cada uno, a los 0,2 / 0,42 / 0,64 s (termina a los 0,94 s). Entera sin JavaScript y con "reducir movimiento" | `.linea-recorrido` en /consultoria |
 | Marquesina | 44 s lineal; se detiene bajo el mouse (solo puntero fino) | solo /herramientas |
-| Flotar / pasear | 6 px en 9 s / 6 s, curva de ida y vuelta de CSS (ease in-out) | orbes del cierre, /agendar, /herramientas y la 404 (no el del titular de la portada) |
+| Flotar / pasear | 6 px en 9 s / 6 s, curva de ida y vuelta de CSS (ease in-out) | orbes del cierre, /agendar, /herramientas y la 404 (la portada ya no lleva orbe) |
 | Líneas de flujo | 2.4 s lineal (solo desde 768 px) | hoy sin uso; la regla sigue en el CSS |
 | Deriva de resplandores | ±24 px, 24 s ida y vuelta, solo desde 768 px | `.animate-deriva`: cierre y el resplandor de arriba de cada zona |
-| Titular gigante de la portada | se corre −6 % / +8 % a lo ancho mientras la portada sale por arriba, sin resorte; animación de CSS atada al scroll (`view-timeline` de la portada, rango `exit-crossing`), sin JavaScript por cuadro; sin soporte (Firefox, Safari anterior a 26) y con "reducir movimiento", quieto | `ZonaPortada`, `.paralaje-izquierda`, `.paralaje-derecha` |
+| Titular gigante de la portada | se corre −6 % / +8 % a lo ancho mientras la portada sale por arriba, sin resorte (la primera línea, al ras del contenedor, nunca a menos de 12 px del borde de la pantalla: en celular se corre 8 px); animación de CSS atada al scroll (`view-timeline` de la portada, rango `exit-crossing`), sin JavaScript por cuadro; sin soporte (Firefox, Safari anterior a 26) y con "reducir movimiento", quieto. La cinta de la portada vuelve a medir sus zonas de lectura con el scroll | `ZonaPortada`, `.paralaje-izquierda`, `.paralaje-derecha` |
 
 **Lo que salió y no vuelve.** El halo que respiraba en el botón principal
 (`animate-halo`), el barrido de brillo (`.boton-barrido`), el blob flotante de 14 px, el
@@ -802,10 +808,10 @@ escalonado queda para listas que se leen como lista. Nada infinito nuevo, y todo
 contenido se ve sin JavaScript.
 
 **Movimiento ligado al scroll y "reducir movimiento".** `MotionConfig
-reducedMotion="user"` no detiene los valores atados a `style`. Por eso el titular
-gigante de la portada lee `useReducedMotion()` dentro del propio valor (una
-referencia que el efecto actualiza): con "reducir movimiento" se queda quieto, y el HTML
-del servidor coincide con el primer render del navegador.
+reducedMotion="user"` no detiene los valores atados a `style`: lo que se ate al scroll
+con Motion tiene que leer `useReducedMotion()` dentro del propio valor. El titular
+gigante de la portada ya no lo necesita: su paralaje es una animación de CSS atada al
+scroll y "reducir movimiento" la apaga en globals.css.
 
 **Cinta de luz del hero.** Shader WebGL propio (sin librerías) en un `<canvas>`
 decorativo detrás del contenido (`src/components/ui/cinta-hero.tsx`,
@@ -817,6 +823,21 @@ pinta el mismo shader cuando hay WebGL.
 - Recorrido: en escritorio entra plana por debajo de la fila del botón (al 71,5 % del
   alto, desde la mitad del ancho) y sube por la derecha, lejos del titular; en celular
   cruza en diagonal.
+- Portada de cada línea (`CintaHero variante="portada"`, el mismo motor y el mismo
+  shader): plana por debajo del titular gigante (al 78 % del alto en escritorio, por el
+  hueco a la izquierda del sub; al 72 % en celular, detrás del sub) y sube pasado el
+  borde derecho del titular, que el motor mide (`data-cinta-esquivar`): "ti." es corto y
+  "empresa." llega casi al borde. El margen, 8 % del ancho, cubre lo que la segunda
+  línea se corre con el paralaje; no pasa detrás del gigante (llega, a lo sumo, su halo
+  tenue, que las zonas recortan). Detrás del sub sí puede
+  pasar, sin brillos, por su tope. Tinte por línea con un uniform (`uTinte`), solo con
+  colores de la paleta: en coaching el cuerpo va del cian profundo al cian; en
+  consultoría el pico es el azul suave y casi sin menta. Banda de respaldo propia
+  (`.cinta-quieta-portada`, en cian o azul). El paralaje mueve el titular: con la cinta a
+  la vista, el motor vuelve a medir las zonas en el scroll (una vez por cuadro, solo
+  lecturas) y al terminar cada transición de entrada. Los topes se calculan contra lo
+  más claro que queda debajo del lienzo: el centro del resplandor de la zona
+  (`uFondo`), no el casi negro con rejilla del hero.
 - Bucle propio, sin costura (las fases se calculan en la CPU y se reducen a 0..2π):
   ondas de 18 s y 11 s, giro de la seda de 23 s, respiración del ancho de 15 s; la lámina
   trasera a 0,62 de eso. Al aparecer, la amplitud sube de 0,6 a 1 en 1,6 s.
@@ -829,6 +850,13 @@ pinta el mismo shader cuando hay WebGL.
   se apaga en 0,9 s. Pasivo: no intercepta el scroll ni los toques en enlaces.
 - Con "reducir movimiento", ahorro de datos o 2 GB de memoria o menos: un solo cuadro
   quieto, sin bucle ni reacción. Sin WebGL: la banda quieta de CSS.
+- Sin GPU (WebGL por software, como el Chromium de Lighthouse y PageSpeed): la banda
+  quieta de CSS, sin compilar el shader. El contexto se pide con
+  `failIfMajorPerformanceCaveat` y, si llega, se lee el renderizador
+  (SwiftShader, llvmpipe, softpipe, "software", Basic Render). Además, un guardián mide
+  lo que tarda el hilo principal en cada uno de los 4 primeros cuadros (del callback a
+  la tarea siguiente: por software casi todo el costo cae fuera del callback); si todos
+  pasan de 50 ms, el motor se apaga y vuelve la banda.
 - Contraste: cada texto del hero lleva `data-cinta-tope`, la luminancia máxima del fondo
   detrás de él: 0,16 el titular blanco, 0,055 el subtítulo, 0,04 la nota del botón; en la
   barra, 0,06 los enlaces y 0,16 el logo y el botón de menú. El titular en degradado se
@@ -836,6 +864,12 @@ pinta el mismo shader cuando hay WebGL.
   lo cian a 0,012 en la punta azul). El tope es plano hasta 6 px del texto y se suelta de
   forma geométrica en 130 px (90 px en celular); cerca del texto la seda pierde el cian y
   la menta. El contraste AA no depende del cuadro.
+- Contraste en la portada: 0,04 las migas, 0,06 el nombre del servicio, 0,16 la primera
+  línea del gigante, 0,07 el sub (blanco al 80 %), 0,06 el botón, 0,05 la nota y 0,04 el
+  enlace. La segunda línea lleva el degradado de su línea, no el del hero: tope fijo de
+  0,035 en cian (3,3:1 contra #1591C4) y de 0,02 en azul, donde el extremo #1B35D0 no
+  llega a 3:1 ni sobre negro: la seda queda fuera de esa palabra sin dejar una caja
+  oscura alrededor.
 - El shader recibe hasta 12 zonas de lectura (`MAX_ZONAS`, un solo valor para el motor y
   el GLSL). En pantallas angostas el texto se parte en más líneas: se fusionan líneas
   vecinas del mismo texto (la caja conserva su tope) y ninguna zona se descarta; el logo
@@ -857,7 +891,7 @@ pinta el mismo shader cuando hay WebGL.
 - Do: resplandores con degradado radial; nunca `filter: blur` grandes ni filtros SVG.
 - Do: pausar todo lo infinito fuera de pantalla y apagarlo con "reducir movimiento".
 - Do: animar solo `opacity` y `transform` en el DOM; lo demás va en el shader.
-- Do: darle `data-cinta-tope` a cualquier texto nuevo dentro del hero.
+- Do: darle `data-cinta-tope` a cualquier texto nuevo dentro del hero o de una portada.
 - Do: alternar una banda con tarjetas y una banda abierta; nunca dos bandas seguidas con
   el mismo contenedor.
 - Do: mostrar en cada paso lo que el cliente tiene en la mano al terminarlo ("Te
