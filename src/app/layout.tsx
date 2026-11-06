@@ -59,25 +59,38 @@ const SCRIPT_CABECERA = [
 // Sin IntersectionObserver (navegadores muy viejos) se quita .js y todo queda
 // visible. El MutationObserver cubre nodos que React cree después.
 //
-// Tres trabajos:
-// 1. Revela cada [data-revelar] al entrar en pantalla. En un grupo
-//    (data-escalonar) cada hijo espera un escalón más que el anterior, 0,08 s
-//    por defecto y nunca más de 0,32 s en total.
-// 2. Respaldo para Safari: con frames lentos y scroll rápido, un bloque puede
+// Cinco trabajos:
+// 1. En iOS, Safari solo pinta :active si la página escucha touchstart, y
+//    React lo registra recién al hidratar: con un oyente vacío y pasivo, los
+//    botones bajan al presionar desde el HTML, también con red lenta.
+// 2. Con cada Tab marca [data-tab] en <html> y lo quita con el primer
+//    movimiento del puntero: así lo que pierde el foco del teclado también se
+//    apaga de una vez (globals.css), no solo lo que lo gana.
+// 3. Revela cada [data-revelar] al entrar en pantalla. En un grupo
+//    (data-escalonar, e = 0,08 s por defecto) el hijo i espera
+//    e·(1 − 0,85^i)/0,15 s, con 3 decimales y nunca más de 0,32 s: cada
+//    intervalo es 15 % más corto que el anterior (0 / 0,08 / 0,148 / 0,206 /
+//    0,255 / 0,297 / 0,32 s). Se lee como una ola, no como una cola de
+//    metrónomo. El primer intervalo sigue siendo e.
+// 4. Respaldo para Safari: con frames lentos y scroll rápido, un bloque puede
 //    pasar de abajo a arriba de la pantalla entre dos frames sin contar nunca
 //    como visible, y se quedaba oculto. Al hacer scroll se revela todo lo que
 //    ya quedó por encima del borde inferior.
-// 3. Pausa las animaciones infinitas (.animate-*) fuera de pantalla: marca
+// 5. Pausa las animaciones infinitas (.animate-*) fuera de pantalla: marca
 //    [data-pausa] y el CSS las detiene. Corriendo todas a la vez mantenían el
 //    celular trabajando aunque nadie tocara la página.
 const SCRIPT_APARICIONES = `(function(){
 var d=document.documentElement;
+document.addEventListener('touchstart',function(){},{passive:true});
+addEventListener('keydown',function(e){if(e.key==='Tab')d.setAttribute('data-tab','')},true);
+addEventListener('pointermove',function(){if(d.hasAttribute('data-tab'))d.removeAttribute('data-tab')},{capture:true,passive:true});
 if(!('IntersectionObserver' in window)){d.classList.remove('js');return;}
 function revelar(el){
 var p=el.parentElement;
 if(p&&p.hasAttribute('data-escalonar')){
 var hs=[].filter.call(p.children,function(c){return c.hasAttribute('data-revelar')});
-el.style.setProperty('--retraso',Math.min(0.32,hs.indexOf(el)*(parseFloat(p.getAttribute('data-escalonar'))||0.08))+'s');}
+var e=parseFloat(p.getAttribute('data-escalonar'))||0.08;
+el.style.setProperty('--retraso',Math.min(0.32,Math.round(e*(1-Math.pow(0.85,hs.indexOf(el)))/0.15*1000)/1000)+'s');}
 el.setAttribute('data-visible','');}
 var io=new IntersectionObserver(function(es){es.forEach(function(e){
 if(!e.isIntersecting)return;io.unobserve(e.target);revelar(e.target);
@@ -86,7 +99,7 @@ var espera=0;
 addEventListener('scroll',function(){if(espera)return;espera=setTimeout(function(){espera=0;var limite=innerHeight*0.94;
 [].forEach.call(document.querySelectorAll('[data-revelar]:not([data-visible])'),function(el){
 if(el.getBoundingClientRect().top<limite){io.unobserve(el);revelar(el);}});},200);},{passive:true});
-var A='.animate-flow,.animate-halo,.animate-deriva,.animate-float,.animate-marquee,.animate-marquee-reverse,.animate-ping,.animate-paseo,.animate-caret';
+var A='.animate-flow,.animate-deriva,.animate-float,.animate-marquee,.animate-marquee-reverse,.animate-ping,.animate-paseo,.animate-caret';
 var ia=new IntersectionObserver(function(es){es.forEach(function(e){
 if(e.isIntersecting)e.target.removeAttribute('data-pausa');else e.target.setAttribute('data-pausa','');
 });},{rootMargin:'100px'});

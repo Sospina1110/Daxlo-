@@ -401,7 +401,8 @@ test("el botón del hero destaca y cumple AA: relleno de marca, texto blanco a 4
     // del botón intactas.
     await page.mouse.move(5, 5);
     for (let i = 0; i < 20 && !(await boton.evaluate((b) => b === document.activeElement)); i++) await page.keyboard.press("Tab");
-    // El color del anillo entra con la transición de 300 ms del botón.
+    // El anillo aparece completo en el primer cuadro (con teclado nada se
+    // anima); se espera solo a que el foco llegue.
     await expect
       .poll(() => boton.evaluate((b) => ({ foco: b.matches(":focus-visible"), anillo: getComputedStyle(b).outlineColor, esquinas: getComputedStyle(b).borderRadius })))
       .toEqual({ foco: true, anillo: "rgb(255, 255, 255)", esquinas: "12px" });
@@ -434,8 +435,10 @@ test("con el teclado, el foco del botón principal se distingue de su halo y de 
   const antes = (await page.screenshot({ clip, scale: "css" })).toString("base64");
   for (let i = 0; i < 20 && !(await boton.evaluate((b) => b === document.activeElement)); i++) await page.keyboard.press("Tab");
   await expect.poll(() => boton.evaluate((b) => b.matches(":focus-visible") && getComputedStyle(b).outlineColor)).toBe("rgb(255, 255, 255)");
-  // La transición del botón es de 300 ms (sube 2 px y se abre el halo).
-  await page.waitForTimeout(700);
+  // Con el teclado el botón ya no sube ni funde nada: el anillo, la banda
+  // oscura y el relleno claro aparecen en el primer cuadro. La espera solo da
+  // margen a que se pinte.
+  await page.waitForTimeout(300);
   const conFoco = await boton.boundingBox();
   const despues = (await page.screenshot({ clip, scale: "css" })).toString("base64");
   const caja = { left: conFoco!.x - clip.x, top: conFoco!.y - clip.y, right: conFoco!.x + conFoco!.width - clip.x, bottom: conFoco!.y + conFoco!.height - clip.y };

@@ -28,15 +28,33 @@
   --font-display: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
+  /* Lenguaje de movimiento: dos curvas y un resorte (el resorte del botón
+     magnético vive en src/lib/utils.ts, RESORTE_IMAN). Generan las utilidades
+     ease-salida y ease-mover.
+     - Salida: todo lo que entra, aparece, responde o se presiona. Es la curva
+       EASE de src/lib/utils.ts: arranca rápido, así la respuesta se ve en el
+       primer cuadro, y se asienta despacio.
+     - Mover: solo para algo que ya está en pantalla y cambia de forma (el
+       ancho y el relleno de la barra). Acelera y frena: así se mueve un
+       objeto que ya estaba quieto. */
+  --ease-salida: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-mover: cubic-bezier(0.77, 0, 0.175, 1);
+  /* Toda utilidad transition-* de Tailwind usa la curva de salida y 200 ms. La
+     curva por defecto de Tailwind (0.4, 0, 0.2, 1) arranca lenta y era una
+     tercera curva suelta en el sitio; 150 ms se quedaba corto para un cambio
+     de color que se tiene que leer. */
+  --default-transition-timing-function: var(--ease-salida);
+  --default-transition-duration: 200ms;
+
   --animate-marquee: marquee var(--marquee-duration, 40s) linear infinite;
   --animate-marquee-reverse: marquee-reverse var(--marquee-duration, 40s) linear infinite;
-  --animate-float: float 7s ease-in-out infinite;
+  /* Orbes que flotan 6 px en 9 s: quietos casi siempre, vivos si uno los mira.
+     Con 14 px en 7 s eran el blob flotante de plantilla. */
+  --animate-float: float 9s ease-in-out infinite;
   --animate-caret: caret 1s steps(1) infinite;
   --animate-flow: flow 2.4s linear infinite;
   --animate-spin-slow: spin 18s linear infinite;
   --animate-paseo: paseo 6s ease-in-out infinite;
-  /* Foco de luz del botón principal: 0,65 a 1 y vuelta, cada 4 s. */
-  --animate-halo: halo 2s ease-in-out infinite alternate;
   /* Resplandores de fondo que se corren muy despacio: 24 s ida y vuelta. */
   --animate-deriva: deriva 12s ease-in-out infinite alternate;
 
@@ -50,7 +68,7 @@
   }
   @keyframes float {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-14px); }
+    50% { transform: translateY(-6px); }
   }
   @keyframes caret {
     0%, 49% { opacity: 1; }
@@ -64,10 +82,6 @@
     33% { transform: translate3d(14px, -6px, 0); }
     66% { transform: translate3d(4px, 4px, 0); }
   }
-  @keyframes halo {
-    from { opacity: 0.65; }
-    to { opacity: 1; }
-  }
   @keyframes deriva {
     from { transform: translate3d(-24px, 14px, 0); }
     to { transform: translate3d(24px, -14px, 0); }
@@ -75,12 +89,50 @@
 }
 
 @layer base {
+  /* Duraciones del lenguaje de movimiento. No son un espacio de nombres de
+     Tailwind: se usan con var() en el CSS de abajo. Ninguna UI pasa de
+     --dur-mover; solo las entradas de página llegan a 0,6–0,8 s. */
+  :root {
+    /* Lo que tarda en bajar al presionar y en volver al soltar: la respuesta
+       tiene que llegar antes que el dedo termine el toque. */
+    --dur-presion: 120ms;
+    /* Salidas y cambio de ícono: más cortas que las entradas. Con teclado, 0. */
+    --dur-rapida: 150ms;
+    /* Hover, color, borde, foco de luz y capa de vidrio de la barra. */
+    --dur-ui: 200ms;
+    /* Cambio de forma de la barra, el éxito del formulario y la forma de las
+       burbujas. Es el tope para cualquier UI. */
+    --dur-mover: 300ms;
+    /* Entradas y apariciones (la opacidad de [data-revelar] dura 0,5 s). */
+    --dur-entrada: 0.6s;
+    /* Titulares que suben, en el hero y en la portada. */
+    --dur-titular: 0.8s;
+  }
   html {
     background: var(--color-ink);
     color-scheme: dark;
     scroll-behavior: smooth;
     /* La barra de navegación es fija: las anclas no deben quedar debajo. */
     scroll-padding-top: 96px;
+    /* Sin el recuadro gris que pinta el navegador al tocar: cada cosa que se
+       puede tocar ya responde por su cuenta (:active, abajo y en .pulsable). */
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Sin la espera de doble toque para hacer zoom: el toque responde al
+     instante. El zoom con dos dedos sigue funcionando. */
+  a,
+  button,
+  [role="button"],
+  summary,
+  label {
+    touch-action: manipulation;
+  }
+  /* Los enlaces de texto (barra, pie, migas, enlaces con flecha, 404) bajan al
+     tocar y vuelven al soltar, sin transición, como un enlace nativo. Los
+     botones (.pulsable) y las tarjetas-enlace (.tarjeta-pulsable) tienen su
+     propia respuesta. Especificidad mínima: cualquier utilidad le gana. */
+  :where(a:not(.pulsable, .tarjeta-pulsable, .tarjeta-pulsable a)):active {
+    opacity: 0.7;
   }
   body {
     background: var(--color-ink);
@@ -198,7 +250,59 @@
     mask-image: linear-gradient(to bottom, #000 60%, transparent);
   }
 
-  .marquee-track:hover { animation-play-state: paused; }
+  /* La marquesina se detiene bajo el mouse para leer un logo. Solo con puntero
+     fino: en pantallas táctiles un toque dejaba el :hover pegado y la
+     marquesina en pausa hasta tocar otra cosa. */
+  @media (hover: hover) and (pointer: fine) {
+    .marquee-track:hover { animation-play-state: paused; }
+  }
+
+  /* ---------------------------------------------------------------- Presión
+     Todo lo que se puede pulsar baja un poco al presionar: confirma que la
+     página escuchó. Disparador :active (dedo o mouse abajo), nunca el clic,
+     que llega cuando ya se soltó. Baja en 120 ms y vuelve en 120 ms
+     (--dur-presion), con la misma curva: la vuelta también es respuesta a la
+     mano y no puede ser la fase lenta. Una transición usa la duración del
+     estilo de después del cambio, así que al soltar rige la de la regla base:
+     por eso la duración va por propiedad (scale en 120 ms; el translate del
+     hover y la opacidad, en 200 ms). Solo translate, scale y opacity: nada de
+     box-shadow, filter ni backdrop-filter, que se repintan en cada cuadro.
+     `scale` y `translate` son propiedades distintas de `transform`: suman sin
+     pisarse con el transform de Motion (botón magnético) y getComputedStyle
+     (el).transform sigue en none. Nunca en el mismo elemento que .entrada,
+     .subir o [data-revelar] (sus reglas van fuera de capa y le ganarían).
+     Con teclado (Espacio o Enter con :focus-visible) no baja: lo que dispara
+     el teclado no se anima. */
+  .pulsable {
+    transition-property: translate, scale, opacity;
+    transition-duration: var(--dur-ui), var(--dur-presion), var(--dur-ui);
+    transition-timing-function: var(--ease-salida);
+  }
+  /* --escala-presion: 0.97 por defecto; 0.98 en el botón principal (mide unos
+     300 × 65 px: con 0.97 se encogería 9 px) y 0.95 en la hamburguesa de
+     44 px, donde 0.97 apenas se nota. */
+  .pulsable:active:not(:focus-visible) {
+    scale: var(--escala-presion, 0.97);
+    transition-duration: var(--dur-presion);
+  }
+  /* Tarjetas que son un enlace (las puertas del inicio, el puente a la otra
+     línea): el borde toma el tono en 200 ms y al presionar bajan a 0.99 en
+     120 ms y vuelven en 120 ms. Es 0.99 y no 0.97 porque la superficie es
+     grande: 0.99 ya son unos 6 px. */
+  .tarjeta-pulsable {
+    transition-property: border-color, scale;
+    transition-duration: var(--dur-ui), var(--dur-presion);
+    transition-timing-function: var(--ease-salida);
+  }
+  .tarjeta-pulsable:active:not(:focus-visible, :has(:focus-visible)),
+  .tarjeta-pulsable:has(a:active:not(:focus-visible)) {
+    scale: 0.99;
+    transition-duration: var(--dur-presion);
+  }
+  /* Con foco del teclado el borde cambia de una vez. */
+  .tarjeta-pulsable:has(:focus-visible) {
+    transition-duration: 0s;
+  }
 
   /* Rejilla sutil de fondo, como la de la plantilla. */
   .bg-grid {
@@ -216,12 +320,24 @@
    script en línea del layout pone .js en <html> y marca data-visible; nada de
    esto espera a React. Sin JavaScript no hay .js y todo queda visible.
    ------------------------------------------------------------------ */
+/* Siguen siendo @keyframes con relleno `both` (no transiciones): arrancan en
+   el primer cuadro sin esperar a ningún script, y el motor de la cinta vuelve
+   a medir los textos del hero en cada animationend (src/lib/cinta/motor.ts).
+   Variables por elemento, no globales:
+   - --desde: cuánto sube .entrada. 8 px por defecto (apoyo); 20 px la maqueta
+     del hero; 0 la barra y las migas, que solo funden porque son marco.
+   - --subir-desde: de dónde sube .subir. 105 % de su alto bajo la máscara del
+     titular del hero; 22 % en el titular gigante de la portada, que no lleva
+     máscara.
+   - --duracion: reemplaza la duración del token (--dur-entrada en .entrada,
+     --dur-titular en .subir).
+   - --retraso: cuándo empieza. */
 @keyframes entrar {
-  from { opacity: 0; transform: translate3d(0, 16px, 0); }
+  from { opacity: 0; transform: translate3d(0, var(--desde, 8px), 0); }
   to { opacity: 1; transform: none; }
 }
 @keyframes subir {
-  from { opacity: 0; transform: translate3d(0, 105%, 0); }
+  from { opacity: 0; transform: translate3d(0, var(--subir-desde, 105%), 0); }
   to { opacity: 1; transform: none; }
 }
 /* Funde hasta --fundir-hasta (1 si no se dice): con relleno `both`, una
@@ -230,18 +346,51 @@
   from { opacity: 0; }
   to { opacity: var(--fundir-hasta, 1); }
 }
-.entrada { animation: entrar 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--retraso, 0s) both; }
-.subir { animation: subir 1s cubic-bezier(0.22, 1, 0.36, 1) var(--retraso, 0s) both; }
+.entrada { animation: entrar var(--duracion, var(--dur-entrada)) var(--ease-salida) var(--retraso, 0s) both; }
+.subir { animation: subir var(--duracion, var(--dur-titular)) var(--ease-salida) var(--retraso, 0s) both; }
+/* La banda de respaldo de la cinta: no se toca, ni siquiera la curva. */
 .fundir { animation: fundir 1.6s ease 0.2s both; }
 
+/* Apariciones al hacer scroll, por rol (la prop `y` de Reveal escribe --y):
+   protagonista (titular de sección) 16 px, apoyo 8 px (por defecto), adorno
+   0 (solo funde). La distancia corta es lo que hace que no se lea como
+   plantilla: 24 px en 0,8 s, igual para 60 bloques, era un metrónomo. La
+   opacidad (0,5 s) termina antes que el desplazamiento (0,6 s): el bloque ya
+   se lee mientras termina de asentarse. */
 .js [data-revelar]:not([data-visible]) {
   opacity: 0;
-  transform: translate3d(0, var(--y, 24px), 0);
+  transform: translate3d(0, var(--y, 8px), 0);
 }
 [data-revelar] {
   transition:
-    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--retraso, 0s),
-    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--retraso, 0s);
+    opacity 0.5s var(--ease-salida) var(--retraso, 0s),
+    transform var(--dur-entrada) var(--ease-salida) var(--retraso, 0s);
+}
+
+/* Burbujas de la ventana de la sesión (/coaching): crecen desde su cola
+   (origin-bottom-left u origin-bottom-right en el componente) en vez de subir
+   desde lejos: 6 px y 0.96, como un mensaje que llega. La opacidad (0,2 s,
+   --dur-ui) va por delante de la forma (0,3 s, --dur-mover). Los retrasos de
+   0,3 / 1,05 / 1,8 s son de una conversación, no un escalón. */
+.js .burbuja[data-revelar]:not([data-visible]) {
+  transform: translate3d(0, 6px, 0) scale(0.96);
+}
+.burbuja[data-revelar] {
+  transition:
+    opacity var(--dur-ui) var(--ease-salida) var(--retraso, 0s),
+    transform var(--dur-mover) var(--ease-salida) var(--retraso, 0s);
+}
+
+/* El foco del teclado nunca nace invisible ni en movimiento: si el foco llega
+   a algo dentro de un bloque que todavía no apareció (Tab más rápido que el
+   scroll), el bloque se pone completo y quieto en ese mismo cuadro. Cuando el
+   observador lo marca visible ya está en su valor final y no hay salto.
+   Especificidad (0,4,0): le gana al estado oculto (0,3,0) y, por ir después,
+   a la burbuja (0,4,0). */
+.js [data-revelar]:not([data-visible]):focus-within {
+  opacity: 1;
+  transform: none;
+  transition: none;
 }
 
 /* Tachado del "Hoy" en /consultoria (el momento de autor de la página): desde
@@ -250,7 +399,7 @@
    mueve nada alrededor. Sin JavaScript no hay .js y queda tachado. */
 .tachado-linea {
   transform-origin: left;
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--retraso, 0s) + 0.35s);
+  transition: transform 0.6s var(--ease-salida) calc(var(--retraso, 0s) + 0.35s);
 }
 .js [data-revelar]:not([data-visible]) .tachado-linea {
   transform: scaleX(0);
@@ -260,6 +409,42 @@
    ganarle a bg-white/40 de utilities. */
 @media (forced-colors: active) {
   .tachado-linea { background-color: CanvasText; }
+}
+
+/* Titular gigante de la portada (ZonaPortada): las dos líneas se corren −6 % y
+   +8 % a lo ancho mientras la portada sale por arriba, de "su borde de arriba
+   en el de la pantalla" a "su borde de abajo en el de la pantalla"
+   (exit-crossing). Va atado al scroll con una línea de tiempo de CSS, sin
+   resorte y sin JavaScript por cuadro: el navegador lo mueve con el scroll
+   aunque el hilo principal esté ocupado. Antes era useScroll + useTransform
+   de Motion, que corría en el hilo principal en cada cuadro (en un Pixel 7
+   con CPU 4x se perdía un cuadro de cada diez). Sin soporte (Firefox, Safari
+   anterior a 26) queda quieto, como con "reducir movimiento".
+   - La línea de tiempo es de la portada, con nombre, y no view() en cada
+     línea: la portada recorta (overflow-hidden) y sería su propio scroll.
+   - view-timeline-inset en 0: por defecto toma el scroll-padding de <html>
+     (96 px, por la barra fija) y el titular arrancaba ya corrido. */
+@keyframes paralaje-izquierda {
+  to { transform: translateX(-6%); }
+}
+@keyframes paralaje-derecha {
+  to { transform: translateX(8%); }
+}
+@supports (animation-timeline: view()) {
+  .portada-paralaje {
+    view-timeline-name: --portada;
+    view-timeline-inset: 0;
+  }
+  .paralaje-izquierda,
+  .paralaje-derecha {
+    animation-duration: auto;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --portada;
+    animation-range: exit-crossing 0% exit-crossing 100%;
+  }
+  .paralaje-izquierda { animation-name: paralaje-izquierda; }
+  .paralaje-derecha { animation-name: paralaje-derecha; }
 }
 
 /* Resplandor sin filtro: el fondo lo pone glow() en src/lib/utils.ts. */
@@ -324,6 +509,8 @@
    da 8,5:1 sobre #1b35d0 y 5,1:1 en la punta #3d5aff. Uno solo por pantalla.
    ------------------------------------------------------------------ */
 .boton-principal {
+  /* Mide unos 300 × 65 px: con la presión de 0.97 se encogería 9 px. */
+  --escala-presion: 0.98;
   border: 1px solid transparent;
   background:
     linear-gradient(120deg, #1b35d0 0%, #2a47ea 55%, #3d5aff 100%) padding-box,
@@ -332,7 +519,6 @@
     0 0 0 1px rgb(41 196 245 / 0.18),
     0 14px 38px -12px rgb(41 196 245 / 0.75),
     0 0 56px -6px rgb(61 90 255 / 0.6);
-  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 /* Relleno más claro al pasar o enfocar (los degradados no se animan: se
    funde una capa encima). #4560fa todavía da 4,9:1 con el texto blanco. */
@@ -343,35 +529,85 @@
   border-radius: inherit;
   background: linear-gradient(120deg, #2a47ea, #4560fa);
   opacity: 0;
-  transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity var(--dur-ui) var(--ease-salida);
   pointer-events: none;
 }
-.boton-principal:hover::before,
 .boton-principal:focus-visible::before { opacity: 1; }
-.boton-principal:hover {
+/* El halo que se abre al pasar. La sombra no se anima (repintarla en cada
+   cuadro cuesta y ninguna lista de transición la incluye): la parte que se
+   suma va en una capa detrás del botón que solo cambia de opacidad. Va en el
+   div del botón magnético (.iman-movil, que lleva isolate), así que se mueve
+   con el botón. Ajustada a ojo para que la sombra fija más esta capa se vean
+   como el halo abierto de antes (ring 0,35, cian 0,9, azul 0,75). */
+.iman-movil:has(> .boton-principal)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 0.75rem;
+  pointer-events: none;
   box-shadow:
-    0 0 0 1px rgb(41 196 245 / 0.35),
-    0 18px 46px -12px rgb(41 196 245 / 0.9),
-    0 0 72px -4px rgb(61 90 255 / 0.75);
+    0 0 0 1px rgb(41 196 245 / 0.2),
+    0 18px 46px -12px rgb(41 196 245 / 0.55),
+    0 0 72px -4px rgb(61 90 255 / 0.4);
+  opacity: 0;
+  transition: opacity var(--dur-ui) var(--ease-salida);
+}
+/* Hover solo con puntero fino: en una pantalla táctil, un toque dejaba el
+   relleno claro y el halo abierto pegados, también al volver con atrás.
+   El foco del teclado queda fuera de esta consulta: se ve siempre. */
+@media (hover: hover) and (pointer: fine) {
+  .boton-principal:hover::before { opacity: 1; }
+  .iman-movil:has(.boton-principal:hover)::after { opacity: 1; }
+}
+/* El imán (src/components/ui/iman.tsx) escribe transform desde JavaScript en
+   cada cuadro. Sin capa propia, Chrome repintaba el botón y su halo (sombras
+   de hasta 72 px de desenfoque) mientras seguía al puntero: en una traza de
+   1,2 s, 14 pinturas en el hero y 40 en la portada de /coaching; con la capa,
+   ninguna. Una capa por llamado (tres por página como mucho), y solo donde el
+   imán se mueve: puntero fino y sin "reducir movimiento". En celular no se
+   crea. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .iman-movil { will-change: transform; }
 }
 /* Foco del teclado: el anillo cian global se perdía contra el halo cian del
    propio botón y contra la cinta. Aquí es blanco y va entre dos bandas casi
    negras (la sombra de 7 px rellena por dentro y por fuera del anillo de 2 px
    a 3 px): blanco contra #0d0e14 da 19:1, y la banda oscura también se
    separa del halo. El anillo sigue siendo outline: las sombras desaparecen en
-   modo de alto contraste (forced-colors) y el outline no. */
+   modo de alto contraste (forced-colors) y el outline no. Conserva sus
+   esquinas de 12 px (la regla global de :focus-visible las bajaría a 6). */
 .boton-principal:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 3px;
+  border-radius: 0.75rem;
   box-shadow:
     0 0 0 7px #0d0e14,
     0 0 0 1px rgb(41 196 245 / 0.35),
     0 18px 46px -12px rgb(41 196 245 / 0.9),
     0 0 72px -4px rgb(61 90 255 / 0.75);
 }
+/* Con Tab todo aparece en el primer cuadro: ni sube ni funde. Lo que dispara
+   el teclado no se anima. */
+.boton-principal:focus-visible,
+.boton-principal:focus-visible::before {
+  transition-duration: 0s;
+}
+/* Al salir con Tab pasa lo mismo: lo que pierde el foco se apaga de una vez.
+   Las reglas de 0 s solo valen mientras hay foco; al perderlo regía la
+   duración de base (200 ms) y por un momento quedaban dos cosas resaltadas.
+   El script del layout marca [data-tab] en <html> con cada Tab y lo quita
+   con el primer movimiento del puntero. Fuera de capa: le gana a las
+   utilidades del foco de luz y a .tarjeta-pulsable. */
+:root[data-tab] .tarjeta-pulsable,
+:root[data-tab] .boton-principal::before,
+:root[data-tab] .boton-principal > span[aria-hidden] {
+  transition-duration: 0s;
+}
 /* Debajo de 640 px el botón va a todo lo ancho, con el subtítulo arriba y la
    nota pegada abajo: un halo ancho caía sobre esos textos y les bajaba el
-   contraste. Aquí el halo es corto y no se sale más de unos 15 px. */
+   contraste. Aquí el halo es corto y no se sale más de unos 15 px; la capa
+   del halo abierto también es corta. */
 @media (max-width: 639px) {
   .boton-principal {
     box-shadow:
@@ -379,11 +615,11 @@
       0 0 22px -6px rgb(41 196 245 / 0.6),
       0 0 30px -10px rgb(61 90 255 / 0.55);
   }
-  .boton-principal:hover {
+  .iman-movil:has(> .boton-principal)::after {
     box-shadow:
-      0 0 0 1px rgb(41 196 245 / 0.4),
-      0 0 24px -6px rgb(41 196 245 / 0.75),
-      0 0 32px -10px rgb(61 90 255 / 0.7);
+      0 0 0 1px rgb(41 196 245 / 0.23),
+      0 0 24px -6px rgb(41 196 245 / 0.4),
+      0 0 32px -10px rgb(61 90 255 / 0.35);
   }
   .boton-principal:focus-visible {
     box-shadow:
@@ -393,26 +629,74 @@
       0 0 32px -10px rgb(61 90 255 / 0.7);
   }
 }
-/* Con el teclado también sube, y conserva sus esquinas de 12 px (la regla
-   global de :focus-visible las bajaría a 6). */
-.boton-principal:focus-visible {
-  translate: 0 -2px;
-  border-radius: 0.75rem;
+
+/* ------------------------------------------------------------------
+   Formulario de /agendar: el panel de éxito y la etiqueta del botón
+   ------------------------------------------------------------------ */
+/* El panel de éxito llega desde 8 px y 0.98 en 300 ms (--dur-mover); el
+   chulo entra 120 ms después, desde 0.9: funde en 200 ms y crece en 300 ms,
+   sin rebote (el sitio no rebota en ningún lado). Ninguna de las dos pasa del
+   tope de 300 ms. Solo CSS: @starting-style da el estado de partida al
+   montar. Sin soporte, se ve como antes (aparece de una vez). */
+.exito-panel {
+  transition:
+    opacity var(--dur-mover) var(--ease-salida),
+    transform var(--dur-mover) var(--ease-salida);
 }
-.boton-principal:active {
-  translate: 0 0;
-  scale: 0.98;
-  transition-duration: 120ms;
+.exito-icono {
+  transition:
+    opacity var(--dur-ui) var(--ease-salida) 120ms,
+    transform var(--dur-mover) var(--ease-salida) 120ms;
 }
-/* Barrido de brillo: solo al pasar o enfocar, nunca solo al cargar. */
-.boton-barrido {
-  background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.22), transparent);
-  transform: translateX(-120%) skewX(-18deg);
+@starting-style {
+  .exito-panel {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  .exito-icono {
+    opacity: 0;
+    transform: scale(0.9);
+  }
 }
-.boton-principal:hover .boton-barrido,
-.boton-principal:focus-visible .boton-barrido {
-  transform: translateX(360%) skewX(-18deg);
-  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+/* "Enviar" pasa a "Enviando" (y vuelve): el texto nuevo entra con un
+   desenfoque de 2 px que se va en 150 ms, así el cambio se lee como uno solo
+   y no como dos textos que se pisan. Solo después del primer envío. */
+@keyframes etiqueta {
+  from { opacity: 0.7; filter: blur(2px); }
+}
+/* Con "reducir movimiento", sin desenfoque. */
+@keyframes etiqueta-quieta {
+  from { opacity: 0.7; }
+}
+.cambio-etiqueta {
+  animation: etiqueta var(--dur-rapida) var(--ease-salida) both;
+}
+
+/* Cursor del texto que se escribe solo (TextoQueSeEscribe): una capa quieta
+   del tamaño de la caja que repite el texto en transparente y lleva el borde
+   final. No se corre con cada letra (no hay layout shift): solo crece lo que
+   hay dentro. El texto visible reserva el mismo borde y el mismo relleno.
+   Fijo mientras escribe o borra, como un cursor real; solo parpadea en la
+   pausa, con opacidad. Conserva la clase animate-caret (el script de pausa la
+   observa al cargar). */
+.cursor-escritura::before {
+  content: attr(data-texto);
+  color: transparent;
+  padding-inline-end: 2px;
+  border-inline-end: 2px solid var(--color-cyan);
+}
+/* Con colores forzados (alto contraste de Windows) la copia sigue
+   transparente (si no, se pintaría encima del texto) y el cursor toma el
+   color del texto. Va después de la regla de arriba para ganarle. */
+@media (forced-colors: active) {
+  .cursor-escritura::before {
+    forced-color-adjust: none;
+    border-inline-end-color: CanvasText;
+  }
+}
+[data-escribiendo] .animate-caret {
+  animation: none;
+  opacity: 1;
 }
 
 @media (max-width: 767px) {
@@ -441,17 +725,45 @@
   .animate-paseo,
   .animate-ping,
   .animate-caret,
-  .animate-halo,
   .animate-deriva,
   .entrada,
   .subir,
-  .fundir { animation: none !important; }
+  .fundir,
+  .paralaje-izquierda,
+  .paralaje-derecha { animation: none !important; }
   .js [data-revelar]:not([data-visible]) { transform: none; }
   [data-revelar] { transition: opacity 0.3s ease; }
+  /* Las burbujas de /coaching tienen más especificidad que la regla general:
+     sin estas dos, crecerían igual. */
+  .js .burbuja[data-revelar]:not([data-visible]) { transform: none; }
+  .burbuja[data-revelar] { transition: opacity 0.3s ease; }
   .cinta-lienzo,
   .cinta-respaldo,
   .boton-principal::before { transition: none !important; }
-  .boton-barrido { display: none; }
+  .iman-movil::after { transition: none; }
+  /* Presión sin escala: lo pulsable se atenúa un poco (0.85) en 100 ms. */
+  .pulsable,
+  .tarjeta-pulsable {
+    transition-property: opacity, border-color;
+    transition-duration: 100ms;
+  }
+  .pulsable:active:not(:focus-visible),
+  .tarjeta-pulsable:active:not(:focus-visible, :has(:focus-visible)),
+  .tarjeta-pulsable:has(a:active:not(:focus-visible)) {
+    scale: none;
+    opacity: 0.85;
+  }
+  /* El foco del teclado sigue entrando de una vez: la regla de 100 ms de
+     arriba va fuera de capa y le ganaba a la de 0 s de components. */
+  .tarjeta-pulsable:has(:focus-visible) { transition-duration: 0s; }
+  /* El éxito del formulario solo funde, en 200 ms (va después de su
+     @starting-style y le gana: el transform de partida también es none). */
+  .exito-panel,
+  .exito-icono {
+    transform: none;
+    transition: opacity 200ms var(--ease-salida);
+  }
+  .cambio-etiqueta { animation-name: etiqueta-quieta; }
   /* El tachado del "Hoy" queda puesto y quieto, también antes de aparecer su
      fila (misma especificidad que la regla de arriba, y va después). */
   .tachado-linea { transition: none; }

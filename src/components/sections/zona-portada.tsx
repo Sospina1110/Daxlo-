@@ -1,9 +1,6 @@
-"use client";
-
-import { useEffect, useRef } from "react";
-import { m, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { ArrowDown, ArrowRight, Check } from "lucide-react";
 import { agendarCon, hero } from "@/content/copy";
+import { Iman } from "@/components/ui/iman";
 import { GlowButton, Orb } from "@/components/ui/primitives";
 import { Reveal } from "@/components/ui/reveal";
 import { cn } from "@/lib/utils";
@@ -37,24 +34,13 @@ export function ZonaPortada({
   nota?: string | readonly string[];
   migas?: React.ReactNode;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  // MotionConfig reducedMotion="user" no detiene los valores atados a style:
-  // con "reducir movimiento" el titular se queda quieto. Se decide dentro del
-  // valor (con una referencia) y no quitando el style: así el HTML del
-  // servidor y el primer render del navegador son iguales.
-  const quieto = useReducedMotion();
-  const quietoRef = useRef(false);
-  useEffect(() => {
-    quietoRef.current = !!quieto;
-  }, [quieto]);
-  const x1 = useTransform(scrollYProgress, (v) => (quietoRef.current ? "0%" : `${-6 * v}%`));
-  const x2 = useTransform(scrollYProgress, (v) => (quietoRef.current ? "0%" : `${8 * v}%`));
   const cyan = tono === "cyan";
   const linea = cyan ? "coaching" : "consultoria";
 
+  // portada-paralaje: la línea de tiempo del scroll que mueve el titular
+  // gigante (globals.css). Sin JavaScript: este componente ya no hidrata.
   return (
-    <div ref={ref} className="relative overflow-hidden pb-4 pt-28 md:pb-16 md:pt-36">
+    <div className="portada-paralaje relative overflow-hidden pb-4 pt-28 md:pb-16 md:pt-36">
       <div className="container-page">
         {migas}
 
@@ -64,30 +50,41 @@ export function ZonaPortada({
             {eyebrow}
           </span>{" "}
           <span className="mt-6 block font-display text-[clamp(3.2rem,17vw,10.5rem)] font-medium leading-[0.9] tracking-[-0.045em] md:mt-8 md:text-[clamp(3.9rem,13.5vw,10.5rem)]">
-            {/* El desplazamiento con el scroll (Motion) y la entrada (CSS)
-                van en elementos distintos: los dos usan transform, y la
-                animación CSS taparía para siempre al de Motion. */}
-            <m.span style={{ x: x1 }} className="block">
-              <span className="subir flex items-center gap-[0.16em]">
-                <Orb tamano="0.78em" tono={cyan ? "cyan" : "blue"} className="animate-float" />
+            {/* El desplazamiento con el scroll y la entrada van en elementos
+                distintos: las dos animaciones usan transform y una taparía a
+                la otra. El parallax es una animación de CSS atada al scroll
+                (.paralaje-izquierda y .paralaje-derecha, globals.css), sin
+                resorte: lo que sigue al scroll sigue al scroll; con "reducir
+                movimiento", quieto.
+                Entrada: las dos líneas suben el 22 % de su alto (unos 33 px
+                en escritorio, 13 px en 375 px) en 800 ms, a los 0 y 0,08 s.
+                Con el 105 % de antes (~158 px, sin máscara) el titular se leía
+                como algo que flota hacia arriba. No llevan máscara: un
+                overflow-hidden cortaría el halo del orbe. El orbe no flota:
+                va dentro de una línea de lectura. */}
+            <span className="paralaje-izquierda block">
+              <span className="subir flex items-center gap-[0.16em] [--subir-desde:22%]">
+                <Orb tamano="0.78em" tono={cyan ? "cyan" : "blue"} />
                 <span>{gigante[0]}</span>
               </span>
-            </m.span>{" "}
-            <m.span style={{ x: x2 }} className="block pl-[0.5em] md:pl-[1.7em]">
+            </span>{" "}
+            <span className="paralaje-derecha block pl-[0.5em] md:pl-[1.7em]">
               {/* El degradado va en el mismo elemento que se anima, como en
                   el titular del inicio, para no perder el recorte del texto. */}
               <span
-                className={`subir block ${cyan ? "text-gradient-cyan" : "text-gradient-blue"}`}
-                style={{ ["--retraso" as string]: "0.12s" } as React.CSSProperties}
+                className={`subir block [--subir-desde:22%] ${cyan ? "text-gradient-cyan" : "text-gradient-blue"}`}
+                style={{ ["--retraso" as string]: "0.08s" } as React.CSSProperties}
               >
                 {gigante[1]}
               </span>
-            </m.span>
+            </span>
           </span>
         </h1>
 
+        {/* El protagonista entra primero: el sub a los 0,18 s y la fila del
+            botón a los 0,26 s; el botón queda quieto hacia los 0,86 s. */}
         <div className="mt-10 md:ml-auto md:mt-12 md:max-w-[560px]">
-          <Reveal delay={0.1}>
+          <Reveal delay={0.18}>
             <p className="text-[19px] leading-relaxed text-white/80 md:text-[21px]">{sub}</p>
           </Reveal>
           {/* Orden en el DOM: botón, nota, enlace. La nota describe lo que pasa
@@ -96,22 +93,27 @@ export function ZonaPortada({
               640 px, la rejilla pone el botón y el enlace en una fila y la nota
               debajo (el foco sigue yendo del botón al enlace: la nota no es
               enfocable). */}
-          <Reveal delay={0.15} className="mt-8">
+          <Reveal delay={0.26} className="mt-8">
             <div className="flex flex-col gap-3 sm:grid sm:grid-cols-[auto_auto] sm:items-center sm:justify-start sm:gap-x-6 sm:gap-y-3">
-              <GlowButton href={agendarCon(linea)} tono={tono} tamano="lg" className="w-full sm:col-start-1 sm:row-start-1 sm:w-auto">
-                {hero.cta}
-                <ArrowRight size={18} className="transition-transform group-hover:translate-x-0.5" />
-              </GlowButton>
+              {/* Botón magnético (Iman): se corre hacia el puntero en vez de
+                  subir 2 px. La rejilla lo estira: el botón ya no necesita
+                  w-full ni su lugar en la rejilla. */}
+              <Iman className="sm:col-start-1 sm:row-start-1">
+                <GlowButton href={agendarCon(linea)} tono={tono} tamano="lg" elevar={false}>
+                  {hero.cta}
+                  <ArrowRight size={18} className="transition-[translate] ease-salida motion-safe:group-hover:translate-x-0.5" />
+                </GlowButton>
+              </Iman>
               <NotaBoton nota={nota} className="sm:col-span-2 sm:row-start-2" />
               <a
                 href={`#${accion.ancla}`}
                 className={cn(
-                  "mt-1 inline-flex min-h-[44px] items-center gap-2 self-start text-[16px] font-medium transition-colors hover:text-white sm:col-start-2 sm:row-start-1 sm:mt-0 sm:self-auto sm:justify-self-start",
+                  "group mt-1 inline-flex min-h-[44px] items-center gap-2 self-start text-[16px] font-medium transition-colors hover:text-white sm:col-start-2 sm:row-start-1 sm:mt-0 sm:self-auto sm:justify-self-start",
                   cyan ? "text-cyan" : "text-blue-soft",
                 )}
               >
                 {accion.enlace}
-                <ArrowDown size={16} aria-hidden />
+                <ArrowDown size={16} aria-hidden className="transition-[translate] ease-salida motion-safe:group-hover:translate-y-0.5" />
               </a>
             </div>
           </Reveal>

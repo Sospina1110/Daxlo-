@@ -4,14 +4,42 @@ import { GlowButton, WindowDots } from "@/components/ui/primitives";
 import { ToolLogo } from "@/components/ui/blocks";
 import { TextoQueSeEscribe } from "@/components/ui/escritura";
 import { CintaHero } from "@/components/ui/cinta-hero";
+import { Iman } from "@/components/ui/iman";
 import { glow } from "@/lib/utils";
 
 // Entrada por CSS (clase .entrada en globals.css): arranca apenas el navegador
 // pinta, sin esperar a que cargue React. Es lo que evita la pantalla vacía en
-// celulares lentos.
-function Entrada({ children, retraso = 0, className = "" }: { children: React.ReactNode; retraso?: number; className?: string }) {
+// celulares lentos. `desde` (px) y `duracion` (s) reemplazan los 8 px y los
+// 0,6 s del token.
+//
+// Línea de tiempo del hero (inicio / duración / recorrido):
+// - frase de posicionamiento (apoyo): 0 / 600 ms / 8 px
+// - titular, línea 1 (protagonista): 60 / 800 ms / 105 % bajo su máscara
+// - titular, línea 2: 140 / 800 ms
+// - sub (apoyo): 280 / 600 ms / 8 px
+// - fila del botón y su nota (acción): 360 / 600 ms / 8 px
+// - maqueta (apoyo grande): 480 / 750 ms / 20 px
+// Pasos desiguales (60, 80, 140, 80 y 120 ms), no de metrónomo. El botón queda
+// quieto a 0,96 s (antes 1,45) y el hero completo a 1,23 s (antes 1,6); se
+// puede tocar desde el primer cuadro en que se ve.
+function Entrada({
+  children,
+  retraso = 0,
+  desde,
+  duracion,
+  className = "",
+}: {
+  children: React.ReactNode;
+  retraso?: number;
+  desde?: number;
+  duracion?: number;
+  className?: string;
+}) {
+  const estilo: Record<string, string> = { "--retraso": `${retraso}s` };
+  if (desde !== undefined) estilo["--desde"] = `${desde}px`;
+  if (duracion !== undefined) estilo["--duracion"] = `${duracion}s`;
   return (
-    <div className={`entrada ${className}`} style={{ ["--retraso" as string]: `${retraso}s` } as React.CSSProperties}>
+    <div className={`entrada ${className}`} style={estilo as React.CSSProperties}>
       {children}
     </div>
   );
@@ -36,21 +64,25 @@ export function Hero() {
         {/* data-cinta-tope: luminancia máxima que puede tener el fondo en
             movimiento detrás de cada texto (ver src/lib/cinta). */}
         <h1 className="mt-6 text-[clamp(2.7rem,6.6vw,5rem)] leading-[1.02] tracking-[-0.03em] max-[359px]:mt-5 max-[359px]:text-[2.15rem]">
-          <LineaTitular texto={hero.titulo[0]} retraso={0.1} tope="0.16" />{" "}
-          <LineaTitular texto={hero.titulo[1]} retraso={0.22} clase="text-gradient-dual pb-1" tope="degradado" />
+          <LineaTitular texto={hero.titulo[0]} retraso={0.06} tope="0.16" />{" "}
+          <LineaTitular texto={hero.titulo[1]} retraso={0.14} clase="text-gradient-dual pb-1" tope="degradado" />
         </h1>
 
-        <Entrada retraso={0.45}>
+        <Entrada retraso={0.28}>
           <p data-cinta-tope="0.055" className="mt-5 max-w-[580px] text-[18px] leading-relaxed text-muted max-[359px]:mt-4 max-[359px]:leading-normal md:mt-7 md:text-[19px]">{hero.sub}</p>
         </Entrada>
 
         {/* Un solo llamado, y debajo lo único que hace falta saber antes de
-            tocarlo. En celular el botón ocupa el ancho: se toca con el pulgar. */}
-        <Entrada retraso={0.55} className="mt-8 flex flex-col max-[359px]:mt-6 md:mt-9 items-stretch gap-4 sm:flex-row sm:items-center sm:gap-6">
-          <GlowButton href={rutas.agendar} tamano="lg" variante="principal">
-            {hero.cta}
-            <ArrowRight size={18} className="transition-transform group-hover:translate-x-0.5" />
-          </GlowButton>
+            tocarlo. En celular el botón ocupa el ancho: se toca con el pulgar.
+            Con mouse, el botón se corre hacia el puntero (Iman) en vez de
+            subir 2 px; la flecha avanza 2 px. */}
+        <Entrada retraso={0.36} className="mt-8 flex flex-col max-[359px]:mt-6 md:mt-9 items-stretch gap-4 sm:flex-row sm:items-center sm:gap-6">
+          <Iman>
+            <GlowButton href={rutas.agendar} tamano="lg" variante="principal" elevar={false}>
+              {hero.cta}
+              <ArrowRight size={18} className="transition-[translate] ease-salida motion-safe:group-hover:translate-x-0.5" />
+            </GlowButton>
+          </Iman>
           <p data-cinta-tope="0.04" className="flex items-center justify-center gap-2 text-[15px] text-white/60 sm:justify-start">
             <Check size={16} className="text-mint" aria-hidden />
             {hero.meta}
@@ -94,7 +126,7 @@ function FondoHero() {
 // Es decorativo: las tareas son ejemplos del tipo de trabajo, no datos de nadie.
 function Maqueta() {
   return (
-    <Entrada retraso={0.7} className="relative mt-16 md:mt-24">
+    <Entrada retraso={0.48} desde={20} duracion={0.75} className="relative mt-16 md:mt-24">
       <div aria-hidden className="relative mx-auto max-w-[1020px]">
         <div className="glass absolute -left-2 top-12 hidden h-[330px] w-[58%] overflow-hidden rounded-2xl bg-ink-2/70 [mask-image:linear-gradient(to_bottom,#000_55%,transparent)] md:block">
           <div className="flex items-center gap-3 border-b border-line px-4 py-3">

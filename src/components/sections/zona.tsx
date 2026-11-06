@@ -191,7 +191,7 @@ function ListaFiltro({ lista, tono, si, enlace }: { lista: ListaPara; tono: Tono
                   )}
                 >
                   {enlace.texto}
-                  <ArrowRight aria-hidden size={16} className="shrink-0 transition-transform motion-safe:group-hover:translate-x-1" />
+                  <ArrowRight aria-hidden size={16} className="shrink-0 transition-[translate] ease-salida motion-safe:group-hover:translate-x-1" />
                 </Link>
               )}
             </span>
@@ -230,7 +230,7 @@ function FranjaSocios({ texto, tono }: { texto: string; tono: TonoZona }) {
           )}
         >
           {inicioNosotros.enlace}
-          <ArrowRight aria-hidden size={16} className="shrink-0 transition-transform motion-safe:group-hover:translate-x-1" />
+          <ArrowRight aria-hidden size={16} className="shrink-0 transition-[translate] ease-salida motion-safe:group-hover:translate-x-1" />
         </Link>
       </div>
     </Reveal>

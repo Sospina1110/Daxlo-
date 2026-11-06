@@ -14,7 +14,7 @@ export function MotionProvider({ children }: { children: React.ReactNode }) {
     d.dataset.hidratado = "1";
     // Si la red de seguridad llegó a activarse (celular lento), se quita apenas
     // React toma el control: sus !important anulaban para siempre las
-    // transformaciones de Motion, como el titular gigante de las portadas.
+    // transformaciones de Motion.
     d.classList.remove("forzar-visible");
   }, []);
   // LazyMotion carga solo las funciones de animación que se usan (sin layout

@@ -33,38 +33,46 @@ type DatosPuerta = { regla: string; titulo: string; linea: string; enlace: strin
 
 // Toda la tarjeta se puede tocar: el enlace se estira sobre ella (after:inset-0)
 // y conserva su nombre accesible ("Ver el coaching: Coaching de IA 1 a 1").
-// Al pasar o con foco, el borde toma el tono de la línea y la flecha se corre
-// 4 px (quieta con "reducir movimiento").
+// Al pasar o con foco, el borde toma el tono de la línea en 200 ms (con foco
+// del teclado, de una vez); al presionar, la tarjeta baja a 0.99
+// (.tarjeta-pulsable, globals.css). La flecha se corre 4 px solo con el mouse
+// (quieta con "reducir movimiento" y con el foco).
+//
+// La aparición (data-revelar) va en un div aparte que envuelve el article: la
+// regla [data-revelar] va fuera de capa y su transition le ganaba a la del
+// borde, que cambiaba de golpe. El div sigue siendo hijo directo del grupo
+// escalonado.
 function Puerta({ tono, datos, href }: { tono: "cyan" | "blue"; datos: DatosPuerta; href: string }) {
   const cyan = tono === "cyan";
   return (
-    <article
-      data-revelar=""
-      className={cn(
-        "group relative flex h-full flex-col rounded-[24px] border border-line-2 bg-ink-2/60 p-6 transition-colors duration-300 sm:p-8 md:p-10",
-        cyan ? "hover:border-cyan/40 focus-within:border-cyan/40" : "hover:border-blue-bright/45 focus-within:border-blue-bright/45",
-      )}
-    >
-      {/* El pictograma y la regla van juntos: la regla se ve antes de leerse. */}
-      <div className="mt-0 flex items-center gap-4">
-        <Pictograma tono={tono} />
-        <p className="text-[15px] leading-snug text-white/85">{datos.regla}</p>
-      </div>
-      <h3 className="mt-5 text-[28px] leading-tight text-white md:text-[32px]">{sinCorte(datos.titulo)}</h3>
-      <p className="mb-6 mt-3 max-w-[460px] text-[18px] leading-relaxed text-muted">{datos.linea}</p>
-      {/* Al pie de la tarjeta: los dos enlaces quedan a la misma altura. */}
-      <Link
-        href={href}
+    <div data-revelar="" className="h-full">
+      <article
         className={cn(
-          "mt-auto inline-flex min-h-[44px] items-center gap-2 self-start text-[16px] font-medium after:absolute after:inset-0 after:rounded-[24px] after:content-['']",
-          cyan ? "text-cyan" : "text-blue-soft",
+          "group tarjeta-pulsable relative flex h-full flex-col rounded-[24px] border border-line-2 bg-ink-2/60 p-6 sm:p-8 md:p-10",
+          cyan ? "hover:border-cyan/40 focus-within:border-cyan/40" : "hover:border-blue-bright/45 focus-within:border-blue-bright/45",
         )}
       >
-        {datos.enlace}
-        <span className="sr-only">: {datos.titulo}</span>
-        <ArrowRight aria-hidden size={17} className="transition-transform duration-300 motion-safe:group-hover:translate-x-1 motion-safe:group-focus-within:translate-x-1" />
-      </Link>
-    </article>
+        {/* El pictograma y la regla van juntos: la regla se ve antes de leerse. */}
+        <div className="mt-0 flex items-center gap-4">
+          <Pictograma tono={tono} />
+          <p className="text-[15px] leading-snug text-white/85">{datos.regla}</p>
+        </div>
+        <h3 className="mt-5 text-[28px] leading-tight text-white md:text-[32px]">{sinCorte(datos.titulo)}</h3>
+        <p className="mb-6 mt-3 max-w-[460px] text-[18px] leading-relaxed text-muted">{datos.linea}</p>
+        {/* Al pie de la tarjeta: los dos enlaces quedan a la misma altura. */}
+        <Link
+          href={href}
+          className={cn(
+            "mt-auto inline-flex min-h-[44px] items-center gap-2 self-start text-[16px] font-medium after:absolute after:inset-0 after:rounded-[24px] after:content-['']",
+            cyan ? "text-cyan" : "text-blue-soft",
+          )}
+        >
+          {datos.enlace}
+          <span className="sr-only">: {datos.titulo}</span>
+          <ArrowRight aria-hidden size={17} className="transition-[translate] ease-salida motion-safe:group-hover:translate-x-1" />
+        </Link>
+      </article>
+    </div>
   );
 }
 

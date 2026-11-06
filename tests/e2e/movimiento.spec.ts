@@ -1,12 +1,13 @@
-import { consultoria, hero, rutas } from "../../src/content/copy";
-import { expect, irA, irAlFinal, RUTAS, test, textosInvisibles, type Page } from "./apoyo";
+import { consultoria, dosFormas, faq, hero, nav, preguntasLinea, rutas } from "../../src/content/copy";
+import { caja, expect, irA, irAlFinal, quieto, RUTAS, test, textosInvisibles, type Locator, type Page } from "./apoyo";
 
 // Movimiento y consumo: las animaciones infinitas se pausan fuera de pantalla,
 // en celular no corren las dos más caras, el texto que se escribe no mueve la
 // página, y con "reducir movimiento" todo se ve sin animaciones.
 
-// La misma lista que pausa el script del layout.
-const INFINITAS = ".animate-flow,.animate-halo,.animate-deriva,.animate-float,.animate-marquee,.animate-marquee-reverse,.animate-ping,.animate-paseo,.animate-caret";
+// La misma lista que pausa el script del layout. (El halo que respiraba en el
+// botón del hero salió en noviembre de 2026.)
+const INFINITAS = ".animate-flow,.animate-deriva,.animate-float,.animate-marquee,.animate-marquee-reverse,.animate-ping,.animate-paseo,.animate-caret";
 
 type Animada = { clase: string; fuera: boolean; dentro: boolean; pausa: boolean; corriendo: number };
 
@@ -51,22 +52,28 @@ for (const ruta of RUTAS.filter((r) => r !== rutas.privacidad)) {
 
 test("al bajar al cierre se pausan las de arriba y arrancan las de abajo", async ({ page }) => {
   await irA(page, "/");
-  // Arriba: el foco de luz del botón del hero (animate-halo), en la primera
-  // pantalla en cualquier tamaño. Abajo: el orbe del cierre (animate-float),
-  // antes del pie. (La cinta de luz del fondo tiene su propia prueba:
-  // cinta.spec.ts.)
-  const halo = page.locator("#top .animate-halo");
+  // Arriba: el cursor del texto que se escribe solo en la maqueta del hero
+  // (animate-caret). Antes la referencia era el halo que respiraba en el botón
+  // del hero, que salió en noviembre de 2026 (un brillo que late solo delata
+  // una plantilla). Abajo: el orbe del cierre (animate-float), antes del pie.
+  // (La cinta de luz del fondo tiene su propia prueba: cinta.spec.ts.)
+  const cursor = page.locator("#top .animate-caret");
   const orbeCierre = page.locator('section[aria-labelledby="titulo-cierre"] .animate-float');
-  await expect(halo).not.toHaveAttribute("data-pausa", "");
+  await expect(cursor).toHaveCount(1);
+  // En celulares bajos la maqueta queda debajo del pliegue: primero se trae a
+  // la vista.
+  await cursor.evaluate((c) => c.scrollIntoView({ block: "center", behavior: "instant" }));
+  await expect(cursor).toBeVisible();
+  await expect(cursor).not.toHaveAttribute("data-pausa", "");
   await expect(orbeCierre).toHaveAttribute("data-pausa", "");
 
   // Se baja hasta el orbe (al fondo del todo no: en celular el pie es alto y
   // el orbe queda arriba, fuera de pantalla, con razón en pausa).
   await orbeCierre.evaluate((o) => o.scrollIntoView({ block: "center", behavior: "instant" }));
   await expect(orbeCierre).not.toHaveAttribute("data-pausa", "");
-  await expect(halo).toHaveAttribute("data-pausa", "");
+  await expect(cursor).toHaveAttribute("data-pausa", "");
   await expect.poll(() => orbeCierre.evaluate((e) => e.getAnimations().filter((a) => a.playState === "running").length)).toBeGreaterThan(0);
-  expect(await halo.evaluate((e) => e.getAnimations().every((a) => a.playState !== "running"))).toBe(true);
+  expect(await cursor.evaluate((e) => e.getAnimations().every((a) => a.playState !== "running"))).toBe(true);
 });
 
 test.describe("animaciones caras en celular", () => {
@@ -283,6 +290,105 @@ test.describe("con 'reducir movimiento'", () => {
     });
   }
 
+  // Presiona con el mouse, mide mientras sigue abajo y suelta sobre el mismo
+  // elemento. El clic se frena en la página (captura en window: ni React ni el
+  // navegador lo ven), así no se navega; soltar fuera arrastraría el enlace.
+  async function presionarYMedir(page: Page, apretar: Locator, medir: Locator) {
+    await quieto(apretar);
+    const b = await caja(apretar);
+    await page.mouse.move(b.x + b.width / 2, b.y + Math.min(b.height / 2, 30));
+    await page.evaluate(() =>
+      addEventListener(
+        "click",
+        (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        },
+        { capture: true, once: true },
+      ),
+    );
+    await page.mouse.down();
+    try {
+      await expect
+        .poll(() => medir.evaluate((el) => ({ escala: getComputedStyle(el).scale, opacidad: Math.round(parseFloat(getComputedStyle(el).opacity) * 100) / 100 })))
+        .toEqual({ escala: "none", opacidad: 0.85 });
+    } finally {
+      await page.mouse.up();
+    }
+  }
+
+  test("al presionar no se escala nada: el botón principal, un botón de luz y una puerta solo se atenúan", async ({ page, isMobile }) => {
+    test.skip(isMobile, "con mouse");
+    await irA(page, "/");
+    const principal = page.locator("#top").getByRole("link", { name: hero.cta });
+    await presionarYMedir(page, principal, principal);
+    const luz = page.getByRole("navigation", { name: "Principal" }).getByRole("link", { name: nav.cta.label, exact: true });
+    await presionarYMedir(page, luz, luz);
+    const puerta = page.locator("article").filter({ hasText: dosFormas.coaching.regla });
+    await presionarYMedir(page, puerta.getByText(dosFormas.coaching.regla, { exact: true }), puerta);
+  });
+
+  for (const ruta of ["/", "/coaching", "/consultoria"]) {
+    test(`${ruta}: el botón magnético no se mueve`, async ({ page, isMobile }) => {
+      test.skip(isMobile, "con mouse");
+      await irA(page, ruta);
+      const cta = page.locator("main").getByRole("link", { name: hero.cta }).first();
+      await quieto(cta);
+      const b = await caja(cta);
+      await page.mouse.move(b.x + b.width - 2, b.y + b.height - 2, { steps: 4 });
+      await page.waitForTimeout(500);
+      const iman = cta.locator("xpath=ancestor::*[contains(@class,'iman-movil')][1]");
+      expect(await iman.evaluate((e) => getComputedStyle(e).transform)).toBe("none");
+    });
+  }
+
+  test("el menú de celular abre y cierra sin desplazarse (solo opacidad)", async ({ page, isMobile }) => {
+    test.skip(!isMobile, "el menú es de celular");
+    await irA(page, "/");
+    const boton = page.getByRole("navigation", { name: "Principal" }).getByRole("button", { name: /menú/ });
+    // Muestrea el transform del panel en cada cuadro durante 300 ms.
+    const muestrear = () =>
+      page.evaluate(
+        () =>
+          new Promise<string[]>((listo) => {
+            const salida: string[] = [];
+            const t0 = performance.now();
+            const paso = () => {
+              const m = document.getElementById("menu-movil");
+              if (m) salida.push(getComputedStyle(m).transform);
+              if (performance.now() - t0 < 300) requestAnimationFrame(paso);
+              else listo(salida);
+            };
+            requestAnimationFrame(paso);
+          }),
+      );
+    let muestras = muestrear();
+    await boton.tap();
+    const alAbrir = await muestras;
+    expect(alAbrir.length, "el panel no apareció").toBeGreaterThan(0);
+    expect(new Set(alAbrir)).toEqual(new Set(["none"]));
+    muestras = muestrear();
+    await boton.tap();
+    for (const t of await muestras) expect(t).toBe("none");
+    await expect(page.locator("#menu-movil")).toHaveCount(0);
+  });
+
+  test("la barra cambia de ancho sin transición", async ({ page }) => {
+    await irA(page, "/");
+    expect(await page.getByRole("navigation", { name: "Principal" }).evaluate((n) => getComputedStyle(n).transitionDuration)).toBe("0s");
+  });
+
+  test("el '+' de una pregunta no se anima al abrirla", async ({ page, isMobile }) => {
+    await irA(page, "/coaching");
+    const q = faq.grupos[preguntasLinea.coaching.grupo].preguntas[0];
+    const boton = page.getByRole("button", { name: q.p, exact: true });
+    await quieto(boton);
+    if (isMobile) await boton.tap();
+    else await boton.click();
+    await expect(boton).toHaveAttribute("aria-expanded", "true");
+    expect(await boton.locator("svg").evaluate((s) => s.getAnimations().length)).toBe(0);
+  });
+
   test("/consultoria: el 'Hoy' ya está tachado y quieto, también antes de llegar a él", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await irA(page, "/consultoria");
@@ -331,5 +437,66 @@ test.describe("con 'reducir movimiento'", () => {
     await expect(page.locator("h1")).toBeVisible();
     await page.waitForTimeout(500);
     // Los errores (incluido un #418) los revisa la vigilancia al terminar.
+  });
+});
+
+// Lo que estaba mal antes de la pasada de movimiento de noviembre de 2026 y no
+// debe volver.
+test.describe("regresiones de movimiento", () => {
+  test("el '+' de una pregunta gira con una transición de la propiedad rotate", async ({ page, isMobile }) => {
+    // Con transition-[transform], rotate-45 (que en Tailwind 4 es la propiedad
+    // rotate) giraba de golpe.
+    await irA(page, "/coaching");
+    const q = faq.grupos[preguntasLinea.coaching.grupo].preguntas[0];
+    const boton = page.getByRole("button", { name: q.p, exact: true });
+    await quieto(boton);
+    if (isMobile) await boton.tap();
+    else await boton.click();
+    const propiedades = await boton
+      .locator("svg")
+      .evaluate((s) => s.getAnimations().map((a) => (a as CSSTransition).transitionProperty ?? ""));
+    expect(propiedades).toContain("rotate");
+  });
+
+  test("la puerta del inicio funde su borde (la aparición ya no le pisa la transición)", async ({ page }) => {
+    await irA(page, "/");
+    const puerta = page.locator("article").filter({ hasText: dosFormas.coaching.regla });
+    const propiedades = await puerta.evaluate((a) => getComputedStyle(a).transitionProperty);
+    expect(propiedades.split(",").map((p) => p.trim())).toContain("border-color");
+    // La aparición va en el envoltorio, no en el article.
+    expect(await puerta.evaluate((a) => a.hasAttribute("data-revelar"))).toBe(false);
+  });
+
+  test("/consultoria: el recorrido entra en ola (cada intervalo más corto, nunca más de 0,32 s)", async ({ page }) => {
+    await irA(page, "/consultoria");
+    const pasos = page.locator("#como-trabajamos ol > li[data-revelar]");
+    await expect(pasos).toHaveCount(4);
+    // En celular los pasos van uno debajo del otro: se trae cada uno a la vista.
+    for (let i = 0; i < 4; i++) await pasos.nth(i).evaluate((p) => p.scrollIntoView({ block: "center", behavior: "instant" }));
+    await expect.poll(() => pasos.evaluateAll((ps) => ps.every((p) => p.hasAttribute("data-visible")))).toBe(true);
+    const retrasos = await pasos.evaluateAll((ps) => ps.map((p) => (p as HTMLElement).style.getPropertyValue("--retraso")));
+    expect(retrasos).toEqual(["0s", "0.08s", "0.148s", "0.206s"]);
+    const s = retrasos.map(parseFloat);
+    const pasosEntre = s.slice(1).map((v, i) => v - s[i]);
+    for (let i = 1; i < pasosEntre.length; i++) expect(pasosEntre[i]).toBeLessThan(pasosEntre[i - 1]);
+    for (const v of s) expect(v).toBeLessThanOrEqual(0.32);
+  });
+
+  test("hero: la fila del botón termina de entrar antes de 1 s y la maqueta antes de 1,25 s", async ({ page }) => {
+    await irA(page, "/");
+    const fila = page.locator("#top .entrada").filter({ has: page.getByRole("link", { name: hero.cta }) });
+    await expect(fila).toHaveCount(1);
+    // Fin de la animación = retraso + duración, en ms desde que arranca.
+    const fin = await fila.evaluate((f) => f.getAnimations()[0]?.effect?.getComputedTiming().endTime ?? null);
+    expect(fin).not.toBeNull();
+    expect(Number(fin)).toBeLessThanOrEqual(1000);
+    await expect.poll(() => fila.evaluate((f) => ({ opacidad: getComputedStyle(f).opacity, estado: f.getAnimations()[0]?.playState ?? "sin animación" }))).toEqual({
+      opacidad: "1",
+      estado: "finished",
+    });
+    const finHero = await page.evaluate(() =>
+      Math.max(...[...document.querySelectorAll("#top .entrada, #top .subir")].map((e) => Number(e.getAnimations()[0]?.effect?.getComputedTiming().endTime ?? 0))),
+    );
+    expect(finHero).toBeLessThanOrEqual(1250);
   });
 });

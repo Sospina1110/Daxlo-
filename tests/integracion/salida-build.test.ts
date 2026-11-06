@@ -295,6 +295,14 @@ describe.skipIf(!HAY_BUILD)(HAY_BUILD ? "salida del build (out/)" : "salida del 
       }
     });
 
+    it("el script de apariciones registra touchstart (:active en iOS antes de hidratar) y escalona en ola (0,85)", () => {
+      const script = [...pagina("inicio").body.querySelectorAll("script:not([src])")].find((s) => s.textContent?.includes("data-pausa"));
+      expect(script?.textContent).toContain("touchstart");
+      expect(script?.textContent).toContain("0.85");
+      // Sigue siendo un solo script en línea al final del body (la CSP no cambia).
+      expect(script?.textContent).not.toContain("animate-halo");
+    });
+
     it("todas las clases animate-* que usa el HTML están en la lista que el script pausa fuera de pantalla", () => {
       const script = [...pagina("inicio").body.querySelectorAll("script:not([src])")].find((s) => s.textContent?.includes("data-pausa"));
       expect(script, "no hay script de apariciones al final de <body>").toBeDefined();
@@ -326,7 +334,8 @@ describe.skipIf(!HAY_BUILD)(HAY_BUILD ? "salida del build (out/)" : "salida del 
     it("con 'reducir movimiento' apaga todas las animaciones infinitas y las entradas", () => {
       const bloques = [...css.matchAll(/@media \(prefers-reduced-motion:\s*reduce\)\s*\{([\s\S]*?\})\s*\}/g)].map((m) => m[1]).join("\n");
       const regla = bloques.match(/([^{}]*)\{animation:none!important\}/)?.[1] ?? "";
-      for (const clase of ["animate-marquee", "animate-marquee-reverse", "animate-float", "animate-flow", "animate-halo", "animate-deriva", "animate-paseo", "animate-ping", "animate-caret", "entrada", "subir", "fundir"]) {
+      // (animate-halo salió en noviembre de 2026 junto con el halo que respiraba.)
+      for (const clase of ["animate-marquee", "animate-marquee-reverse", "animate-float", "animate-flow", "animate-deriva", "animate-paseo", "animate-ping", "animate-caret", "entrada", "subir", "fundir"]) {
         expect(regla.split(",").map((s) => s.trim()), clase).toContain(`.${clase}`);
       }
     });
@@ -337,11 +346,65 @@ describe.skipIf(!HAY_BUILD)(HAY_BUILD ? "salida del build (out/)" : "salida del 
     });
 
     // El lienzo de la cinta y la banda de respaldo aparecen sin transición, y
-    // el barrido de brillo del botón principal no corre.
+    // el relleno claro del botón principal tampoco funde. (El barrido de
+    // brillo salió en noviembre de 2026: ya no hay nada que apagar.)
     it("con 'reducir movimiento' el fondo del hero y el botón principal no se animan", () => {
       const bloques = [...css.matchAll(/@media \(prefers-reduced-motion:\s*reduce\)\s*\{([\s\S]*?\})\s*\}/g)].map((m) => m[1]).join("\n").replace(/\s/g, "");
       expect(bloques).toMatch(/\.cinta-lienzo,\.cinta-respaldo,\.boton-principal:+before\{transition:none!important\}/);
-      expect(bloques).toContain(".boton-barrido{display:none}");
+    });
+
+    // ------------------------------------------------ Lenguaje de movimiento
+    // (DESIGN.md, Motion): dos curvas y un resorte, hover solo con puntero
+    // fino, presión en todo lo pulsable y nada de lo que salió.
+    const plano = css.replace(/\s/g, "");
+    const bloquesReducir = () =>
+      [...css.matchAll(/@media \(prefers-reduced-motion:\s*reduce\)\s*\{([\s\S]*?\})\s*\}/g)].map((m) => m[1]).join("\n").replace(/\s/g, "");
+
+    it("el hover del botón principal y la pausa de la marquesina solo existen con puntero fino", () => {
+      // Todo lo que está dentro de @media (hover:hover) and (pointer:fine) se
+      // quita; afuera no puede quedar ninguno de estos hover.
+      const finos = [...plano.matchAll(/@media\(hover:hover\)and\(pointer:fine\)\{((?:[^{}]*\{[^{}]*\})*)\}/g)];
+      expect(finos.length).toBeGreaterThan(0);
+      const dentro = finos.map((m) => m[1]).join("");
+      for (const sel of [".boton-principal:hover:before", ".iman-movil:has(.boton-principal:hover):after", ".marquee-track:hover"]) {
+        expect(dentro, sel).toContain(sel);
+      }
+      const afuera = finos.reduce((t, m) => t.replace(m[0], ""), plano);
+      expect(afuera).not.toMatch(/\.boton-principal:hover/);
+      expect(afuera).not.toMatch(/\.marquee-track:hover/);
+    });
+
+    it("sin el recuadro gris al tocar", () => {
+      expect(plano).toMatch(/html\{[^}]*-webkit-tap-highlight-color:transparent/);
+    });
+
+    it("lo pulsable baja al presionar, salvo con teclado; con 'reducir movimiento' no se escala", () => {
+      expect(plano).toContain(".pulsable:active:not(:focus-visible){scale:var(--escala-presion,.97)");
+      expect(bloquesReducir()).toMatch(/\.pulsable:active:not\(:focus-visible\)\{[^}]*scale:none/);
+    });
+
+    it(".pulsable y .tarjeta-pulsable animan solo propiedades baratas (ni box-shadow ni all)", () => {
+      for (const clase of ["pulsable", "tarjeta-pulsable"]) {
+        const listas = [...plano.matchAll(new RegExp(`\\.${clase}\\{transition-property:([^;}]*)`, "g"))].map((m) => m[1]);
+        expect(listas.length, clase).toBeGreaterThan(0);
+        for (const l of listas) {
+          expect(l, clase).not.toMatch(/box-shadow|\ball\b/);
+        }
+      }
+    });
+
+    it("--ease-salida queda en :root y ninguna regla usa la curva por defecto de Tailwind (0.4, 0, 0.2, 1)", () => {
+      const raiz = plano.match(/:root,:host\{[^}]*\}/)?.[0] ?? "";
+      expect(raiz).toContain("--ease-salida:cubic-bezier(.22,1,.36,1)");
+      expect(raiz).toContain("--ease-mover:cubic-bezier(.77,0,.175,1)");
+      expect(raiz).toContain("--default-transition-timing-function:var(--ease-salida)");
+      expect(plano).not.toContain("cubic-bezier(.4,0,.2,1)");
+    });
+
+    it("ya no existen el barrido de brillo ni el halo que respiraba", () => {
+      expect(plano).not.toContain(".boton-barrido");
+      expect(css).not.toMatch(/@keyframes\s+halo\b/);
+      expect(plano).not.toContain("animate-halo");
     });
   });
 

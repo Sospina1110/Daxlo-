@@ -48,8 +48,10 @@ export function SectionHeading({
   const Titular = nivel === 1 ? "h1" : "h2";
   const apoyo = nivel === 2 && escala === "apoyo";
   const anchoIzquierda = nivel === 1 ? "max-w-[680px]" : apoyo ? "max-w-[640px]" : "max-w-[880px]";
+  // Protagonista de su sección: sube 16 px, el doble que el texto de apoyo.
   return (
     <Reveal
+      y={16}
       className={cn(
         centro ? (nivel === 1 ? "mx-auto max-w-[760px] text-center" : "max-w-[760px] sm:mx-auto sm:text-center") : anchoIzquierda,
         className,

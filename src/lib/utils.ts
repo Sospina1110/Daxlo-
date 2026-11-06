@@ -2,8 +2,28 @@ export function cn(...clases: Array<string | false | null | undefined>) {
   return clases.filter(Boolean).join(" ");
 }
 
-// Curva de salida que usa la plantilla en casi todas sus apariciones.
+// Lenguaje de movimiento del sitio: dos curvas y un resorte (DESIGN.md, Motion).
+// Las curvas viven en CSS como --ease-salida y --ease-mover (globals.css); aquí
+// van sus equivalentes para Motion.
+
+// Curva de salida: todo lo que entra, aparece, responde o se presiona. Arranca
+// rápido (el ojo ve la respuesta en el primer cuadro) y se asienta despacio.
+// Es la misma que --ease-salida.
 export const EASE = [0.22, 1, 0.36, 1] as const;
+
+// Resorte del botón magnético (Iman). Con masa 1, ζ = 30 / (2·√300) ≈ 0,87:
+// rebasa menos de 0,5 % (menos de 0,03 px en 6 px), se asienta en ~0,27 s y,
+// como todo resorte, conserva la velocidad si el puntero cambia de idea a
+// mitad de camino. Va por rigidez y amortiguación, no por duración: en motion
+// 13.4.4 un resorte definido por tiempo (visualDuration/bounce) pone la
+// velocidad en 0 cada vez que cambia de destino y la vuelta deja de ser
+// continua.
+export const RESORTE_IMAN = { stiffness: 300, damping: 30, mass: 1 } as const;
+
+// Lo más que se corre el botón hacia el puntero, con el puntero en el borde:
+// se nota como respuesta y nunca saca el botón de debajo del puntero.
+export const IMAN_MAX_X = 6;
+export const IMAN_MAX_Y = 4;
 
 export type Tono = "cyan" | "blue" | "dual";
 

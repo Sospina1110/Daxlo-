@@ -44,17 +44,32 @@ type GlowButtonProps = {
   type?: "button" | "submit";
   disabled?: boolean;
   onClick?: () => void;
+  // Sube 2 px al pasar el mouse. Los tres llamados con botón magnético (Iman:
+  // hero, portada y cierre) lo apagan: ahí el botón ya se mueve hacia el
+  // puntero y las dos cosas juntas se sentían de juguete.
+  elevar?: boolean;
 };
 
-// Foco de luz del botón principal: cian claro, respira despacio.
+// Foco de luz del botón principal: cian claro, fijo al 85 %. Sube a 100 % al
+// pasar el mouse, al presionar o con foco del teclado (en 200 ms; con foco, de
+// una vez, y al salir con Tab también: [data-tab] en globals.css). Antes respiraba sin fin de 0,65 a 1: un brillo que late solo es de
+// los recursos que más delatan una página hecha con plantilla.
 const brilloPrincipal = "radial-gradient(closest-side, rgba(127,224,255,0.95), rgba(41,196,245,0.45) 55%, transparent)";
 
 // Botón oscuro con borde degradado y un foco de luz en el borde superior,
 // como el "Get Started" de la plantilla.
-export function GlowButton({ children, href, tono = "dual", tamano = "md", variante = "luz", className, type = "button", disabled, onClick }: GlowButtonProps) {
+//
+// Movimiento (DESIGN.md, Motion): .pulsable (globals.css) lo baja a 0.97 al
+// presionar (0.98 el principal) en 120 ms y lo devuelve en 120 ms; solo anima
+// translate, scale y opacity. Antes llevaba la utilidad `transition`, que
+// anima unas 20 propiedades (box-shadow, filter y backdrop-filter incluidas):
+// un transition: all encubierto. La subida de hover va solo con mouse
+// (hover de Tailwind) y sin "reducir movimiento".
+export function GlowButton({ children, href, tono = "dual", tamano = "md", variante = "luz", className, type = "button", disabled, onClick, elevar = true }: GlowButtonProps) {
   const principal = variante === "principal";
   const clases = cn(
-    "group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl font-medium text-white transition duration-300 hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-60",
+    "group pulsable relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl font-medium text-white disabled:pointer-events-none disabled:opacity-60",
+    elevar && "motion-safe:hover:-translate-y-0.5",
     principal ? "boton-principal" : "border-gradient",
     tamano === "sm" && "min-h-[44px] px-4 py-2 text-[15px]",
     tamano === "md" && "px-4 py-3 text-[16px] min-[360px]:px-5",
@@ -69,15 +84,18 @@ export function GlowButton({ children, href, tono = "dual", tamano = "md", varia
   const estilo = principal ? undefined : ({ ...bordePorTono[tono], ["--fill" as string]: "#10121a", ["--angle" as string]: "120deg" } as React.CSSProperties);
   const interior = (
     <>
+      {/* Foco de luz: solo cambia de opacidad, con la curva y los 200 ms por
+          defecto de las utilidades transition-* (globals.css, @theme). */}
       {principal ? (
-        <>
-          <span aria-hidden className="animate-halo pointer-events-none absolute -top-5 left-1/2 h-10 w-[90%] -translate-x-1/2" style={{ background: brilloPrincipal }} />
-          <span aria-hidden className="boton-barrido pointer-events-none absolute inset-y-0 left-0 w-1/3" />
-        </>
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -top-5 left-1/2 h-10 w-[90%] -translate-x-1/2 opacity-85 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 group-focus-visible:duration-0 group-active:opacity-100"
+          style={{ background: brilloPrincipal }}
+        />
       ) : (
         <span
           aria-hidden
-          className="pointer-events-none absolute -top-5 left-1/2 h-10 w-[90%] -translate-x-1/2 opacity-60 transition-opacity duration-300 group-hover:opacity-100"
+          className="pointer-events-none absolute -top-5 left-1/2 h-10 w-[90%] -translate-x-1/2 opacity-60 transition-opacity group-hover:opacity-100 group-active:opacity-100"
           style={{ background: brilloPorTono[tono] }}
         />
       )}

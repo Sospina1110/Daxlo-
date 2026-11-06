@@ -55,18 +55,15 @@ export function Herramientas({ migas }: { migas?: React.ReactNode }) {
           <h2 className="text-[26px] text-white md:text-[30px]">{h.subtituloLista}</h2>
         </Reveal>
         {/* En celular cada herramienta es una fila (logo a la izquierda, texto
-            a la derecha): como tarjetas, las ocho ocupaban cuatro pantallas. */}
+            a la derecha): como tarjetas, las ocho ocupaban cuatro pantallas.
+            Entran en ola con un escalón más corto (0,06 s): son nueve. */}
         <Stagger as="ul" className="mt-8 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4" escalon={0.06}>
           {h.lista.map((t) => (
             <StaggerItem as="li" key={t.id} className="h-full">
-              <article
-                className="glass group relative flex h-full flex-row items-start gap-4 overflow-hidden rounded-[20px] p-5 transition-colors duration-300 hover:border-line-2 sm:flex-col sm:gap-0 sm:p-6"
-              >
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-0 blur-[50px] transition-opacity duration-500 group-hover:opacity-70"
-                  style={{ background: toolLogos[t.id].color }}
-                />
+              {/* Las fichas no se pueden pulsar: sin hover (DESIGN.md: hover
+                  solo en lo pulsable). Antes cambiaban de borde y encendían un
+                  resplandor con filter: blur(50px), de lo más caro de pintar. */}
+              <article className="glass relative flex h-full flex-row items-start gap-4 overflow-hidden rounded-[20px] p-5 sm:flex-col sm:gap-0 sm:p-6">
                 <span className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl sm:h-12 sm:w-12" style={{ background: fondoMarca(t.id) }}>
                   <ToolLogo id={t.id} tamano={24} />
                 </span>

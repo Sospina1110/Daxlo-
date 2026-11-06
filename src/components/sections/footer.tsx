@@ -44,20 +44,21 @@ export function Footer() {
             </nav>
           ))}
           {/* En celular el contacto va a lo ancho y en fila: en media columna
-              el correo no cabía en 320 px. */}
+              el correo no cabía en 320 px. Funden de color en 200 ms, como
+              los demás enlaces del pie (antes saltaban). */}
           <div className="col-span-2 sm:col-span-1">
             <p className="font-display text-[17px] text-white">Contacto</p>
             <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-[16px] sm:block sm:space-y-1">
               <li>
-                <a href={contacto.whatsapp} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center gap-2 text-white/60 hover:text-white">
+                <a href={contacto.whatsapp} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center gap-2 text-white/60 transition-colors hover:text-white">
                   <MessageCircle size={16} /> WhatsApp
                 </a>
               </li>
               <li>
-                <CorreoContacto className="inline-flex min-h-[44px] items-center gap-2 text-white/60 hover:text-white" />
+                <CorreoContacto className="inline-flex min-h-[44px] items-center gap-2 text-white/60 transition-colors hover:text-white" />
               </li>
               <li>
-                <a href={contacto.instagram} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center gap-2 text-white/60 hover:text-white">
+                <a href={contacto.instagram} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center gap-2 text-white/60 transition-colors hover:text-white">
                   <Instagram size={16} /> Instagram
                 </a>
               </li>

@@ -19,7 +19,8 @@ export function Nosotros({ migas }: { migas?: React.ReactNode }) {
     <section className="relative overflow-hidden pb-20 pt-28 md:pb-32 md:pt-36">
       {migas && <div className="container-page">{migas}</div>}
       <div className="container-page mt-10 grid items-center gap-10 md:mt-14 lg:grid-cols-[400px_1fr] lg:gap-20">
-        <Reveal className="relative mx-auto w-full max-w-[400px] max-lg:order-2">
+        {/* La foto es adorno: solo funde. */}
+        <Reveal y={0} className="relative mx-auto w-full max-w-[400px] max-lg:order-2">
           <span aria-hidden className="resplandor absolute -left-12 -top-12 h-72 w-72" style={glow("41 196 245", 0.32, 1.4)} />
           <span aria-hidden className="resplandor absolute -bottom-12 -right-12 h-80 w-80" style={glow("27 53 208", 0.5, 1.4)} />
           <div className="relative overflow-hidden rounded-[28px] border border-line-2">
@@ -39,9 +40,10 @@ export function Nosotros({ migas }: { migas?: React.ReactNode }) {
         </Reveal>
         <div>
           <SectionHeading badge={n.badge} titulo={n.titulo} alineacion="izquierda" nivel={1} />
-          <div className="mt-7 space-y-5">
+          {/* Los párrafos entran en ola (data-escalonar, script del layout). */}
+          <div data-escalonar="0.08" className="mt-7 space-y-5">
             {n.parrafos.map((p, i) => (
-              <Reveal key={i} delay={0.05 * i}>
+              <Reveal key={i}>
                 <p className="text-[18px] leading-relaxed text-muted">{p}</p>
               </Reveal>
             ))}
@@ -87,9 +89,11 @@ export function Faq({ migas }: { migas?: React.ReactNode }) {
                   {g.nombre}
                 </h2>
               </Reveal>
-              <div className="mt-4 space-y-3">
-                {g.preguntas.map((q, i) => (
-                  <Reveal key={q.p} delay={0.04 * i}>
+              {/* Las preguntas entran en ola, con un escalón más corto
+                  (0,05 s): son muchas y se leen de corrido. */}
+              <div data-escalonar="0.05" className="mt-4 space-y-3">
+                {g.preguntas.map((q) => (
+                  <Reveal key={q.p}>
                     <Pregunta pregunta={q.p} respuesta={q.r} enlace={q.enlace} />
                   </Reveal>
                 ))}
@@ -115,6 +119,9 @@ export function Faq({ migas }: { migas?: React.ReactNode }) {
 // ------------------------------------------------ Agendar
 
 // Página /agendar: el titular es el h1 y el formulario queda a la vista.
+// Entrada por rol: el orbe y la etiqueta (adornos, solo funden) y el h1 a los
+// 0 s, el sub a los 0,08 s y el formulario a los 0,14 s. Antes era una cola de
+// 0 / 0,05 / 0,1 / 0,15 / 0,2 s.
 export function Agendar({ migas }: { migas?: React.ReactNode }) {
   const a = agendar;
   return (
@@ -124,20 +131,20 @@ export function Agendar({ migas }: { migas?: React.ReactNode }) {
       <div className="container-page">
         {migas}
         <div className="mx-auto mt-10 max-w-[760px] text-center md:mt-12">
-          <Reveal className="flex justify-center">
+          <Reveal y={0} className="flex justify-center">
             <Orb tamano={64} className="animate-float" />
           </Reveal>
-          <Reveal delay={0.05} className="mt-6">
+          <Reveal y={0} className="mt-6">
             <Badge>{a.badge}</Badge>
           </Reveal>
-          <Reveal delay={0.1}>
+          <Reveal y={16}>
             <h1 className="mt-5 text-[clamp(2.2rem,5vw,3.6rem)] leading-[1.05] text-white">{a.titulo}</h1>
           </Reveal>
-          <Reveal delay={0.15}>
+          <Reveal delay={0.08}>
             <p className="mx-auto mt-5 max-w-[600px] text-[18px] leading-relaxed text-muted">{a.sub}</p>
           </Reveal>
         </div>
-        <Reveal delay={0.2} className="mx-auto mt-10 max-w-[720px] md:mt-12">
+        <Reveal delay={0.14} className="mx-auto mt-10 max-w-[720px] md:mt-12">
           <FormularioContacto />
         </Reveal>
       </div>

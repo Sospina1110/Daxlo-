@@ -4,9 +4,11 @@ import { cn } from "@/lib/utils";
 
 // Migas de pan: dónde está el visitante y cómo volver al inicio. Los datos
 // estructurados equivalentes van aparte (ldMigas en src/lib/sitio.ts).
+// Entran solo con un fundido de 0,4 s (--desde 0): son marco, no contenido, y
+// antes subían 16 px en cada carga.
 export function Migas({ actual, centro = false, className }: { actual: string; centro?: boolean; className?: string }) {
   return (
-    <nav aria-label="Migas de pan" className={cn("entrada text-[14px] text-white/60", className)}>
+    <nav aria-label="Migas de pan" className={cn("entrada text-[14px] text-white/60 [--desde:0px] [--duracion:0.4s]", className)}>
       <ol className={cn("flex flex-wrap items-center gap-1.5", centro && "justify-center")}>
         <li>
           {/* 44 × 44 px para el pulgar, sin mover la línea: los márgenes

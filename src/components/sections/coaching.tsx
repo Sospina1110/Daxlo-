@@ -47,7 +47,9 @@ function Sesion() {
       <div className="container-page">
         <SectionHeading titulo={sinCorte(s.titulo)} tono="cyan" alineacion="izquierda" />
         <div className="mt-10 grid items-start gap-10 md:mt-14 lg:grid-cols-[1.35fr_1fr] lg:gap-12">
-          <Reveal y={32}>
+          {/* La ventana solo funde: el movimiento lo llevan sus burbujas, una
+              sola entrada por contenedor. */}
+          <Reveal y={0}>
             <VentanaSesion />
           </Reveal>
           <div>
@@ -86,12 +88,16 @@ function VentanaSesion() {
             <span className="rounded-full bg-cyan/10 px-2.5 py-0.5 text-[13px] text-cyan">{v.etiqueta}</span>
           </div>
           <div className="flex flex-1 flex-col justify-end gap-4 py-6">
+            {/* Cada mensaje crece desde su cola (.burbuja, globals.css): el de
+                Daxlo desde abajo a la izquierda, el tuyo desde abajo a la
+                derecha. Los retrasos (0,3 / 1,05 / 1,8 s) son el ritmo de una
+                conversación, no un escalón. */}
             {v.mensajes.map((m, i) => (
               <div
                 key={m.texto}
                 data-revelar=""
-                style={{ ["--retraso" as string]: `${0.3 + i * 0.75}s`, ["--y" as string]: "14px" } as React.CSSProperties}
-                className={cn("flex items-end gap-3", m.de === "tu" ? "justify-end" : "justify-start")}
+                style={{ ["--retraso" as string]: `${0.3 + i * 0.75}s` } as React.CSSProperties}
+                className={cn("burbuja flex items-end gap-3", m.de === "tu" ? "origin-bottom-right justify-end" : "origin-bottom-left justify-start")}
               >
                 {m.de === "daxlo" && <MarcaX tamano={32} />}
                 <p

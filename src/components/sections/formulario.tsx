@@ -29,6 +29,9 @@ export function FormularioContacto() {
   // El HTML exportado promete lo que pasa sin JavaScript (el envío va directo
   // al Apps Script, sin agenda); la frase de la agenda sale ya montado.
   const [montado, setMontado] = useState(false);
+  // Desde el primer envío, el cambio "Enviar" ↔ "Enviando" se funde con un
+  // desenfoque corto (.cambio-etiqueta, globals.css). Al cargar no se anima.
+  const [envioIntentado, setEnvioIntentado] = useState(false);
   const exitoRef = useRef<HTMLDivElement>(null);
 
   // El panel de éxito reemplaza al formulario, que es más alto: quien tocó
@@ -96,6 +99,7 @@ export function FormularioContacto() {
     datos.append("politica_version", privacidad.version);
     datos.append("marketing", marcado("marketing") ? "si" : "no");
 
+    setEnvioIntentado(true);
     setEstado("enviando");
     try {
       const res = await fetch(ENDPOINT, { method: "POST", body: datos });
@@ -132,10 +136,13 @@ export function FormularioContacto() {
     }
   }
 
+  // El panel de éxito llega (.exito-panel) y el chulo entra un poco después
+  // (.exito-icono), solo con CSS (@starting-style, globals.css). Los errores
+  // no se animan: aparecen junto con el foco en el campo.
   if (estado === "exito" && agenda) {
     return (
-      <div ref={exitoRef} tabIndex={-1} role="status" className="glass rounded-[26px] p-10 text-center outline-none">
-        <CheckCircle2 size={56} className="mx-auto text-mint" />
+      <div ref={exitoRef} tabIndex={-1} role="status" className="exito-panel glass rounded-[26px] p-10 text-center outline-none">
+        <CheckCircle2 size={56} className="exito-icono mx-auto text-mint" />
         <h3 className="mt-5 text-[30px] text-white">{a.exito.agenda.titulo}</h3>
         <p className="mx-auto mt-3 max-w-[460px] text-[18px] text-muted">{a.exito.agenda.texto}</p>
         <GlowButton href={agenda} className="mt-7">
@@ -148,8 +155,8 @@ export function FormularioContacto() {
 
   if (estado === "exito") {
     return (
-      <div ref={exitoRef} tabIndex={-1} role="status" className="glass rounded-[26px] p-10 text-center outline-none">
-        <CheckCircle2 size={56} className="mx-auto text-mint" />
+      <div ref={exitoRef} tabIndex={-1} role="status" className="exito-panel glass rounded-[26px] p-10 text-center outline-none">
+        <CheckCircle2 size={56} className="exito-icono mx-auto text-mint" />
         <h3 className="mt-5 text-[30px] text-white">{a.exito.titulo}</h3>
         <p className="mx-auto mt-3 max-w-[460px] text-[18px] text-muted">{duplicado ? a.exito.duplicado : a.exito.texto}</p>
         <GlowButton href={contacto.whatsapp} className="mt-7">
@@ -248,9 +255,13 @@ export function FormularioContacto() {
           <input id="website" name="website" tabIndex={-1} autoComplete="off" />
         </div>
 
+        {/* La etiqueta cambia de llave al pasar a "Enviando": el span nuevo
+            entra con su fundido, sin cruzarse con el viejo. */}
         <GlowButton type="submit" tamano="lg" className="mt-2 w-full" disabled={estado === "enviando"}>
-          {estado === "enviando" ? a.enviando : a.enviar}
-          {estado !== "enviando" && <ArrowRight size={18} />}
+          <span key={estado === "enviando" ? "enviando" : "enviar"} className={cn("inline-flex items-center gap-2", envioIntentado && "cambio-etiqueta")}>
+            {estado === "enviando" ? a.enviando : a.enviar}
+            {estado !== "enviando" && <ArrowRight size={18} />}
+          </span>
         </GlowButton>
         <p role="status" aria-live="polite" className={cn("text-center text-[15px]", estado === "error" ? "font-medium text-[#ffb4be]" : "text-dim")}>
           {estado === "error" ? a.errores.general : montado && hayAgenda() ? a.metaAgenda : a.meta}

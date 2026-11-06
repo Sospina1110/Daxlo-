@@ -182,6 +182,14 @@ spacing:
   timeline-node: 12px
   timeline-gap: 32px
   strike-duration: 600ms
+  press-duration: 120ms
+  exit-duration: 150ms
+  ui-duration: 200ms
+  move-duration: 300ms
+  enter-duration: 600ms
+  headline-duration: 800ms
+  magnet-max-x: 6px
+  magnet-max-y: 4px
   hero-top-mobile: 112px
   hero-top-desktop: 176px
   card-padding: 28px
@@ -511,9 +519,12 @@ La profundidad viene de la luz y de capas translúcidas, no de sombras grises.
   detrás de cada panel.
 - **Vidrio (`.glass`):** degradado blanco del 4,5 % al 1,5 % con borde blanco al 8 %.
 - **Sombras:** solo oscuras y anchas para separar ventanas del fondo
-  (`0 30px 80px rgba(0,0,0,0.55)`), y halos de color en el botón principal.
+  (`0 30px 80px rgba(0,0,0,0.55)`), y halos de color en el botón principal. Ninguna
+  sombra se anima: el halo abierto del botón principal es una capa aparte que solo
+  cambia de opacidad.
 - **Barra de navegación:** transparente arriba; al bajar, píldora casi negra al 97 % (75 %
-  con desenfoque desde 768 px).
+  con desenfoque desde 768 px). El vidrio (fondo, borde, sombra y desenfoque) es una capa
+  que funde en 200 ms.
 - **Escalones de superficie:** casi negro, vidrio y #12141C al 60 % (las dos puertas
   del inicio). Lo destacado sube un escalón; no gana insignia ni color nuevo. Nada de
   cajas dentro de cajas.
@@ -551,15 +562,21 @@ Esquinas suaves y consistentes por tamaño:
   1 px cian → blanco al 45 % → azul claro, texto blanco Inter 500 de 17 px (8,5:1 sobre
   #1B35D0, 5,1:1 en el peor punto del degradado). Halo de luz cian y azul alrededor (por
   debajo de 640 px, corto: no cae sobre el subtítulo ni sobre la nota), foco de luz
-  interior arriba que respira despacio. 65 px de alto desde 360 px (60 px por debajo, para
-  seguir en la primera pantalla en 320 × 568). Hover y foco del teclado: sube 2 px, el
-  relleno se aclara a #2A47EA → #4560FA (4,9:1), el halo se abre y un barrido de brillo
-  cruza una vez. Foco del teclado: anillo blanco de 2 px a 3 px entre dos bandas casi
-  negras (sombra de 7 px #0D0E14), esquinas de 12 px; el anillo cian del resto del sitio
-  se perdía contra el halo cian del botón y contra la cinta. Uno solo por pantalla.
+  interior arriba, fijo al 85 %. 65 px de alto desde 360 px (60 px por debajo, para
+  seguir en la primera pantalla en 320 × 568). Hover (solo con mouse): el botón se corre
+  hacia el puntero (imán, ver Motion), el relleno se aclara a #2A47EA → #4560FA (4,9:1),
+  el halo se abre y el foco de luz sube a 100 %, en 200 ms; ya no sube 2 px ni lo cruza
+  un barrido de brillo, y el foco de luz ya no respira. Al presionar baja a 0.98. Foco del
+  teclado: anillo blanco de 2 px a 3 px entre dos bandas casi negras (sombra de 7 px
+  #0D0E14), esquinas de 12 px, relleno claro y foco de luz a 100 %, todo en el primer
+  cuadro (no sube ni funde); el anillo cian del resto del sitio se perdía contra el halo
+  cian del botón y contra la cinta. Uno solo por pantalla.
 - **Botón de luz (`button-glow`):** el resto de botones. Relleno #10121A, borde degradado
   (`.border-gradient`, por tono: dual, cian o azul), foco de luz arriba y línea blanca de
-  1 px en el borde superior. Hover: sube 2 px y el foco pasa a opacidad total.
+  1 px en el borde superior. Hover (solo con mouse, y sin "reducir movimiento"): sube
+  2 px y el foco pasa a opacidad total, en 200 ms. Al presionar baja a 0.97 y el foco se
+  enciende. En los llamados con imán (portada y cierre) no sube: se corre hacia el
+  puntero.
 - **Etiqueta (`badge`):** píldora con borde degradado sobre casi negro, mayúsculas.
   Marca la línea del hero y va sobre el h1 de las páginas sin portada (/herramientas,
   /preguntas, /agendar, /nosotros). Las cabeceras de sección bajo el hero no llevan
@@ -573,12 +590,16 @@ Esquinas suaves y consistentes por tamaño:
   barra en consultoría) y la regla escrita en 15 px, en la misma fila; sin píldora de
   audiencia encima. Después, el h3 en Outfit 28/32 px, la línea en 18 px atenuado y el
   enlace en el tono de la línea. El enlace se estira sobre toda la tarjeta
-  (`after:inset-0`) y conserva su nombre accesible. Con mouse o foco: el borde toma el
-  tono y la flecha se corre 4 px (quieta con "reducir movimiento").
+  (`after:inset-0`) y conserva su nombre accesible. Con mouse o foco el borde toma el
+  tono en 200 ms (con foco del teclado, de una vez); la flecha se corre 4 px solo con el
+  mouse (quieta con "reducir movimiento"); al presionar, la tarjeta baja a 0.99. La
+  aparición va en un envoltorio aparte (`div[data-revelar]`): en el mismo elemento, su
+  transición le ganaba a la del borde.
 - **Tarjeta de vidrio (`card-glass`):** superficie base del puente a la otra línea en
   /nosotros y de la ayuda de /preguntas. Si es enlace, en hover cambia el borde al tono
-  de su línea; si no, no responde al mouse. Pendiente fuera de esta pasada: las fichas
-  de /herramientas todavía cambian de borde sin ser enlace.
+  de su línea en 200 ms y al presionar baja a 0.99 (`.tarjeta-pulsable`); si no, no
+  responde al mouse. Las fichas de /herramientas ya no cambian de borde ni encienden su
+  resplandor al pasar: no son enlaces.
 - **Fila abierta (`row-open`):** sin fondo ni caja, con regla superior de 1 px blanca al
   8 % y un tramo de 40 px del tono de la línea encima de esa regla. 28 px de aire (36 px
   en escritorio) en las escenas; 24–28 px en las razones. Título en `headline-sm`
@@ -620,8 +641,9 @@ Esquinas suaves y consistentes por tamaño:
   h3 en `headline-sm`, una línea en `body-sm` atenuado y "Te llevas" (Inter 500 de
   15 px en azul claro, sin mayúsculas) con el entregable en 17 px blanco.
 - **Pregunta (acordeón):** botón dentro de un h3 (Inter 500 de 17/18 px, blanco) con
-  un "+" blanco al 60 % que gira 45° al abrir (300 ms, quieto con "reducir
-  movimiento"). Dos formas:
+  un "+" blanco al 60 % que gira 45° al abrir (200 ms, antes de que termine de abrir;
+  baja a 0.9 al presionar; quieto con "reducir movimiento" y con el teclado). Dos
+  formas:
   - `faq-row` (/coaching y /consultoria): fila abierta, regla de 1 px blanca al 8 %
     arriba de la lista y debajo de cada pregunta, sin relleno lateral, 64 px de alto
     como mínimo; respuesta en 17 px atenuado hasta 64 caracteres por línea. Al pasar,
@@ -632,7 +654,8 @@ Esquinas suaves y consistentes por tamaño:
     la vista lo justo (`scrollIntoView`, `nearest`), sin animar con "reducir
     movimiento". Sin eso, el toque parecía no hacer nada.
   - `faq-box` (/preguntas, fuera de esta pasada): recuadro de 16 px de radio, borde
-    blanco al 8 % (14 % al pasar o abierta) y fondo blanco al 3,5 % abierta.
+    blanco al 8 % (14 % al pasar o abierta, en 200 ms) y fondo blanco al 3,5 % abierta;
+    al presionar, el fondo se aclara al 4 % al instante.
 - **Enlace de WhatsApp del cierre:** solo en el cierre del inicio, /coaching y
   /consultoria (`CtaFinal whatsapp`); /preguntas ya tiene su botón en la ayuda y
   /herramientas y /nosotros no lo llevan. Texto de 15 px blanco al 75 % con subrayado
@@ -645,7 +668,22 @@ Esquinas suaves y consistentes por tamaño:
   porque ahí el orden importa. No hay numerales decorativos ni en degradado.
 - **Campos:** casi negro al 70 %, borde blanco al 14 %, foco con borde cian al 60 %; error
   con #FF8A9B. Etiqueta visible siempre.
-- **Barra de navegación (`nav-compact`):** se encoge a píldora al bajar 24 px.
+- **Barra de navegación (`nav-compact`):** se encoge a píldora al bajar 24 px (lo avisa un
+  IntersectionObserver sobre un centinela de 24 px arriba del documento, solo al cruzar el
+  umbral; nada corre en cada cuadro de scroll): ancho y relleno en 300 ms con la curva de
+  mover, el vidrio funde en 200 ms. El vidrio es una
+  capa centrada que mide siempre el ancho compacto (hasta 1000 px), así su esquina no se
+  mueve y Chrome no lo cuenta como layout shift; desde 1240 px el encogimiento se ve con
+  `scale` (1.2 → 1). La entrada de la barra no se queda rellenando al terminar
+  (`animation-fill-mode: backwards`): si no, la barra se vuelve raíz del
+  `backdrop-filter` y el vidrio deja de desenfocar. El menú de celular
+  sale del botón (origen en el centro de la hamburguesa), y el ícono ☰/✕ se cruza en
+  150 ms en la misma celda. La hamburguesa baja a 0.95 al presionar; las filas del menú
+  se aclaran al presionar, sin escala y sin bajar de opacidad (`active:opacity-100`: no
+  son enlaces de texto).
+- **Enlaces de texto:** al tocar bajan a opacidad 0.7 y vuelven al soltar, sin
+  transición, como un enlace nativo. Los que llevan flecha la corren 4 px solo con el
+  mouse.
 
 ### Diagramas y maquetas
 
@@ -680,30 +718,79 @@ El movimiento acompaña la lectura; nunca la retrasa ni la tapa. Todo lo que ent
 cargar corre en CSS, sin esperar a React. Todo lo infinito se pausa fuera de pantalla
 (script del layout, atributo `data-pausa`) y se apaga con `prefers-reduced-motion`.
 
+**Lenguaje de movimiento.** Dos curvas y un resorte, nada más. Lo que se leía como
+plantilla no era la curva: eran la duración, la distancia y la uniformidad (60 bloques
+que entraban igual, un halo que respiraba sin fin, un barrido de brillo).
+
+- Ninguna UI pasa de 300 ms; solo las entradas de página llegan a 0,6–0,8 s.
+- Las salidas son más cortas que las entradas (menú: 200 ms al entrar, 150 ms al salir).
+- Lo que dispara el teclado no se anima: Enter, Espacio, Escape y Tab cambian en 0 ms
+  (ni presión, ni subida, ni flechas con foco, ni salida del menú). Con Tab, también lo
+  que pierde el foco: el script del layout marca `[data-tab]` en `<html>` y lo quita con
+  el primer movimiento del puntero. El anillo de foco
+  aparece completo en el primer cuadro, y un bloque que todavía no apareció se muestra
+  completo y quieto apenas algo de adentro recibe el foco.
+- El hover solo existe con `hover: hover` y `pointer: fine` (el `hover:` de Tailwind ya
+  va dentro de `@media (hover: hover)`; el CSS propio pide además puntero fino). En
+  pantallas táctiles un toque no deja nada pegado.
+- Al presionar (`:active`, dedo o mouse abajo; nunca el clic) todo lo pulsable responde:
+  botones a 0.97, el botón principal a 0.98, la hamburguesa de 44 px a 0.95, el "+" a
+  0.9, las tarjetas-enlace a 0.99; las filas a todo lo ancho solo aclaran el fondo; los
+  enlaces de texto bajan a opacidad 0.7. Sin el recuadro gris del navegador al tocar
+  (`-webkit-tap-highlight-color: transparent`), y en iOS el `:active` funciona desde el
+  HTML (oyente vacío de `touchstart` en el script del layout).
+- Sin rebote en ningún lado.
+- Solo `transform` y `opacity` (y `scale`/`translate`, que son transform). Dos
+  excepciones documentadas que no se extienden: el alto del acordeón
+  (`grid-template-rows`, lo dispara el usuario y no cuenta para CLS) y el ancho y el
+  relleno de la barra (elemento fijo, un cambio por dirección; si en un celular de gama
+  media pasa de 2 ms de layout por cuadro, se pasa a FLIP). Que sea fijo no lo saca del
+  CLS: Chrome cuenta lo que se corre dentro de la barra. Por eso el vidrio va centrado y
+  con ancho fijo (ver Components); lo que queda son el logo y los botones, que se corren
+  unos 90 px una vez por dirección (CLS medido por debajo de 0,01 al recorrer cada
+  página, `tests/e2e/estabilidad.spec.ts`).
+- Con "reducir movimiento" queda solo opacidad: nada se desplaza ni se escala (lo
+  pulsable se atenúa a 0.85 en 100 ms, el menú solo funde).
+- En celular no hay efectos de puntero, y lo infinito caro sigue apagado por debajo de
+  768 px.
+
 | Token | Valor | Dónde |
 |---|---|---|
-| Curva de salida | `cubic-bezier(0.22, 1, 0.36, 1)` (`EASE`) | entradas, apariciones, menú, cinta |
-| Entrada del hero | 0.9 s, sube 16 px | `.entrada` (retrasos 0 / 0.45 / 0.55 / 0.7 s) |
-| Subida del titular | 1 s, desde 105 % bajo máscara | `.subir` (0.1 y 0.22 s) |
-| Fundido | 1.6 s, `ease`, 0.2 s de retraso | `.fundir` |
-| Aparición al hacer scroll | opacidad 0.7 s + desplazamiento 0.8 s, 24 px | `[data-revelar]` |
-| Cabecera de sección | un solo bloque (titular y bajada juntos), sin escalón interno | `SectionHeading` |
-| Escalón entre hermanos | 0.08 s; retraso total de 0.32 s como máximo | `data-escalonar`, `Reveal delay` |
-| Tachado del "Hoy" | raya de 1 px, `scaleX` de 0 a 1 en 600 ms con `EASE`, 0.35 s después de su fila y 80 ms de escalón entre filas (solo desde 1024 px; fijo por debajo y con "reducir movimiento"; con colores forzados, la raya se pinta en `CanvasText`) | `.tachado-linea` en /consultoria |
-| Interacción de botones | 300 ms | hover, foco |
-| Bordes de tarjeta y barra | 500 ms | hover, compactar |
-| Menú móvil | 200–250 ms | abrir y cerrar |
-| Marquesina | 44 s lineal | solo /herramientas (salió del inicio y de /coaching) |
-| Flotar / pasear | 7 s / 6 s `ease-in-out` | orbes, cursor de la maqueta |
+| Curva de salida | `--ease-salida`: `cubic-bezier(0.22, 1, 0.36, 1)` (`EASE` en JS); utilidad `ease-salida` y curva por defecto de toda utilidad `transition-*` | todo lo que entra, aparece, responde o se presiona |
+| Curva de mover | `--ease-mover`: `cubic-bezier(0.77, 0, 0.175, 1)`; utilidad `ease-mover` | solo algo que ya está en pantalla y cambia de forma: el ancho y el relleno de la barra |
+| Resorte | `RESORTE_IMAN`: rigidez 300, amortiguación 30, masa 1 (ζ ≈ 0,87, se asienta en ~0,27 s, rebasa menos de 0,03 px); por rigidez, no por duración | botón magnético |
+| Duraciones | `--dur-presion` 120 ms · `--dur-rapida` 150 ms · `--dur-ui` 200 ms (por defecto de las utilidades) · `--dur-mover` 300 ms (tope de UI) · `--dur-entrada` 0,6 s · `--dur-titular` 0,8 s | `:root` en `globals.css` |
+| Distancias por rol | protagonista (titular de sección) 16 px · apoyo 8 px (por defecto) · maqueta del hero 20 px · burbuja 6 px + 0.96 · adorno 0 (solo funde) · titular gigante de la portada 22 % de su alto | `--y` (prop `y` de `Reveal`), `--desde`, `--subir-desde` |
+| Entrada del hero | frase 0 / 600 ms / 8 px; titular 60 y 140 ms / 800 ms / 105 % bajo máscara; sub 280 ms; fila del botón 360 ms; maqueta 480 ms / 750 ms / 20 px. El botón queda quieto a 0,96 s y el hero completo a 1,23 s | `.entrada`, `.subir` (variables `--retraso`, `--desde`, `--duracion`) |
+| Barra y migas | solo funden, 0,4 s (`--desde: 0`) | `nav`, `Migas` |
+| Fundido | 1.6 s, `ease`, 0.2 s de retraso | `.fundir` (banda de la cinta) |
+| Aparición al hacer scroll | opacidad 0,5 s + desplazamiento 0,6 s, curva de salida; distancia por rol | `[data-revelar]` |
+| Cabecera de sección | un solo bloque (titular y bajada juntos), sube 16 px, sin escalón interno | `SectionHeading` |
+| Escalón en ola | retraso(i) = min(0,32, e·(1 − 0,85^i)/0,15), e = 0,08 s (0,06 s en /herramientas, 0,05 s en las preguntas de /preguntas): 0 / 0,08 / 0,148 / 0,206 / 0,255 / 0,297 / 0,32 s. Cada intervalo es 15 % más corto que el anterior | `data-escalonar` (script del layout) |
+| Retrasos a mano por rol | protagonista 0; apoyo +0,08 s; la acción y su nota juntas +0,14 s; adorno 0 | cierre, /agendar, portada (sub 0,18 s, botón 0,26 s) |
+| Presión | baja en 120 ms y vuelve en 120 ms (`--dur-presion`; la duración va por propiedad: el `translate` del hover y la opacidad siguen en 200 ms), curva de salida; `scale` 0.97 (`--escala-presion`), 0.98 el principal, 0.95 la hamburguesa, 0.99 tarjetas-enlace; no con teclado (`:not(:focus-visible)`) | `.pulsable`, `.tarjeta-pulsable` |
+| Interacción de botones | 200 ms (hover, color, borde, foco de luz); con foco del teclado, 0 ms al entrar y al salir con Tab (`[data-tab]`, script del layout) | `GlowButton` |
+| Imán | hacia el puntero, como mucho 6 × 4 px (con el puntero en el borde; 0 en el centro), resorte al volver, interrumpible; solo mouse con puntero fino y sin "reducir movimiento"; reemplaza la subida de 2 px. Con esas mismas condiciones el div que se mueve (`.iman-movil`) lleva `will-change: transform`: sin capa propia el botón y su halo se repintaban en cada cuadro | `Iman`: hero, portada de cada línea y cierre |
+| Flecha | 2 px dentro de botones, 4 px en enlaces y tarjetas, 2 px hacia abajo en el atajo de la portada; 200 ms, solo con mouse | `transition-[translate]` + `motion-safe:group-hover:` |
+| Bordes de tarjeta y barra | 200 ms; el ancho y el relleno de la barra, 300 ms con la curva de mover | hover, compactar |
+| Menú móvil | entra en 200 ms desde el botón (6 px y 0.97), sale en 150 ms (4 px y 0.98); fondo 200 / 150 ms; con teclado, 0 ms; con "reducir movimiento", solo opacidad 150 / 100 ms. Sin escalón en las filas | `Nav` (transform en string: va por WAAPI) |
+| Ícono del menú | ☰ y ✕ en la misma celda: opacidad, escala 0.8 y 2 px de desenfoque, 150 ms; con teclado de una vez | `Nav` |
+| Preguntas | el "+" gira 45° en 200 ms; abrir: alto 260 ms y opacidad 200 ms con 60 ms de retraso; cerrar: alto 200 ms y opacidad 120 ms; la respuesta que abre fuera de la pantalla se trae a la vista a los 280 ms (de una vez con teclado o "reducir movimiento") | `Pregunta`, `PreguntasLinea` |
+| Escritura | letra i: 26 ms + (0, 18, 6, 30, 12, 24, 4, 34)[i mod 8]; +120 ms después de coma o punto; +60 ms después de cada tercer espacio; 1,8 s quieta; seleccionada 260 ms y borrada de una vez; 300 ms vacía. El cursor parpadea solo en las pausas (opacidad) y es el borde final de una capa quieta que repite el texto en transparente: no se corre con cada letra, sin layout shift | `TextoQueSeEscribe`: maqueta del hero y ventana de /coaching |
+| Burbujas | crecen desde su cola: 6 px y 0.96, opacidad 0,2 s (`--dur-ui`) y forma 0,3 s (`--dur-mover`); retrasos de conversación (0,3 / 1,05 / 1,8 s). La ventana solo funde | `.burbuja` en /coaching |
+| Éxito del formulario | el panel llega desde 8 px y 0.98 en 300 ms (`--dur-mover`); el chulo entra desde 0.9 a los 120 ms (funde en 200 ms, crece en 300 ms), sin rebote; "Enviar" ↔ "Enviando" con 2 px de desenfoque en 150 ms. Los errores no se animan | `.exito-panel`, `.exito-icono`, `.cambio-etiqueta` |
+| Tachado del "Hoy" | raya de 1 px, `scaleX` de 0 a 1 en 600 ms con la curva de salida, 0.35 s después de su fila (solo desde 1024 px; fijo por debajo y con "reducir movimiento"; con colores forzados, la raya se pinta en `CanvasText`) | `.tachado-linea` en /consultoria |
+| Marquesina | 44 s lineal; se detiene bajo el mouse (solo puntero fino) | solo /herramientas |
+| Flotar / pasear | 6 px en 9 s / 6 s, curva de ida y vuelta de CSS (ease in-out) | orbes del cierre, /agendar, /herramientas y la 404 (no el del titular de la portada) |
 | Líneas de flujo | 2.4 s lineal (solo desde 768 px) | hoy sin uso; la regla sigue en el CSS |
-| Recorrido de /consultoria | un paso tras otro con 0.08 s de escalón (tope de 0.32 s) | `[data-revelar]` |
-| Preguntas de cada línea | la lista entera entra como un solo bloque (antes, una entrada por pregunta); el "+" gira 45° en 300 ms; la respuesta que abre fuera de la pantalla se trae a la vista con un desplazamiento suave a los 320 ms (instantáneo con "reducir movimiento") | `PreguntasLinea`, `Pregunta` |
-| Escritura | 32 ms por letra, 2 s quieta, 14 ms al borrar | maqueta del hero |
-| Halo del botón principal | opacidad 0.65 ↔ 1, 4 s ida y vuelta, `ease-in-out` | `.animate-halo`, foco interior del CTA del hero |
 | Deriva de resplandores | ±24 px, 24 s ida y vuelta, solo desde 768 px | `.animate-deriva`: cierre y el resplandor de arriba de cada zona |
-| Puerta del inicio | borde al tono en 300 ms; la flecha se corre 4 px (no con "reducir movimiento") | `DosPuertas` |
-| Barrido del botón | 700 ms, solo al pasar o enfocar | `.boton-barrido` |
-| Titular gigante de la portada | se corre −6 % / +8 % a lo ancho con el scroll | `ZonaPortada` |
+| Titular gigante de la portada | se corre −6 % / +8 % a lo ancho mientras la portada sale por arriba, sin resorte; animación de CSS atada al scroll (`view-timeline` de la portada, rango `exit-crossing`), sin JavaScript por cuadro; sin soporte (Firefox, Safari anterior a 26) y con "reducir movimiento", quieto | `ZonaPortada`, `.paralaje-izquierda`, `.paralaje-derecha` |
+
+**Lo que salió y no vuelve.** El halo que respiraba en el botón principal
+(`animate-halo`), el barrido de brillo (`.boton-barrido`), el blob flotante de 14 px, el
+borrado letra por letra y el resplandor de las fichas de /herramientas. Tampoco van:
+transiciones entre páginas, rebotes, contadores, inclinación 3D, cursor propio, parallax
+en más secciones, titulares letra por letra ni un segundo imán.
 
 **Un momento de autor por página.** En el inicio, la cinta del hero; en /coaching, la
 ventana de la sesión (los mensajes entran uno tras otro y la instrucción se escribe
