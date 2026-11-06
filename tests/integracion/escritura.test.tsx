@@ -141,6 +141,44 @@ describe("TextoQueSeEscribe", () => {
     expect(texto()).toBe(FRASES[1].slice(0, 4));
   });
 
+  it("al borrarse, la frase sale en un solo bloque: una copia seleccionada que solo vive en la pausa", async () => {
+    vi.useFakeTimers();
+    const frase = FRASES[0];
+    const { container } = render(<TextoQueSeEscribe frases={FRASES} />);
+    await act(async () => {});
+    const salida = () => container.querySelector<HTMLElement>(".salida-escritura");
+    avanzar(hasta(frase, frase.length));
+    avanzar(0);
+    avanzar(1800);
+    // Seleccionada: todavía no hay copia.
+    expect(salida()).toBeNull();
+    avanzar(260);
+    // En el mismo paso en que se borra, la copia ya está: con la frase entera,
+    // seleccionada, sin anunciarse y antes del texto visible (que sigue siendo
+    // el último hijo, vacío).
+    const copia = salida();
+    expect(copia).not.toBeNull();
+    expect(copia!.textContent).toBe(frase);
+    expect(copia!.getAttribute("aria-hidden")).toBe("true");
+    expect(copia!.firstElementChild!.className).toContain("bg-cyan/35");
+    expect(copia!.className).toContain("[grid-area:1/1]");
+    expect(copia!.nextElementSibling).toBe(partes(container).visible);
+    expect(partes(container).visible.textContent).toBe("");
+    // Termina la pausa: la copia se va y arranca la frase siguiente.
+    avanzar(300);
+    expect(salida()).toBeNull();
+  });
+
+  it("con 'reducir movimiento' no hay copia que sale", () => {
+    simularMovimientoReducido(true);
+    vi.useFakeTimers();
+    const { container } = render(<TextoQueSeEscribe frases={FRASES} />);
+    for (let i = 0; i < 20; i++) {
+      avanzar(500);
+      expect(container.querySelector(".salida-escritura")).toBeNull();
+    }
+  });
+
   it("el cursor conserva siempre animate-caret (el script de pausa lo observa)", async () => {
     vi.useFakeTimers();
     const { container } = render(<TextoQueSeEscribe frases={["Hola"]} />);

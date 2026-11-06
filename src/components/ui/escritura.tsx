@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { useInView, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 
@@ -20,7 +21,9 @@ export const SOSTENER = 1800;
 // de ::selection 260 ms) y borrar de una vez. Antes retrocedía letra por letra
 // a 14 ms, y eso no lo hace nadie.
 export const SELECCION = 260;
-// Vacío antes de la frase siguiente.
+// Vacío antes de la frase siguiente. Los primeros 150 ms de la pausa la frase
+// borrada sale en un solo bloque (.salida-escritura, globals.css): el ritmo
+// del bucle no cambia.
 export const PAUSA = 300;
 
 // Lo que se espera antes de escribir la letra `i` (con `i` letras ya escritas).
@@ -109,9 +112,12 @@ export function TextoQueSeEscribe({ frases }: { frases: readonly string[] }) {
       t = setTimeout(() => setFase("seleccionar"), SOSTENER);
     } else if (fase === "seleccionar") {
       t = setTimeout(() => {
+        // flushSync monta la copia que sale (fase "pausa") antes de vaciar el
+        // texto: borrar y empezar a salir caen en el mismo cuadro, sin un
+        // cuadro vacío entre los dos.
+        flushSync(() => setFase("pausa"));
         escritas.current = 0;
         poner(el, c, "");
-        setFase("pausa");
       }, SELECCION);
     } else {
       t = setTimeout(() => {
@@ -136,6 +142,18 @@ export function TextoQueSeEscribe({ frases }: { frases: readonly string[] }) {
           <span className="ml-0.5 inline-block h-[1.05em] w-[2px]" />
         </span>
       ))}
+      {/* La frase recién borrada sale en un solo bloque, todavía seleccionada:
+          sube 6 px y se apaga en 150 ms (.salida-escritura). Es una copia en
+          la misma celda, montada solo durante la pausa: el texto de verdad ya
+          está vacío y el cursor ya volvió al inicio, así que nada cambia de
+          alto ni de lugar. Va antes del texto visible (que sigue siendo el
+          último hijo) y no se anuncia. Con "reducir movimiento" no hay pausa
+          y no aparece. */}
+      {fase === "pausa" && !reducir && (
+        <span aria-hidden className="salida-escritura pointer-events-none whitespace-pre-wrap [grid-area:1/1]">
+          <span className="border-e-2 border-transparent bg-cyan/35 bg-clip-content pe-0.5">{frases[indice]}</span>
+        </span>
+      )}
       <span className="relative whitespace-pre-wrap [grid-area:1/1]" data-escribiendo={escribiendo || undefined}>
         {/* Seleccionada, con el mismo cian que ::selection y solo detrás de
             las letras (bg-clip-content); nada se desplaza. El borde

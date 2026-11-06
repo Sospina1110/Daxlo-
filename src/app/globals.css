@@ -411,6 +411,61 @@
   .tachado-linea { background-color: CanvasText; }
 }
 
+/* La flecha del hoy → después (/consultoria, desde 1024 px) llega con el
+   tachado: arranca 0,55 s después de su fila (0,2 s después de que empieza la
+   raya, cuando ya cruzó casi todo el "Hoy"), se corre 8 px hacia "Después" en
+   300 ms (--dur-mover) y funde en 200 ms. Raya y flecha se leen como un solo
+   gesto: lo de hoy se tacha y empuja hacia lo de después. Sin JavaScript no
+   hay .js y está quieta en su lugar. */
+.flecha-cambio {
+  transition:
+    opacity var(--dur-ui) var(--ease-salida) calc(var(--retraso, 0s) + 0.55s),
+    transform var(--dur-mover) var(--ease-salida) calc(var(--retraso, 0s) + 0.55s);
+}
+.js [data-revelar]:not([data-visible]) .flecha-cambio {
+  opacity: 0;
+  transform: translate3d(-8px, 0, 0);
+}
+
+/* Recorrido de /consultoria: la línea que une un paso con el siguiente se
+   traza desde su nodo (solo transform: no mueve nada alrededor).
+   - En celular y tableta (pasos uno debajo del otro), cada tramo baja desde
+     su nodo 0,12 s después de que aparece su paso, en 0,6 s (--dur-entrada):
+     la línea lleva al paso siguiente mientras se baja.
+   - Desde 1024 px (cuatro columnas que aparecen juntas), los tres tramos van
+     seguidos, como un solo trazo de 01 a 04: cada uno en 300 ms
+     (--dur-mover), el primero a los 0,2 s y cada siguiente 0,22 s después
+     (--tramo), cuando el anterior ya casi llegó a su nodo. Termina a los
+     0,94 s, lo mismo que tarda la ola de los pasos.
+   Sin JavaScript no hay .js y la línea está entera. */
+.linea-recorrido {
+  transform-origin: top;
+  transition: transform var(--dur-entrada) var(--ease-salida) calc(var(--retraso, 0s) + 0.12s);
+}
+.js [data-revelar]:not([data-visible]) .linea-recorrido {
+  transform: scaleY(0);
+}
+@media (min-width: 1024px) {
+  .linea-recorrido {
+    transform-origin: left;
+    transition: transform var(--dur-mover) var(--ease-salida) calc(0.2s + var(--tramo, 0) * 0.22s);
+  }
+  .js [data-revelar]:not([data-visible]) .linea-recorrido {
+    transform: scaleX(0);
+  }
+}
+
+/* La frase que se escribe sola (TextoQueSeEscribe), al borrarse: la copia
+   seleccionada sale en un solo bloque, sube 6 px y se apaga en 150 ms
+   (--dur-rapida, la de las salidas: más corta que cualquier entrada). Toda
+   la frase a la vez, no letra por letra. */
+@keyframes salida-escritura {
+  to { opacity: 0; transform: translate3d(0, -6px, 0); }
+}
+.salida-escritura {
+  animation: salida-escritura var(--dur-rapida) var(--ease-salida) both;
+}
+
 /* Titular gigante de la portada (ZonaPortada): las dos líneas se corren −6 % y
    +8 % a lo ancho mientras la portada sale por arriba, de "su borde de arriba
    en el de la pantalla" a "su borde de abajo en el de la pantalla"
@@ -768,4 +823,12 @@
      fila (misma especificidad que la regla de arriba, y va después). */
   .tachado-linea { transition: none; }
   .js [data-revelar]:not([data-visible]) .tachado-linea { transform: none; }
+  /* La flecha del hoy → después y las líneas del recorrido ya están en su
+     lugar: aparecen con su fila, que solo funde. La salida de la frase que se
+     escribe no se ve (con "reducir movimiento" la frase queda quieta). */
+  .flecha-cambio,
+  .linea-recorrido { transition: none; }
+  .js [data-revelar]:not([data-visible]) .flecha-cambio { opacity: 1; transform: none; }
+  .js [data-revelar]:not([data-visible]) .linea-recorrido { transform: none; }
+  .salida-escritura { animation: none; visibility: hidden; }
 }

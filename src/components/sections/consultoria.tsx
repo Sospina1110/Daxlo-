@@ -77,7 +77,9 @@ function CambiosEmpresa() {
                   <span aria-hidden className="tachado-linea absolute inset-x-0 top-1/2 hidden h-px bg-white/40 lg:block" />
                 </span>
               </p>
-              <ArrowRight aria-hidden size={18} className="hidden text-blue-soft lg:block" />
+              {/* La flecha llega con el tachado (.flecha-cambio): se corre 8 px
+                  hacia "Después" mientras la raya termina. */}
+              <ArrowRight aria-hidden size={18} className="flecha-cambio hidden text-blue-soft lg:block" />
               <p className="flex items-start gap-3 font-display text-[22px] font-medium leading-snug text-white">
                 <span aria-hidden className="mt-[14px] h-[2px] w-2.5 shrink-0 rounded-full bg-blue-soft lg:hidden" />
                 <span>
@@ -122,11 +124,15 @@ function Recorrido() {
           {r.pasos.map((p, i) => (
             <li key={p.numero} data-revelar="" className="relative pl-10 lg:pl-0 lg:pt-8">
               {/* La línea que une los nodos: vertical en celular, horizontal
-                  hasta el nodo siguiente en escritorio. */}
+                  hasta el nodo siguiente en escritorio. Se traza desde su nodo
+                  cuando el paso aparece (.linea-recorrido, globals.css); en
+                  escritorio los tres tramos van seguidos (--tramo), como un
+                  solo trazo de 01 a 04. */}
               {i < ultimo && (
                 <span
                   aria-hidden
-                  className="absolute bottom-[-44px] left-[15px] top-3 w-px bg-blue-soft/40 lg:bottom-auto lg:left-3 lg:right-[-32px] lg:top-[5.5px] lg:h-px lg:w-auto"
+                  style={{ ["--tramo" as string]: i } as React.CSSProperties}
+                  className="linea-recorrido absolute bottom-[-44px] left-[15px] top-3 w-px bg-blue-soft/40 lg:bottom-auto lg:left-3 lg:right-[-32px] lg:top-[5.5px] lg:h-px lg:w-auto"
                 />
               )}
               <span aria-hidden className="absolute left-[9.5px] top-1.5 h-3 w-3 rounded-full border border-blue-soft bg-[#08090e] lg:left-0 lg:top-0" />

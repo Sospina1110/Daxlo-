@@ -157,6 +157,26 @@ test.describe("tachado del 'Hoy' en /consultoria", () => {
     await expect.poll(() => escala(page), { timeout: 5_000 }).toEqual(Array(FILAS).fill(1));
   });
 
+  test("desde 1024 px: la flecha llega con el tachado, desde 8 px a la izquierda", async ({ page }) => {
+    test.skip((page.viewportSize()?.width ?? 0) < 1024, "la flecha entre columnas es solo desde 1024 px");
+    await irA(page, "/consultoria");
+    const flechas = page.locator("#que-automatizamos .flecha-cambio");
+    await expect(flechas).toHaveCount(FILAS);
+    const estado = () =>
+      flechas.evaluateAll((els) =>
+        els.map((e) => {
+          const m = getComputedStyle(e).transform;
+          return { opacidad: getComputedStyle(e).opacity, x: m === "none" ? 0 : new DOMMatrixReadOnly(m).e };
+        }),
+      );
+    expect(await estado()).toEqual(Array(FILAS).fill({ opacidad: "0", x: -8 }));
+    // Arranca 0,2 s después de la raya (0,55 s después de su fila).
+    const retraso = await flechas.first().evaluate((e) => getComputedStyle(e).transitionDelay);
+    expect(retraso).toBe("0.55s, 0.55s");
+    await flechas.last().evaluate((e) => e.scrollIntoView({ block: "center", behavior: "instant" }));
+    await expect.poll(estado, { timeout: 5_000 }).toEqual(Array(FILAS).fill({ opacidad: "1", x: 0 }));
+  });
+
   test("por debajo de 1024 px el tachado es fijo, con line-through", async ({ page }) => {
     test.skip((page.viewportSize()?.width ?? 0) >= 1024, "solo pantallas angostas");
     await irA(page, "/consultoria");
@@ -403,6 +423,19 @@ test.describe("con 'reducir movimiento'", () => {
     for (const e of await estado()) expect(e).toEqual({ transform: "none", transicion: "0s" });
   });
 
+  test("/consultoria: la flecha del hoy → después y las líneas del recorrido ya están en su lugar", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await irA(page, "/consultoria");
+    const piezas = page.locator("#que-automatizamos .flecha-cambio, #como-trabajamos .linea-recorrido");
+    await expect(piezas).toHaveCount(consultoria.cambios.filas.length + 3);
+    // Fuera de pantalla todavía (sus filas no han aparecido): enteras y quietas.
+    const estado = () =>
+      piezas.evaluateAll((els) =>
+        els.map((e) => ({ transform: getComputedStyle(e).transform, opacidad: getComputedStyle(e).opacity, transicion: getComputedStyle(e).transitionDuration })),
+      );
+    for (const e of await estado()) expect(e).toEqual({ transform: "none", opacidad: "1", transicion: "0s" });
+  });
+
   test("el hero muestra la primera tarea completa y quieta", async ({ page, vigilancia }) => {
     vigilancia.tolerar(ERROR_HIDRATACION);
     await irA(page, "/");
@@ -480,6 +513,37 @@ test.describe("regresiones de movimiento", () => {
     const pasosEntre = s.slice(1).map((v, i) => v - s[i]);
     for (let i = 1; i < pasosEntre.length; i++) expect(pasosEntre[i]).toBeLessThan(pasosEntre[i - 1]);
     for (const v of s) expect(v).toBeLessThanOrEqual(0.32);
+  });
+
+  test("/consultoria: la línea del recorrido se traza desde cada nodo al aparecer su paso", async ({ page }) => {
+    await irA(page, "/consultoria");
+    const lineas = page.locator("#como-trabajamos .linea-recorrido");
+    await expect(lineas).toHaveCount(3);
+    const ancho = page.viewportSize()?.width ?? 0;
+    // A lo ancho desde 1024 px (cuatro columnas); hacia abajo por debajo.
+    const escala = () =>
+      lineas.evaluateAll(
+        (els, horizontal) =>
+          els.map((e) => {
+            const m = getComputedStyle(e).transform;
+            if (m === "none") return 1;
+            const d = new DOMMatrixReadOnly(m);
+            return horizontal ? d.a : d.d;
+          }),
+        ancho >= 1024,
+      );
+    expect(await escala()).toEqual([0, 0, 0]);
+    // Crece desde su nodo: el origen está en el borde izquierdo (o el de arriba).
+    const origen = await lineas.first().evaluate((e) => getComputedStyle(e).transformOrigin.split(" ").map(parseFloat));
+    expect(origen[ancho >= 1024 ? 0 : 1]).toBe(0);
+    if (ancho >= 1024) {
+      // Un solo trazo de 01 a 04: cada tramo empieza cuando el anterior ya casi llegó.
+      const retrasos = await lineas.evaluateAll((els) => els.map((e) => getComputedStyle(e).transitionDelay));
+      expect(retrasos).toEqual(["0.2s", "0.42s", "0.64s"]);
+    }
+    const pasos = page.locator("#como-trabajamos ol > li");
+    for (let i = 0; i < 4; i++) await pasos.nth(i).evaluate((p) => p.scrollIntoView({ block: "center", behavior: "instant" }));
+    await expect.poll(escala, { timeout: 5_000 }).toEqual([1, 1, 1]);
   });
 
   test("hero: la fila del botón termina de entrar antes de 1 s y la maqueta antes de 1,25 s", async ({ page }) => {
