@@ -208,6 +208,87 @@ describe("TextoQueSeEscribe", () => {
     expect(texto()).toBe("Ho");
   });
 
+  // I4 (2026-11-06): en el hero, lo primero es una búsqueda que no se
+  // selecciona: se tacha (las rayas las pinta el CSS; jsdom no mide renglones)
+  // durante 400 + 600 + 1000 ms, sale tachada y da paso a la primera tarea.
+  describe("con una búsqueda que se tacha (hero)", () => {
+    const BUSQUEDA = hero.busqueda;
+
+    it("la búsqueda también reserva su alto: va primera entre los fantasmas", () => {
+      const { container } = render(<TextoQueSeEscribe frases={FRASES} busqueda={BUSQUEDA} />);
+      expect(partes(container).fantasmas.map((f) => f.textContent)).toEqual([BUSQUEDA, ...FRASES]);
+    });
+
+    it("con 'reducir movimiento' no aparece: queda la primera tarea, quieta", () => {
+      simularMovimientoReducido(true);
+      vi.useFakeTimers();
+      const { container } = render(<TextoQueSeEscribe frases={FRASES} busqueda={BUSQUEDA} />);
+      expect(partes(container).visible.textContent).toBe(FRASES[0]);
+      for (let i = 0; i < 20; i++) {
+        avanzar(500);
+        expect(partes(container).visible.textContent).toBe(FRASES[0]);
+        expect(container.querySelector(".texto-tachado, .salida-escritura, .raya-busqueda")).toBeNull();
+      }
+    });
+
+    it("escribe la búsqueda, la tacha sin seleccionarla, sale tachada y sigue con la primera tarea", async () => {
+      vi.useFakeTimers();
+      const { container } = render(<TextoQueSeEscribe frases={FRASES} busqueda={BUSQUEDA} />);
+      await act(async () => {});
+      const texto = () => partes(container).visible.textContent;
+      const clase = () => partes(container).texto.className;
+      const salida = () => container.querySelector<HTMLElement>(".salida-escritura");
+
+      avanzar(hasta(BUSQUEDA, BUSQUEDA.length));
+      expect(texto()).toBe(BUSQUEDA);
+      avanzar(0);
+      // Tachándose: baja al 75 % (.texto-tachado), sin el cian de la selección.
+      expect(clase()).toContain("texto-tachado");
+      expect(clase()).not.toContain("bg-cyan/35");
+      avanzar(1999);
+      expect(texto()).toBe(BUSQUEDA);
+      expect(salida()).toBeNull();
+      avanzar(1);
+
+      // Borrada de una vez: la copia sale tachada, no seleccionada.
+      expect(texto()).toBe("");
+      const copia = salida();
+      expect(copia?.textContent).toBe(BUSQUEDA);
+      expect(copia!.firstElementChild!.className).toContain("texto-tachado-quieto");
+      expect(copia!.firstElementChild!.className).not.toContain("bg-cyan/35");
+      expect(clase()).not.toContain("texto-tachado");
+      avanzar(300);
+      expect(salida()).toBeNull();
+
+      // La primera tarea, con su ritmo y su selección de siempre.
+      avanzar(hasta(FRASES[0], 4));
+      expect(texto()).toBe(FRASES[0].slice(0, 4));
+    });
+
+    it("después de la última frase vuelve a la búsqueda", async () => {
+      vi.useFakeTimers();
+      const dos = ["Hola", "Chao"];
+      const { container } = render(<TextoQueSeEscribe frases={dos} busqueda="¿Qué es?" />);
+      await act(async () => {});
+      const texto = () => partes(container).visible.textContent;
+      avanzar(hasta("¿Qué es?", 8));
+      expect(texto()).toBe("¿Qué es?");
+      avanzar(0);
+      avanzar(2000);
+      avanzar(300);
+      for (const f of dos) {
+        avanzar(hasta(f, f.length));
+        expect(texto()).toBe(f);
+        avanzar(0);
+        avanzar(1800);
+        avanzar(260);
+        avanzar(300);
+      }
+      avanzar(hasta("¿Qué es?", 2));
+      expect(texto()).toBe("¿Q");
+    });
+  });
+
   it("fuera de pantalla no escribe (no gasta procesador)", async () => {
     entorno.enPantalla = false;
     vi.useFakeTimers();

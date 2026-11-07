@@ -123,7 +123,8 @@ function FondoHero() {
 }
 
 // Recuadro de chat que se escribe solo, delante de una ventana con historial.
-// Es decorativo: las tareas son ejemplos del tipo de trabajo, no datos de nadie.
+// Es decorativo: la búsqueda y las tareas son ejemplos del tipo de trabajo, no
+// datos de nadie.
 function Maqueta() {
   return (
     <Entrada retraso={0.48} desde={20} duracion={0.75} className="relative mt-16 md:mt-24">
@@ -154,8 +155,11 @@ function Maqueta() {
               <Globe size={15} />
             </span>
           </div>
+          {/* Primero una búsqueda que se tacha y da paso a las tareas: el
+              titular de abajo ("Usas la IA como un buscador…") nombra lo que
+              se acaba de ver (hero.busqueda). */}
           <div className="min-h-[104px] px-5 py-6 text-[18px] leading-snug text-white md:min-h-[96px] md:text-[21px]">
-            <TextoQueSeEscribe frases={hero.tareas} />
+            <TextoQueSeEscribe frases={hero.tareas} busqueda={hero.busqueda} />
           </div>
           <div className="flex items-center justify-between gap-3 p-4 pt-0">
             <div className="flex flex-wrap gap-2">

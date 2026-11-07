@@ -316,6 +316,11 @@ export async function sinRevelar(page: Page) {
 // sus ancestros) casi cero. Se excluyen las respuestas de preguntas cerradas y
 // las frases fantasma de TextoQueSeEscribe (visibility: hidden). `excluir`
 // deja fuera otra zona (un selector).
+// También quedan fuera, a propósito, dos cosas del recorrido animado de
+// /consultoria (sus pruebas están en recorrido.spec.ts): los pasos que el
+// reproductor no muestra (opacidad 0, completos en el DOM y para lectores de
+// pantalla) y el escenario, decorativo (aria-hidden), que fuera de pantalla
+// se pausa en el cuadro en que iba.
 export async function textosInvisibles(page: Page, excluir?: string) {
   return page.evaluate((otra) => {
     const salida: string[] = [];
@@ -328,6 +333,7 @@ export async function textosInvisibles(page: Page, excluir?: string) {
       if (!texto || !el || vistos.has(el)) continue;
       vistos.add(el);
       if (el.closest("script, style, noscript, template, [role=region][inert]")) continue;
+      if (el.closest(".recorrido-escenario, .recorrido-paso:not([data-activo])")) continue;
       if (otra && el.closest(otra)) continue;
       if (el.getClientRects().length === 0) continue;
       if (getComputedStyle(el).visibility === "hidden") continue;

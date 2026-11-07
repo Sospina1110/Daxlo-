@@ -14,7 +14,7 @@ function fondoMarca(id: ToolId) {
 }
 
 // Las integraciones de la plantilla: orbe detrás del titular y una fila de
-// tejas que pasa por debajo. Abajo, qué hacemos con cada herramienta.
+// tejas que pasa por debajo. Abajo, para qué sirve cada herramienta.
 // Con `migas`, la sección abre la página /herramientas: su titular es el h1.
 export function Herramientas({ migas }: { migas?: React.ReactNode }) {
   const h = herramientas;

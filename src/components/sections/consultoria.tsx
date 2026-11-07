@@ -4,6 +4,8 @@ import { LineaCapitulo, SectionHeading } from "@/components/ui/blocks";
 import { cn } from "@/lib/utils";
 import { ParaQuien, TarjetasProblema, Zona } from "./zona";
 import { ZonaPortada } from "./zona-portada";
+import { Recorrido as RecorridoAnimado } from "./recorrido";
+import { EscenaCosto, EscenaEmpezar, EscenaOrdenar, EscenaSiguiente } from "./recorrido-escenas";
 
 // La página contesta en orden: ¿qué es? (portada), ¿me pasa a mí? (escenas),
 // ¿qué cambia? (hoy → después), ¿cómo lo hacen? (recorrido) y ¿es para mi
@@ -105,47 +107,29 @@ function Rotulo({ children, azul = false, as = "p" }: { children: React.ReactNod
 
 // ------------------------------------------------ Cómo trabajamos
 
-// El proceso como línea de tiempo: cuatro pasos en un <ol>, cada uno con lo
-// que te llevas. En escritorio, cuatro columnas unidas por una línea de 1 px
-// entre nodos; en celular, lista vertical con la línea a la izquierda. Todos
-// los nodos iguales. Sin figura debajo: cómo elegimos el primer proceso (lo
-// que se dice en la reunión contra lo que muestran los documentos, y las
-// cuatro preguntas que lo filtran) va en la pregunta "¿Cómo identifican qué
-// proceso cambiar primero?"; en el cuerpo queda una cláusula del paso 02.
+// El método como un video corto (2026-11-06, pedido de Santiago): una escena
+// animada por paso que avanza sola, con la barra de capítulos debajo y el
+// texto del paso al lado (debajo en celular). Los cuatro pasos siguen
+// completos en un <ol>; sin JavaScript se ven como la línea de tiempo de
+// antes. El reproductor vive en recorrido.tsx y las escenas en
+// recorrido-escenas.tsx (se pintan en el servidor y viajan como props). Cómo
+// elegimos el primer proceso (lo que se dice en la reunión contra lo que
+// muestran los documentos, y las cuatro preguntas que lo filtran) va en la
+// pregunta "¿Cómo identifican qué proceso cambiar primero?"; en el cuerpo
+// queda una cláusula del paso 02.
 function Recorrido() {
   const r = consultoria.recorrido;
-  const ultimo = r.pasos.length - 1;
+  const { escenas, ...textos } = r.animacion;
   return (
     <section id="como-trabajamos" className="relative py-16 md:py-24">
       <LineaCapitulo tono="blue" />
       <div className="container-page">
         <SectionHeading titulo={r.titulo} tono="blue" alineacion="izquierda" />
-        <ol data-escalonar="0.08" className="mt-10 grid gap-8 md:mt-14 lg:grid-cols-4 lg:gap-8">
-          {r.pasos.map((p, i) => (
-            <li key={p.numero} data-revelar="" className="relative pl-10 lg:pl-0 lg:pt-8">
-              {/* La línea que une los nodos: vertical en celular, horizontal
-                  hasta el nodo siguiente en escritorio. Se traza desde su nodo
-                  cuando el paso aparece (.linea-recorrido, globals.css); en
-                  escritorio los tres tramos van seguidos (--tramo), como un
-                  solo trazo de 01 a 04. */}
-              {i < ultimo && (
-                <span
-                  aria-hidden
-                  style={{ ["--tramo" as string]: i } as React.CSSProperties}
-                  className="linea-recorrido absolute bottom-[-44px] left-[15px] top-3 w-px bg-blue-soft/40 lg:bottom-auto lg:left-3 lg:right-[-32px] lg:top-[5.5px] lg:h-px lg:w-auto"
-                />
-              )}
-              <span aria-hidden className="absolute left-[9.5px] top-1.5 h-3 w-3 rounded-full border border-blue-soft bg-[#08090e] lg:left-0 lg:top-0" />
-              <p className="font-display text-[15px] font-medium tracking-[0.1em] text-blue-soft">{p.numero}</p>
-              <h3 className="mt-2 text-[22px] leading-snug text-white">{p.titulo}</h3>
-              <p className="mt-2 text-[17px] leading-relaxed text-muted">{p.texto}</p>
-              {/* "Te llevas" en minúscula y 15 px: repetido cuatro veces en
-                  mayúsculas espaciadas gritaba más que el entregable. */}
-              <p className="mt-4 text-[15px] font-medium leading-snug text-blue-soft">{p.rotulo}</p>
-              <p className="mt-1 text-[17px] leading-snug text-white">{p.llevas}</p>
-            </li>
-          ))}
-        </ol>
+        <RecorridoAnimado
+          pasos={r.pasos}
+          textos={textos}
+          escenas={[<EscenaCosto key="costo" />, <EscenaEmpezar key="empezar" />, <EscenaOrdenar key="ordenar" />, <EscenaSiguiente key="siguiente" />]}
+        />
       </div>
     </section>
   );

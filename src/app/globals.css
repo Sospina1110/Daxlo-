@@ -285,6 +285,12 @@
     scale: var(--escala-presion, 0.97);
     transition-duration: var(--dur-presion);
   }
+  /* El botón de pausa del recorrido de /consultoria: la presión de siempre y,
+     al pasar el mouse, el color y el borde en 200 ms. */
+  .recorrido-boton.pulsable {
+    transition-property: translate, scale, opacity, color, border-color;
+    transition-duration: var(--dur-ui), var(--dur-presion), var(--dur-ui), var(--dur-ui), var(--dur-ui);
+  }
   /* Tarjetas que son un enlace (las puertas del inicio, el puente a la otra
      línea): el borde toma el tono en 200 ms y al presionar bajan a 0.99 en
      120 ms y vuelven en 120 ms. Es 0.99 y no 0.97 porque la superficie es
@@ -427,32 +433,238 @@
   transform: translate3d(-8px, 0, 0);
 }
 
-/* Recorrido de /consultoria: la línea que une un paso con el siguiente se
-   traza desde su nodo (solo transform: no mueve nada alrededor).
-   - En celular y tableta (pasos uno debajo del otro), cada tramo baja desde
-     su nodo 0,12 s después de que aparece su paso, en 0,6 s (--dur-entrada):
-     la línea lleva al paso siguiente mientras se baja.
-   - Desde 1024 px (cuatro columnas que aparecen juntas), los tres tramos van
-     seguidos, como un solo trazo de 01 a 04: cada uno en 300 ms
-     (--dur-mover), el primero a los 0,2 s y cada siguiente 0,22 s después
-     (--tramo), cuando el anterior ya casi llegó a su nodo. Termina a los
-     0,94 s, lo mismo que tarda la ola de los pasos.
-   Sin JavaScript no hay .js y la línea está entera. */
-.linea-recorrido {
-  transform-origin: top;
-  transition: transform var(--dur-entrada) var(--ease-salida) calc(var(--retraso, 0s) + 0.12s);
+/* ------------------------------------------------------------------
+   Recorrido de /consultoria: los cuatro pasos como un video corto
+   (src/components/sections/recorrido.tsx y recorrido-escenas.tsx)
+   ------------------------------------------------------------------
+   Sin JavaScript (sin .js) es la línea de tiempo de antes, con los cuatro
+   pasos a la vista; el escenario y los controles no se pintan. Con
+   JavaScript es un reproductor: el escenario, la barra de capítulos debajo y
+   el texto del paso que se ve (al lado desde 1024 px). La clase .js la pone
+   el layout antes de pintar: el reproductor ya sale armado del HTML y nada
+   salta al hidratar.
+   Los cuatro pasos siguen en el <ol>, apilados en la misma celda: la celda
+   toma el alto del más largo (el texto de abajo no se mueve al cambiar de
+   paso) y los que no se ven quedan en opacidad 0, en el DOM y para los
+   lectores de pantalla. El escenario tiene alto fijo por tamaño de pantalla.
+   Todo esto va fuera de capa: le gana a las utilidades de la línea de tiempo
+   sin JavaScript (grid-cols-4, pl-10...). */
+.recorrido-escenario,
+.recorrido-controles { display: none; }
+.js .recorrido {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "escenario" "controles" "pasos";
 }
-.js [data-revelar]:not([data-visible]) .linea-recorrido {
-  transform: scaleY(0);
+/* El rótulo "Ejemplo" va en los 40 px de arriba; la escena, centrada abajo. */
+.js .recorrido-escenario {
+  display: grid;
+  grid-area: escenario;
+  place-items: center;
+  height: 232px;
+  padding: 40px 0 20px;
+}
+.js .recorrido-controles {
+  display: flex;
+  grid-area: controles;
+  margin-top: 12px;
+}
+.js .recorrido-pasos {
+  grid-area: pasos;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  margin-top: 16px;
+}
+/* El paso que sale se apaga en 150 ms (--dur-rapida); el que entra sube 6 px
+   y aparece en 300 ms (--dur-mover), 100 ms después: el cambio se lee como
+   uno solo y los dos textos casi no se pisan. */
+.js .recorrido-paso {
+  grid-area: 1 / 1;
+  padding: 0;
+  opacity: 0;
+  transform: translate3d(0, 6px, 0);
+  pointer-events: none;
+  transition:
+    opacity var(--dur-rapida) var(--ease-salida),
+    transform var(--dur-rapida) var(--ease-salida);
+}
+.js .recorrido-paso[data-activo] {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  transition:
+    opacity var(--dur-mover) var(--ease-salida) 0.1s,
+    transform var(--dur-mover) var(--ease-salida) 0.1s;
+}
+.js .recorrido-estatico { display: none; }
+@media (min-width: 1024px) {
+  /* Escenario a la izquierda, el texto del paso a la derecha, centrado con
+     el escenario; la barra de capítulos debajo del escenario, como la de un
+     video. */
+  .js .recorrido {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    grid-template-areas: "escenario pasos" "controles .";
+    column-gap: 56px;
+  }
+  .js .recorrido-pasos {
+    margin-top: 0;
+    align-self: center;
+  }
+}
+
+/* La escena: una caja de 260 × 172 px (las posiciones de recorrido-escenas.tsx
+   van en px de esta caja) que se agranda con zoom según la pantalla. Con zoom
+   el texto se dibuja a su tamaño final (nítido) y nunca baja de 13 px: en
+   320 px la caja va a 1 y entra con 9 px por lado. */
+.escena {
+  position: relative;
+  width: 260px;
+  height: 172px;
+}
+@media (min-width: 375px) {
+  .js .recorrido-escenario { height: 268px; }
+  .escena { zoom: 1.2; }
+}
+@media (min-width: 640px) {
+  .js .recorrido-escenario { height: 320px; padding-top: 44px; }
+  .escena { zoom: 1.45; }
 }
 @media (min-width: 1024px) {
-  .linea-recorrido {
-    transform-origin: left;
-    transition: transform var(--dur-mover) var(--ease-salida) calc(0.2s + var(--tramo, 0) * 0.22s);
+  .js .recorrido-escenario { height: 352px; padding-bottom: 24px; }
+  .escena { zoom: 1.6; }
+}
+
+/* Las piezas de las escenas. Cada una arranca a los --t segundos de su
+   escena y su estilo de base es su cuadro final: sin animación se ve la
+   escena completa. Mismo lenguaje que el resto del sitio:
+   - Lo que llega (.ce-entra) crece desde 6 px y 0.96, como las burbujas de
+     /coaching: opacidad en 200 ms (--dur-ui), forma en 300 ms (--dur-mover),
+     curva de salida.
+   - Los trazos crecen desde su origen en 300 ms o menos (--d).
+   - Lo que ya está en pantalla y cambia de lugar (las hojas que se juntan,
+     la ficha que se corre, la selección que recorre las opciones) va con la
+     curva de mover: 600 ms (--dur-entrada) o 300 ms por salto.
+   - Lo que se apaga baja a --hasta (0,4) en 300 ms.
+   - El reloj es lo único que dura más (1,4 s rápido y después despacio
+     hasta el final del paso): es tiempo que pasa, no una respuesta.
+   Sin rebote, sin nada infinito y solo transform y opacity. */
+@keyframes ce-funde { from { opacity: 0; } }
+@keyframes ce-sube { from { transform: translate3d(0, 6px, 0) scale(0.96); } }
+@keyframes ce-traza-x { from { transform: scaleX(0); } }
+@keyframes ce-traza-y { from { transform: scaleY(0); } }
+@keyframes ce-atenua { from { opacity: 1; } }
+/* Las agujas del reloj (escena 01): --vueltas rápido en el primer 32 %
+   (1,4 s de 4,4 s) con la curva de mover, escrita a mano porque dentro de
+   @keyframes no se lee la variable, y --resto despacio y parejo hasta poco
+   antes de que termine el paso. */
+@keyframes ce-gira {
+  from {
+    transform: rotate(calc(var(--giro, 0deg) + var(--vueltas, -360deg) + var(--resto, 0deg)));
+    animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
   }
-  .js [data-revelar]:not([data-visible]) .linea-recorrido {
-    transform: scaleX(0);
+  32% {
+    transform: rotate(calc(var(--giro, 0deg) + var(--resto, 0deg)));
+    animation-timing-function: linear;
   }
+}
+@keyframes ce-desliza { from { transform: translate3d(var(--dx, 0), 0, 0); } }
+@keyframes ce-fila { from { opacity: 0; transform: translate3d(-4px, 0, 0); } }
+@keyframes ce-marca { from { opacity: 0; transform: scale(0.8); } }
+@keyframes ce-escala { from { opacity: 0; transform: scale(0.97); } }
+/* Las hojas regadas: el primer cuadro es su lugar suelto (--dx, --dy,
+   --inclinacion desde el centro de la tabla); se juntan en el centro y se
+   apagan ahí, donde aparece la tabla. */
+@keyframes ce-junta {
+  from { opacity: 1; transform: translate3d(var(--dx, 0), var(--dy, 0), 0) rotate(var(--inclinacion, 0deg)); }
+  70% { opacity: 1; }
+}
+/* La selección de la escena 02 recorre los procesos: aparece en "Pedidos",
+   salta a "Cierre de mes", a "Facturas" y se queda en "Cotizaciones" (su
+   lugar de base). Cada salto dura 300 ms (16 % de 1,9 s) con la curva de
+   mover, cubic-bezier(0.77, 0, 0.175, 1), escrita a mano porque dentro de
+   @keyframes no se lee la variable. Entre saltos, 250 ms quieta. */
+@keyframes ce-anillo {
+  0% { opacity: 0; transform: translate3d(0, 58px, 0); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  10% { opacity: 1; transform: translate3d(0, 58px, 0); }
+  26% { transform: translate3d(0, 58px, 0); animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1); }
+  42% { transform: translate3d(136px, 58px, 0); }
+  55% { transform: translate3d(136px, 58px, 0); animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1); }
+  71% { transform: translate3d(136px, 0, 0); }
+  84% { transform: translate3d(136px, 0, 0); animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1); }
+  100% { opacity: 1; transform: none; }
+}
+.ce-entra {
+  animation:
+    ce-funde var(--dur-ui) var(--ease-salida) var(--t, 0s) both,
+    ce-sube var(--dur-mover) var(--ease-salida) var(--t, 0s) both;
+}
+.ce-funde { animation: ce-funde var(--dur-ui) var(--ease-salida) var(--t, 0s) both; }
+.ce-traza-x {
+  transform-origin: left;
+  animation: ce-traza-x var(--d, var(--dur-mover)) var(--ease-salida) var(--t, 0s) both;
+}
+.ce-traza-y {
+  transform-origin: top;
+  animation: ce-traza-y var(--d, var(--dur-mover)) var(--ease-salida) var(--t, 0s) both;
+}
+.ce-atenua {
+  opacity: var(--hasta, 0.4);
+  animation: ce-atenua var(--dur-mover) var(--ease-salida) var(--t, 0s) both;
+}
+.ce-gira {
+  transform-origin: 50% 100%;
+  transform: rotate(var(--giro, 0deg));
+  animation: ce-gira 4.4s linear var(--t, 0s) both;
+}
+.ce-desliza { animation: ce-desliza var(--dur-entrada) var(--ease-mover) var(--t, 0s) both; }
+.ce-fila { animation: ce-fila var(--dur-mover) var(--ease-salida) var(--t, 0s) both; }
+.ce-marca { animation: ce-marca var(--dur-mover) var(--ease-salida) var(--t, 0s) both; }
+.ce-escala { animation: ce-escala var(--dur-mover) var(--ease-salida) var(--t, 0s) both; }
+.ce-junta {
+  opacity: 0;
+  transform: scale(0.6);
+  animation: ce-junta var(--dur-entrada) var(--ease-mover) var(--t, 0s) both;
+}
+.ce-anillo { animation: ce-anillo 1.9s linear var(--t, 0s) both; }
+/* Del segundo paso en adelante la escena nueva entra fundiéndose en 200 ms,
+   como un corte de video. */
+.escena-corte { animation: ce-funde var(--dur-ui) var(--ease-salida) both; }
+
+/* La barra de capítulos. El tramo del paso que corre se llena en lo que dura
+   el paso (--dur-paso), lineal: es tiempo, como la barra de un video. Al
+   terminar, el reproductor pasa al siguiente (animationend). Los que ya
+   pasaron, llenos; los que faltan, vacíos. El nodo se llena y el de ahora
+   lleva un halo: solo cambian de opacidad. */
+@keyframes recorrido-progreso { from { transform: scaleX(0); } }
+.recorrido-relleno { transform-origin: left; }
+.recorrido-capitulo[data-fase="pendiente"] .recorrido-relleno { transform: scaleX(0); }
+.recorrido-capitulo[data-fase="activo"] .recorrido-relleno {
+  animation: recorrido-progreso var(--dur-paso, 5s) linear both;
+}
+.recorrido-nodo-lleno,
+.recorrido-halo {
+  opacity: 0;
+  transition: opacity var(--dur-ui) var(--ease-salida);
+}
+.recorrido-capitulo:not([data-fase="pendiente"]) .recorrido-nodo-lleno,
+.recorrido-capitulo[data-fase="activo"] .recorrido-halo { opacity: 1; }
+/* Al presionar un capítulo, su nodo y su número se aclaran, sin transición,
+   como un enlace de texto. Con teclado no. */
+.recorrido-capitulo:active:not(:focus-visible) :is(.recorrido-nodo, .recorrido-numero) { opacity: 0.7; }
+
+/* Pausa: escena y barra se congelan juntas, en el mismo cuadro. Pasa antes
+   de arrancar (el primer cuadro), con el botón, fuera de pantalla y con la
+   pestaña oculta. */
+.recorrido:not([data-estado="reproduciendo"]) :is(.escena, .escena *, .recorrido-relleno) {
+  animation-play-state: paused;
+}
+/* Cuadro final: la escena completa y quieta. Al saltar a un paso en pausa, al
+   terminar y con "reducir movimiento" (abajo). Si React no llegó a cargar
+   (.forzar-visible, red de seguridad del layout), también: así no queda
+   congelado el primer cuadro. */
+.recorrido[data-cuadro="final"] :is(.escena, .escena *, .recorrido-relleno),
+.forzar-visible .recorrido :is(.escena, .escena *) {
+  animation: none;
 }
 
 /* La frase que se escribe sola (TextoQueSeEscribe), al borrarse: la copia
@@ -464,6 +676,29 @@
 }
 .salida-escritura {
   animation: salida-escritura var(--dur-rapida) var(--ease-salida) both;
+}
+
+/* La búsqueda del hero (TextoQueSeEscribe con `busqueda`) se tacha con la raya
+   del "Hoy" de /consultoria: 1 px blanco al 40 % que crece de izquierda a
+   derecha en 600 ms (--dur-entrada) con la curva de salida, 400 ms después de
+   escrita (--retraso; el segundo renglón, si lo hay, 150 ms después). Solo
+   transform. Mientras cruza, el texto baja al 75 %, como el "Hoy" (solo
+   opacidad). En la copia que sale ya está cruzada y quieta. */
+@keyframes raya-busqueda {
+  from { transform: scaleX(0); }
+}
+.raya-busqueda {
+  transform-origin: left;
+  animation: raya-busqueda var(--dur-entrada) var(--ease-salida) var(--retraso, 0s) both;
+}
+.texto-tachado {
+  opacity: 0.75;
+  transition: opacity var(--dur-entrada) var(--ease-salida) var(--retraso-tachado, 0.4s);
+}
+.texto-tachado-quieto { opacity: 0.75; }
+@media (forced-colors: active) {
+  .raya-busqueda,
+  .raya-busqueda-quieta { background-color: CanvasText; }
 }
 
 /* Titular gigante de la portada (ZonaPortada): las dos líneas se corren −6 % y
@@ -871,12 +1106,25 @@
      fila (misma especificidad que la regla de arriba, y va después). */
   .tachado-linea { transition: none; }
   .js [data-revelar]:not([data-visible]) .tachado-linea { transform: none; }
-  /* La flecha del hoy → después y las líneas del recorrido ya están en su
-     lugar: aparecen con su fila, que solo funde. La salida de la frase que se
-     escribe no se ve (con "reducir movimiento" la frase queda quieta). */
-  .flecha-cambio,
-  .linea-recorrido { transition: none; }
+  /* La flecha del hoy → después ya está en su lugar: aparece con su fila,
+     que solo funde. La salida de la frase que se escribe no se ve (con
+     "reducir movimiento" la frase queda quieta). */
+  .flecha-cambio { transition: none; }
   .js [data-revelar]:not([data-visible]) .flecha-cambio { opacity: 1; transform: none; }
-  .js [data-revelar]:not([data-visible]) .linea-recorrido { transform: none; }
   .salida-escritura { animation: none; visibility: hidden; }
+  /* La búsqueda del hero no aparece con "reducir movimiento" (queda la
+     primera tarea, quieta); si llegara a pintarse, no se mueve. */
+  .raya-busqueda { animation: none; }
+  .texto-tachado { transition: none; }
+  /* El recorrido de /consultoria no avanza solo: cada escena queda en su
+     cuadro final, la barra marca hasta el paso elegido y, sin nada que se
+     mueva, no hay botón de pausa. Al cambiar de paso con un nodo, el texto
+     solo funde (200 ms). */
+  .recorrido :is(.escena, .escena *, .recorrido-relleno) { animation: none !important; }
+  .js .recorrido-paso,
+  .js .recorrido-paso[data-activo] {
+    transform: none;
+    transition: opacity var(--dur-ui) ease;
+  }
+  .recorrido-boton { display: none; }
 }

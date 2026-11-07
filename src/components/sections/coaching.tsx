@@ -1,3 +1,4 @@
+import { Check, FileText } from "lucide-react";
 import { coaching, otraLinea, rutas } from "@/content/copy";
 import { MarcaX } from "@/components/ui/primitives";
 import { LineaCapitulo, SectionHeading } from "@/components/ui/blocks";
@@ -115,6 +116,23 @@ function VentanaSesion() {
                 )}
               </div>
             ))}
+            {/* Al final de la conversación, lo que te llevas para repetirlo:
+                una ficha de las maquetas (8 px de radio, borde blanco al 14 %,
+                ícono del tono y la marca menta de "listo", como la ficha del
+                paso 04 de /consultoria). Va bajo la última respuesta de Daxlo
+                (alineada con sus burbujas) y crece como ellas, en el mismo
+                ritmo de conversación: 0,75 s después de la anterior. */}
+            <div
+              data-revelar=""
+              style={{ ["--retraso" as string]: `${0.3 + v.mensajes.length * 0.75}s` } as React.CSSProperties}
+              className="burbuja ficha-sesion origin-bottom-left pl-11"
+            >
+              <p className="inline-flex max-w-full items-center gap-2.5 rounded-lg border border-line-2 bg-ink/70 px-3 py-2 text-[14px] font-medium leading-snug text-white/85">
+                <FileText size={16} strokeWidth={1.5} aria-hidden className="shrink-0 text-cyan" />
+                <span>{v.ficha}</span>
+                <Check size={14} strokeWidth={2} aria-hidden className="shrink-0 text-mint" />
+              </p>
+            </div>
           </div>
           <div className="rounded-2xl border border-line-2 bg-ink/70 px-4 py-3.5 text-[15px] text-white/60">
             <TextoQueSeEscribe frases={[v.placeholder]} />

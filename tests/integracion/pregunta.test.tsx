@@ -1,10 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import { faq } from "@/content/copy";
+import { faq, preguntasLinea } from "@/content/copy";
 import { Pregunta } from "@/components/sections/pregunta";
 
-const [q1, q2] = faq.grupos[0].preguntas;
+// Dos preguntas cualquiera de un mismo grupo (el del coaching tiene varias).
+const [q1, q2] = faq.grupos[preguntasLinea.coaching.grupo].preguntas;
 
 function montar() {
   render(<Pregunta pregunta={q1.p} respuesta={q1.r} />);

@@ -56,8 +56,10 @@ test.describe("ergonomía en celular", () => {
   // de la portada, el puente a la otra línea en "No es para… si", "Conoce a
   // Martín y Santiago" (bajo los socios en cada línea y en el inicio), "Ver
   // todas las preguntas", el WhatsApp del cierre y, en el inicio, las dos
-  // puertas.
+  // puertas. Desde el 2026-11-06, en /preguntas, el enlace a cada línea bajo
+  // el título de su grupo.
   const ENLACES_SUELTOS: { ruta: string; nombres: (string | RegExp)[] }[] = [
+    { ruta: "/preguntas", nombres: [dosFormas.coaching.enlace, dosFormas.consultoria.enlace] },
     { ruta: "/coaching", nombres: [coaching.portada.accion.enlace, otraLinea.consultoria.enlace, inicioNosotros.enlace, preguntasLinea.todas, cierre.whatsapp] },
     { ruta: "/consultoria", nombres: [consultoria.portada.accion.enlace, otraLinea.coaching.enlace, inicioNosotros.enlace, preguntasLinea.todas, cierre.whatsapp] },
     { ruta: "/", nombres: [new RegExp(`^${dosFormas.coaching.enlace}\\b`), new RegExp(`^${dosFormas.consultoria.enlace}\\b`), inicioNosotros.enlace, cierre.whatsapp] },
@@ -101,7 +103,7 @@ test.describe("ergonomía en celular", () => {
 
   test("el enlace dentro de una respuesta abierta ('Para qué sirve cada una') mide al menos 44×44", async ({ page }) => {
     await irA(page, "/coaching");
-    const q = faq.grupos[0].preguntas.find((x) => x.enlace)!;
+    const q = faq.grupos[preguntasLinea.coaching.grupo].preguntas.find((x) => x.enlace)!;
     const boton = page.getByRole("button", { name: q.p, exact: true });
     await quieto(boton);
     await boton.tap();

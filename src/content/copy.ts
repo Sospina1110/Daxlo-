@@ -117,7 +117,14 @@ export const hero = {
   sub: "Te enseñamos a resolver tu propio trabajo con IA, o construimos el sistema que lo resuelve dentro de tu empresa. Seguimos contigo al ritmo de la IA, sin que contrates un proveedor nuevo cada vez.",
   cta: "Agendar una conversación",
   meta: "Primera conversación sin costo",
-  // El recuadro del hero escribe estas tareas solo, una tras otra.
+  // Lo primero que escribe el recuadro del hero es una búsqueda: se tacha con
+  // la raya del "Hoy" de /consultoria y da paso a las tareas (2026-11-06, I4
+  // de landing-hilo-conductor). Así el titular de abajo ("Usas la IA como un
+  // buscador. El trabajo sigue a mano.") nombra lo que se acaba de ver. Con
+  // "reducir movimiento" no aparece: queda la primera tarea, quieta.
+  busqueda: "¿Cómo se registra una factura electrónica?",
+  // Después de la búsqueda, el recuadro escribe estas tareas solo, una tras
+  // otra (y vuelve a la búsqueda).
   tareas: [
     "Lee las facturas que llegaron hoy y pásalas a la hoja de costos",
     "Arma el borrador de la cotización con los datos de este correo",
@@ -150,7 +157,9 @@ export const hero = {
 // común (la IA usada como buscador) y cada puerta cuenta cómo trabajamos, en
 // el mismo orden que su página: coaching, resuelves tú y sales sabiendo
 // repetirlo; consultoría, ver dónde se traba el trabajo y qué te cuesta,
-// ordenar, cambiarlo con el equipo cada semana y traer el siguiente paso.
+// ordenar, cambiarlo con el equipo cada semana y, cuando el equipo ya lo
+// opera, seguir con el siguiente (2026-11-06: "Después te traemos el siguiente
+// paso" no decía de qué; ahora usa las palabras de la portada de /consultoria).
 // "Construir" sin objeto no dice qué cambia: se dice "lo cambiamos", como en
 // otraLinea. Frecuencia ("cada semana") pendiente de Santiago.
 export const dosFormas = {
@@ -165,7 +174,7 @@ export const dosFormas = {
   consultoria: {
     regla: "Lo hacen varias personas de tu equipo",
     titulo: servicios.consultoria,
-    linea: "Vemos dónde se traba el trabajo y qué te está costando. Ordenamos la información y trabajamos cada semana con tu equipo hasta cambiar ese proceso. Después te traemos el siguiente paso.",
+    linea: "Vemos dónde se traba el trabajo y qué te está costando. Ordenamos la información y trabajamos cada semana con tu equipo hasta cambiar ese proceso. Cuando tu equipo ya lo opera, seguimos con el siguiente.",
     enlace: "Ver la consultoría",
   },
 };
@@ -193,19 +202,22 @@ export const coaching = {
     // web (Santiago, 2026-11-03).
     nota: ["Llamada de 15 minutos sin costo", "Por videollamada", "Pagas por sesión, sin mensualidad"],
   },
-  // La sensación de ir detrás sale de la escena (el titular), sin nombrar a
-  // nadie: "hay quien", no una compañera concreta (la comparación con un par
-  // roza la lista de miedo de voz-daxlo.md; Santiago decide si la quiere más
-  // directa). Las tres escenas son las causas, y los pasos de la sesión las
-  // contestan una por una. Ninguna es de contabilidad ni repite el informe de
-  // la maqueta: quien no lleva facturas también tiene que verse ahí.
-  // "La misma IA" y no una herramienta con nombre (Santiago, 2026-11-03).
+  // Desde el 2026-11-06 (Santiago, C1 y C2 de landing-hilo-conductor) el
+  // titular anuncia que lo de abajo son razones y sigue el hilo de la portada:
+  // "ese trabajo" es "un trabajo tuyo que hoy te toma horas". "Con la misma
+  // IA, hay quien ya entrega antes que tú" hablaba de otra persona y no se
+  // entendía qué tenían que ver las escenas; además suponía que ya usas IA.
+  // Las tres escenas son causas (la del lunes era la consecuencia), y los
+  // pasos de la sesión las contestan con sus mismas palabras: tu archivo
+  // (paso 2), qué pediste mal (paso 2) y empezar de cero (paso 3). Ninguna es
+  // de contabilidad ni repite el informe de la maqueta: quien no lleva
+  // facturas también tiene que verse ahí. Sin bajada: el titular la hace.
   problema: {
-    titulo: "Con la misma IA, hay quien ya entrega antes que tú.",
+    titulo: "Por qué ese trabajo te sigue tomando horas.",
     escenas: [
       "El tutorial usa un ejemplo limpio y tu archivo no se parece en nada.",
       "La respuesta sale regular y nadie te dice qué pediste mal.",
-      "La presentación de cada lunes te sigue tomando las mismas horas.",
+      "Un lunes la presentación te sale bien. Al siguiente, empiezas de cero.",
     ],
   },
   // El título conserva la búsqueda ("clases de IA 1 a 1") y dice el método que
@@ -227,12 +239,18 @@ export const coaching = {
       ],
       avatar: "Tú",
       placeholder: "Tu siguiente instrucción…",
+      // Al final de la conversación llega lo que te llevas para repetirlo
+      // (paso 3: "El lunes siguiente no empiezas de cero"). Así la maqueta
+      // muestra las tres respuestas en orden: tu archivo, la corrección y las
+      // instrucciones guardadas (2026-11-06).
+      ficha: "Instrucciones guardadas para el próximo lunes",
     },
     // Es el método de la consultoría llevado a una persona (2026-11-03):
     // elegir por dónde empezar, trabajar sobre lo real entendiendo el porqué y
-    // salir con algo que se repite. Cada paso contesta una escena: el tutorial
-    // con ejemplo limpio (tu archivo real), nadie te dice qué pediste mal (qué
-    // pediste mal y por qué) y la presentación de cada lunes. El límite del
+    // salir con algo que se repite. Los pasos contestan las escenas con sus
+    // palabras: el tutorial con ejemplo limpio (tu archivo real), nadie te
+    // dice qué pediste mal (qué pediste mal y por qué) y empezar de cero cada
+    // lunes (el lunes siguiente no empiezas de cero). El límite del
     // primero es regla de voz. Sin nombres de herramientas: no son la
     // propuesta de valor (Santiago, 2026-11-03; lo vigila copy.test.ts).
     // Siguen en el título de la página, en la maqueta, en las preguntas y en
@@ -275,11 +293,17 @@ export const coaching = {
 
 // ------------------------------------------------------------ HERRAMIENTAS
 
+// Desde el 2026-11-06 (H1 a H3 de landing-hilo-conductor): el sub dice por qué
+// estas ("Así" se apoyaba en una razón que no se decía), el título de la lista
+// dice lo que de verdad dicen las fichas (para qué sirve cada herramienta; la
+// pregunta del coaching ya enlaza aquí con esas palabras) y la página termina
+// con las dos tarjetas de otraLinea, como /nosotros: era la única sin camino a
+// las dos líneas.
 export const herramientas = {
   badge: "Herramientas",
   titulo: "Te enseñamos las que ya existen.",
-  sub: "Así, lo que aprendes o construimos contigo sigue funcionando sin nosotros.",
-  subtituloLista: "Qué hacemos con cada una",
+  sub: "Como no son nuestras, lo que aprendes o construimos contigo sigue funcionando sin nosotros.",
+  subtituloLista: "Para qué sirve cada una",
   lista: [
     { id: "claude", nombre: "Claude", uso: "Leer documentos largos, redactar y pensar con tus propios datos." },
     { id: "chatgpt", nombre: "ChatGPT", uso: "El asistente que ya tienes abierto, con instrucciones que puedes reusar." },
@@ -304,12 +328,13 @@ export const herramientas = {
 // no decía nada) la página cuenta cómo trabajamos: vemos qué le cuesta a la
 // empresa lo que se demora, elegimos por dónde empezar, ordenamos la
 // información antes de automatizar, construimos con el equipo cada semana para
-// que entienda lo que se hace y traemos el siguiente paso. El hilo se lee de
-// punta a punta: no sabes en qué parte se demora el trabajo, la información
-// está regada y la herramienta que llegó nadie la entendió (escenas) → las
-// reglas quedan escritas, la IA deja el borrador y tu equipo ajusta lo que
-// construimos (hoy → después) → los cuatro pasos del método → ¿quién lo va a
-// operar cuando nos vayamos?
+// que entienda lo que se hace y, cuando tu equipo lo opera, seguimos con el
+// siguiente proceso. El hilo se lee de punta a punta: no ves dónde se traba el
+// trabajo, la información está regada y la herramienta que llegó nadie la
+// entendió (escenas) → las reglas quedan escritas, la IA deja el borrador y tu
+// equipo ajusta lo que construimos (hoy → después) → los cuatro pasos del
+// método, desde la primera conversación (la del botón) → ¿quién lo va a operar
+// sin nosotros al lado?
 // Cada promesa se dice una vez en el cuerpo: "tu equipo lo opera" va en la
 // portada, en el paso 04 y en la pregunta que filtra, y en ningún otro lado.
 // Aliado (hero, Santiago 2026-11-03): cada proceso queda en manos de tu
@@ -355,10 +380,12 @@ export const consultoria = {
   // empresa" (dos lectores se confundieron). El cierre de mes es un proceso
   // genérico de la lista de "¿Por dónde empieza…?", no de un cliente.
   // El titular queda literal (lo vigila tests/integracion/en-lineas.test.tsx).
+  // La primera dice "se traba", el verbo de la portada (2026-11-06): antes
+  // decía "se atasca" y eran dos palabras para lo mismo.
   problema: {
     titulo: "Tu gente ya usa IA. Tu empresa trabaja igual.",
     escenas: [
-      { titulo: "No ves dónde se atasca el trabajo", texto: "Algo se demora y no sabes en qué parte." },
+      { titulo: "No ves dónde se traba el trabajo", texto: "Algo se demora y no sabes en qué parte." },
       { titulo: "La información está regada", texto: "Cada área con sus hojas de cálculo. Cerrar el mes es juntarlas a mano." },
       { titulo: "La herramienta llegó y nadie la usa", texto: "Te la entregaron con capacitación, pero nadie adentro entendió cómo funciona." },
     ],
@@ -403,18 +430,52 @@ export const consultoria = {
   // 03 dice por qué construimos con tu gente aunque tome más: solos sería más
   // fácil, pero nadie adentro entendería cómo funciona. Nadie en la
   // competencia admite ese costo, y cierra con las palabras de la escena 3
-  // ("nadie adentro entendió cómo funciona"). El siguiente proceso se dice
-  // en la portada y en el título del 04; el texto del 04 dice lo otro que
-  // traemos (una herramienta nueva que te sirva), también pendiente de
-  // Santiago como oferta estándar.
+  // ("nadie adentro entendió cómo funciona").
+  // Desde el 2026-11-06 (K1 a K3 de landing-hilo-conductor, Santiago): el 01
+  // dice que es la primera conversación (la del botón: "Conversación y
+  // diagnóstico sin costo"), así el sí o el no tiene a qué contestar. El 04 ya
+  // no se llama "Te traemos el siguiente paso" (un paso llamado "siguiente
+  // paso" dentro de una lista de pasos): su título es lo que promete la
+  // portada, "Tu equipo lo opera", y el siguiente proceso va en lo que te
+  // llevas, con las palabras de la portada y de "¿Qué pasa cuando ustedes se
+  // van?" (tú decides si seguimos). "El siguiente" y no "el siguiente
+  // proceso": con la palabra de más la página pasaba el tope de 560 palabras
+  // (561); "El proceso" ya está en la misma frase. El texto del 04 dice lo
+  // otro que traemos (una herramienta nueva que te sirva), pendiente de
+  // Santiago como oferta estándar. La animación lee estos mismos textos.
   recorrido: {
     titulo: "Así implementamos la IA en tu empresa.",
     pasos: [
-      { numero: "01", titulo: "Vemos qué te está costando", texto: "Nos cuentas qué se demora y buscamos lo que hay detrás: un cliente que espera, un error que se repite.", rotulo: "Te llevas", llevas: "Un sí o un no, con la razón." },
+      { numero: "01", titulo: "Vemos qué te está costando", texto: "En la primera conversación nos cuentas qué se demora y buscamos lo que hay detrás: un cliente que espera, un error que se repite.", rotulo: "Te llevas", llevas: "Un sí o un no, con la razón." },
       { numero: "02", titulo: "Elegimos por dónde empezar", texto: "Sin costo. Una semana de diagnóstico: hablamos con quien dirige y con quien hace el trabajo, y lo cruzamos con los documentos.", rotulo: "Te llevas", llevas: "El primer proceso, quién lo opera y su precio cerrado." },
       { numero: "03", titulo: "Ordenamos antes de automatizar", texto: "Juntamos en un solo lugar las hojas de cálculo y los documentos regados. Construimos cada semana con tu gente. Solos sería más fácil, pero nadie adentro entendería cómo funciona.", rotulo: "Te llevas", llevas: "El proceso funcionando, probado con casos reales." },
-      { numero: "04", titulo: "Te traemos el siguiente paso", texto: "Entrenamos a quien lo va a operar. Si sale una herramienta que te sirva, te la proponemos.", rotulo: "Te llevas", llevas: "El proceso en manos de tu equipo." },
+      { numero: "04", titulo: "Tu equipo lo opera", texto: "Entrenamos a quien lo va a operar. Si sale una herramienta que te sirva, te la proponemos.", rotulo: "Te llevas", llevas: "El proceso en manos de tu equipo. Si quieres, seguimos con el siguiente." },
     ],
+    // La secuencia animada que cuenta los cuatro pasos como un video corto
+    // (2026-11-06; Santiago: "más como una animación, un video animado, algo
+    // así, en vez de puro texto"). Los textos de los pasos no cambian: estas
+    // son solo las palabras nuevas, los controles y los rótulos de las escenas.
+    // Las escenas son ilustrativas: un mismo proceso genérico de punta a punta
+    // (las cotizaciones, de la lista de "¿Por dónde empieza…?"), nunca la
+    // pantalla de un cliente, sin cifras ni resultados, y con el rótulo de
+    // ejemplo a la vista, como la ventana de /coaching. Las dos causas de la
+    // escena 01 repiten las del texto del paso 01.
+    animacion: {
+      etiqueta: "Ejemplo",
+      grupo: "Animación de los cuatro pasos",
+      pausar: "Pausar la animación",
+      seguir: "Seguir la animación",
+      volver: "Volver a ver",
+      verPaso: "Ver el paso",
+      escenas: {
+        proceso: "Cotizaciones",
+        causas: ["Un cliente que espera", "Un error que se repite"],
+        otros: ["Facturas", "Pedidos", "Cierre de mes"],
+        elegido: "Primero",
+        equipo: "Tu equipo",
+        siguiente: "Siguiente proceso",
+      },
+    },
   },
   // ¿Es para mi empresa y con quién hablo? La pregunta que filtra (quién lo
   // opera), a quién no le servimos y los dos socios, antes del final. La
@@ -429,8 +490,10 @@ export const consultoria = {
   paraQuien: {
     titulo: "¿Esto es para tu empresa?",
     // "El proceso", como en los pasos: "el sistema" sin definir confundía.
-    // Literal: si "cuando nos vayamos" cambia por el aliado, lo decide Santiago.
-    cita: "Si el proceso queda funcionando, ¿quién de tu equipo lo va a operar cuando nos vayamos?",
+    // "Sin nosotros al lado" y no "cuando nos vayamos" (Santiago, 2026-11-06,
+    // K5): dos secciones antes la portada dice que seguimos contigo con el
+    // siguiente proceso.
+    cita: "Si el proceso queda funcionando, ¿quién de tu equipo lo va a operar sin nosotros al lado?",
     respuesta: "Necesitamos el nombre de una persona. Si la respuesta es «ustedes lo manejan», ahí te decimos que no.",
     noEs: {
       titulo: "No es para tu empresa si",
@@ -445,13 +508,19 @@ export const consultoria = {
 
 // ---------------------------------------------------------------- CIERRE
 
+// Desde el 2026-11-06 (I2 y N2 de landing-hilo-conductor): el titular (h1 de
+// /nosotros y h2 del inicio) nombra las dos líneas, y el tercer párrafo dice
+// las dos formas de trabajar con la regla de las puertas del inicio
+// (dosFormas.*.regla), así presenta las dos tarjetas que siguen. Quien llega
+// desde /coaching ya no lee una página que solo habla de empresas. Si la regla
+// cambia, cambia aquí también.
 export const nosotros = {
   badge: "Quiénes somos",
-  titulo: "Dos socios que construyen.",
+  titulo: "Dos socios que enseñan y construyen.",
   parrafos: [
     "Somos Martín Zárate y Santiago Ospina, egresados de Administración del CESA. Usamos IA todos los días para leer datos, automatizar procesos y armar sistemas que hacen solos lo que antes tomaba horas.",
     "Fundamos Daxlo por algo que vimos repetido: las empresas compran IA y quedan con un sistema que no entienden, o con un equipo que entendió la teoría y no cambió nada.",
-    "Hay quien te vende un programa y desaparece. Nosotros construimos dentro de tu empresa, en Colombia, con tu gente al lado, y no cerramos un proyecto hasta que alguien de tu equipo pueda sostenerlo sin nosotros.",
+    "Hay quien te vende un programa y desaparece. Nosotros trabajamos de dos formas, según quién hace el trabajo. Si lo haces tú solo, te enseñamos a resolverlo tú en sesiones 1 a 1. Si lo hacen varias personas de tu equipo, lo construimos con ellas dentro de tu empresa, en Colombia. No cerramos el proyecto hasta que alguien de adentro pueda sostenerlo sin nosotros.",
   ],
   firma: "En todo lo que sale de Daxlo estamos los dos.",
 };
@@ -465,23 +534,44 @@ export type PreguntaFaq = { p: string; r: string; enlace?: { t: string; h: strin
 // no alarga la lectura. La primera oración de cada respuesta contesta la
 // búsqueda literal. /preguntas muestra los tres grupos; cada línea, el suyo
 // (preguntasLinea). El grupo "Coaching o consultoría" va solo en /preguntas.
+// Desde el 2026-11-06 (Q1 a Q3 de landing-hilo-conductor): bajo el h1 de
+// /preguntas, qué es Daxlo y la regla de las dos líneas (quien llega por una
+// pregunta desde Google no lo sabía: estaba al final de una respuesta
+// cerrada); la pregunta que decide entre las dos va primero, no después de
+// catorce; y cada grupo de una línea lleva a su página, con el texto de las
+// puertas del inicio. `ancla` es el id del grupo en /preguntas (#elegir,
+// #coaching, #consultoria): las páginas de cada línea enlazan al suyo.
 export const faq: {
   badge: string;
   titulo: string;
+  sub: string;
   ayuda: string;
   ayudaTexto: string;
   ayudaCta: string;
-  grupos: { nombre: string; tono: "cyan" | "blue" | "dual"; preguntas: PreguntaFaq[] }[];
+  grupos: { nombre: string; ancla: string; tono: "cyan" | "blue" | "dual"; enlace?: { t: string; h: string }; preguntas: PreguntaFaq[] }[];
 } = {
   badge: "Preguntas",
   titulo: "Preguntas frecuentes",
+  sub: "Daxlo tiene dos líneas: coaching de IA 1 a 1, si el trabajo lo haces tú solo, y consultoría, si lo hacen varias personas de tu equipo. Estas son las dudas de cada una.",
   ayuda: "¿Te quedó una duda que no está acá?",
   ayudaTexto: "Escríbenos por WhatsApp y te respondemos nosotros.",
   ayudaCta: "Escribir por WhatsApp",
   grupos: [
     {
+      // La regla de las dos puertas del inicio (dosFormas.*.regla), con las
+      // mismas palabras.
+      nombre: "Coaching o consultoría",
+      ancla: "elegir",
+      tono: "dual",
+      preguntas: [
+        { p: "¿Te sirve el coaching o la consultoría de IA?", r: "Depende de quién hace el trabajo. Si lo haces tú solo, aunque los documentos te lleguen de otros, es coaching: aprendes a resolverlo tú y pagas por sesión. Si lo hacen varias personas de tu equipo, es consultoría: después de una semana de diagnóstico sin costo, lo construimos con ellos a precio cerrado. Si no lo tienes claro, te lo decimos en la primera conversación." },
+      ],
+    },
+    {
       nombre: servicios.coaching,
+      ancla: "coaching",
       tono: "cyan",
+      enlace: { t: dosFormas.coaching.enlace, h: rutas.coaching },
       preguntas: [
         // Una sola pregunta para "qué es" y "clases por videollamada": eran dos
         // casi iguales y alargaban la lista. La búsqueda ("clases de
@@ -505,7 +595,9 @@ export const faq: {
     },
     {
       nombre: servicios.consultoria,
+      ancla: "consultoria",
       tono: "blue",
+      enlace: { t: dosFormas.consultoria.enlace, h: rutas.consultoria },
       preguntas: [
         // La primera responde la búsqueda y dice quiénes somos, para
         // fragmentos destacados y respuestas de IA. "En Colombia", sin ciudad
@@ -559,15 +651,6 @@ export const faq: {
         { p: "¿Esto reemplaza a mis auxiliares?", r: "Eso lo decides tú. El sistema les quita la parte de copiar y pegar, como pasar los datos de un correo o de un PDF a la hoja de cálculo o al sistema contable, y deja borradores que revisa y aprueba alguien de tu equipo. Quien lleva años haciendo ese trabajo a veces desconfía de la IA. Por eso lo construimos con esa persona: entiende cada regla porque ayudó a escribirla." },
       ],
     },
-    {
-      // La regla de las dos puertas del inicio (dosFormas.*.regla), con las
-      // mismas palabras.
-      nombre: "Coaching o consultoría",
-      tono: "dual",
-      preguntas: [
-        { p: "¿Te sirve el coaching o la consultoría de IA?", r: "Depende de quién hace el trabajo. Si lo haces tú solo, aunque los documentos te lleguen de otros, es coaching: aprendes a resolverlo tú y pagas por sesión. Si lo hacen varias personas de tu equipo, es consultoría: después de una semana de diagnóstico sin costo, lo construimos con ellos a precio cerrado. Si no lo tienes claro, te lo decimos en la primera conversación." },
-      ],
-    },
   ],
 };
 
@@ -599,6 +682,18 @@ export const agendar = {
     // en texto: la ofuscación de Cloudflare lo reescribiría en el HTML.
     aviso:
       "Responsable: Daxlo (Martín Zárate y Santiago Ospina). Usamos tus datos solo para lo que autorizas. Se guardan en servicios de Google, Cloudflare y Cal.com y en nuestro sistema interno, con servidores fuera de Colombia. Puedes conocerlos, corregirlos, pedir que los borremos o revocar la autorización cuando quieras; la política explica cómo.",
+  },
+  // Qué pasa después de enviar, debajo del formulario, en la línea de nodos
+  // del recorrido de /consultoria (2026-11-06; reemplaza el párrafo de B-4).
+  // El paso del medio es el de cierre.meta: depende de si hay agenda de
+  // Cal.com (hayAgenda). La duración es la de la portada de /coaching. Faltan
+  // la duración de la conversación de consultoría y quién la atiende: no se
+  // dicen hasta tener el dato.
+  pasos: {
+    titulo: "Qué pasa después de enviar",
+    enviar: "Envías tus datos",
+    conversar: "Conversamos sin costo",
+    duracion: "15 minutos en coaching",
   },
   enviar: "Agendar la conversación",
   enviando: "Enviando…",
@@ -686,9 +781,11 @@ export const otraLinea = {
   },
 };
 
+// `grupo` es el índice en faq.grupos: desde el 2026-11-06 el 0 es "Coaching o
+// consultoría" (Q2).
 export const preguntasLinea = {
-  coaching: { titulo: "Preguntas sobre el coaching de IA", grupo: 0 },
-  consultoria: { titulo: "Preguntas sobre la consultoría de IA", grupo: 1 },
+  coaching: { titulo: "Preguntas sobre el coaching de IA", grupo: 1 },
+  consultoria: { titulo: "Preguntas sobre la consultoría de IA", grupo: 2 },
   todas: "Ver todas las preguntas",
 };
 

@@ -181,6 +181,8 @@ spacing:
   diagram-text-min: 13px
   timeline-node: 12px
   timeline-gap: 32px
+  scene-width: 260px
+  scene-height: 172px
   strike-duration: 600ms
   press-duration: 120ms
   exit-duration: 150ms
@@ -289,6 +291,18 @@ components:
     textColor: "{colors.on-surface-muted}"
     typography: "{typography.body-sm}"
     padding: 32px 0 0
+  recorrido-stage:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.on-surface}"
+    typography: "{typography.caption}"
+    rounded: "{rounded.lg}"
+    padding: 40px 0 20px
+    height: 232px
+  recorrido-chapter:
+    backgroundColor: transparent
+    textColor: "{colors.primary-soft}"
+    typography: "{typography.label-fase}"
+    height: 64px
   door-card:
     backgroundColor: "rgba(18, 20, 28, 0.6)"
     textColor: "{colors.on-surface}"
@@ -334,9 +348,12 @@ muchos de más de 45 años: se lee primero, se admira después.
   resto en botones oscuros con borde degradado.
 - **Ritmo:** cada página se lee como un argumento (afirmación, dolor, proceso, criterio,
   cierre). Esas partes las separa el aire y una línea de luz fina, no las cajas. Cada
-  página tiene un solo momento de movimiento con autoría: la cinta en el inicio, la
-  ventana de la sesión en /coaching y el tachado del "Hoy" en /consultoria. (En las
-  portadas la cinta es fondo, no el momento de autor.)
+  página tiene un momento de movimiento con autoría: la cinta en el inicio, la
+  ventana de la sesión en /coaching y, en /consultoria, el recorrido animado (desde el
+  2026-11-06, pedido de Santiago: "más como una animación, un video animado, algo así,
+  en vez de puro texto"). El tachado del "Hoy" sigue como la entrada de su sección:
+  Santiago decidió el 2026-11-06 dejar las dos animaciones. (En las portadas la cinta es fondo, no el
+  momento de autor.)
 - **Brevedad:** cada página contesta en orden las preguntas de quien lee, un h2 por
   pregunta y una idea por sección; se entiende leyendo solo los h2 y mirando el objeto
   visual de cada sección. Lo largo (lo que sirve a buscadores y a las objeciones) va en
@@ -442,7 +459,8 @@ titular solo suben desde una máscara al cargar.
   desde 768 px. Unidad base de 4 px (escala de Tailwind).
 - **Ritmo vertical en cinco pasos** (celular / escritorio). Mucho aire entre bandas y
   poco dentro de cada bloque; más aire arriba de un titular que debajo.
-  - Estrecho, 40–48 / 64 px: puente a la otra línea en /nosotros.
+  - Estrecho, 40–48 / 64 px: puente a la otra línea en /nosotros y en /herramientas
+    (desde el 2026-11-06, las mismas dos tarjetas entre las fichas y el cierre).
   - Continuación, 48 / 80 px: la sección que sigue la idea de la anterior (escenas del
     problema tras la portada, "¿Esto es para…?"). Las escenas arrancan a 64 px en
     escritorio porque la portada ya deja 64 abajo.
@@ -471,8 +489,9 @@ titular solo suben desde una máscara al cargar.
   leerla. El h1 centrado de /herramientas y /preguntas sigue centrado en todos los
   anchos, con sus migas.
 - **Alternancia:** dos bandas seguidas no repiten el mismo contenedor. En /consultoria:
-  escenas en filas abiertas, el hoy → después en filas con rótulos, el recorrido en línea
-  de tiempo, "¿Esto es para tu empresa?" (cita, filas y socios) y las preguntas con
+  escenas en filas abiertas, el hoy → después en filas con rótulos, el recorrido como
+  secuencia animada (escenario, barra de capítulos y el texto del paso), "¿Esto es para
+  tu empresa?" (cita, filas y socios) y las preguntas con
   cabecera lateral. En /coaching: escenas, la sesión (ventana y pasos), dos columnas
   con los socios debajo y preguntas con cabecera lateral. Pendiente del OK de
   Santiago, sin aplicar: una banda en #12141C (`surface-container`) detrás del hoy →
@@ -602,7 +621,7 @@ Esquinas suaves y consistentes por tamaño:
   aparición va en un envoltorio aparte (`div[data-revelar]`): en el mismo elemento, su
   transición le ganaba a la del borde.
 - **Tarjeta de vidrio (`card-glass`):** superficie base del puente a la otra línea en
-  /nosotros y de la ayuda de /preguntas. Si es enlace, en hover cambia el borde al tono
+  /nosotros y /herramientas y de la ayuda de /preguntas. Si es enlace, en hover cambia el borde al tono
   de su línea en 200 ms y al presionar baja a 0.99 (`.tarjeta-pulsable`); si no, no
   responde al mouse. Las fichas de /herramientas ya no cambian de borde ni encienden su
   resplandor al pasar: no son enlaces.
@@ -639,13 +658,40 @@ Esquinas suaves y consistentes por tamaño:
   quiénes somos,
   siempre en `<p>`: son palabras de Daxlo, no citas de otra fuente. Reemplaza las
   franjas laterales de color.
-- **Línea de tiempo (`timeline-step`):** el recorrido de /consultoria en un `<ol>`.
-  Desde 1024 px, cuatro columnas con 32 px entre ellas y un nodo de 12 px arriba de
-  cada una (borde azul claro, relleno #08090E, todos iguales), unidos por 1 px de azul
-  claro al 40 %. Nada cuelga de un paso. En celular, lista vertical con
-  la línea a 15 px del borde y 40 px de sangría. Cada paso: número en `label-fase`,
-  h3 en `headline-sm`, una línea en `body-sm` atenuado y "Te llevas" (Inter 500 de
-  15 px en azul claro, sin mayúsculas) con el entregable en 17 px blanco.
+- **Recorrido animado (/consultoria, #como-trabajamos):** los cuatro pasos del método
+  como un video corto (`src/components/sections/recorrido.tsx`, escenas en
+  `recorrido-escenas.tsx`). Tres piezas:
+  - **Escenario (`recorrido-stage`):** panel de diagrama (casi negro al 95 %, borde
+    blanco al 14 %, 16 px de radio) con la rejilla del hero tenue y apagada hacia los
+    bordes, y el rótulo "Ejemplo" arriba a la derecha (píldora rellena de azul claro al
+    10 %, sin borde, 13 px). Alto fijo: 232 px en celular, 268 px desde 375 px, 320 px
+    desde 640 px y 352 px desde 1024 px. Es `aria-hidden`: lo que cuenta ya está en el
+    texto de cada paso.
+  - **Barra de capítulos:** debajo del escenario, como la de un video. A la izquierda,
+    el botón de pausa (44 × 44, 12 px de radio, borde blanco al 14 %, ícono de 16 px;
+    "Pausar la animación" / "Seguir la animación" / "Volver a ver" al terminar). A la
+    derecha, un botón por paso (64 px de alto, todo el ancho de su tramo): el nodo de
+    12 px (borde azul claro, relleno #08090E; lleno de azul claro si ya pasó o es el de
+    ahora, y el de ahora con un halo de 24 px al 20 %), la pista de 1 px en azul claro al
+    30 % y lo corrido en 2 px de azul claro, y el número en `label-fase` (blanco el de
+    ahora). El nombre accesible es "Ver el paso 01: …" y el de ahora lleva
+    `aria-current="step"`. El tramo del último paso llega hasta el final, como el de un
+    video.
+  - **Texto del paso:** el `<ol>` de siempre, con los cuatro pasos completos: número en
+    `label-fase`, h3 en `headline-sm`, una línea en `body-sm` atenuado y "Te llevas"
+    (Inter 500 de 15 px en azul claro, sin mayúsculas) con el entregable en 17 px
+    blanco. Los cuatro van apilados en la misma celda (toma el alto del más largo) y se
+    ve el del momento; los otros quedan en opacidad 0, en el DOM y para lectores de
+    pantalla (no se anuncia el cambio: no hay `aria-live` en algo que avanza solo).
+  Desde 1024 px el escenario y la barra van a la izquierda (1.3fr) y el texto a la
+  derecha (1fr), centrado con el escenario, 56 px entre columnas. Por debajo, uno debajo
+  del otro: escenario, barra y texto; en 390 px todo cabe en una pantalla. Sin
+  JavaScript (sin `.js`) no se pintan ni el escenario ni la barra y el `<ol>` es la
+  **línea de tiempo (`timeline-step`)** de antes: desde 1024 px, cuatro columnas con
+  32 px entre ellas y un nodo de 12 px arriba de cada una, unidos por 1 px de azul claro
+  al 40 %; en celular, lista vertical con la línea a 15 px del borde y 40 px de
+  sangría. La clase `.js` la pone el layout antes de pintar: el reproductor sale armado
+  del HTML y nada salta al hidratar.
 - **Pregunta (acordeón):** botón dentro de un h3 (Inter 500 de 17/18 px, blanco) con
   un "+" blanco al 60 % que gira 45° al abrir (200 ms, antes de que termine de abrir;
   baja a 0.9 al presionar; quieto con "reducir movimiento" y con el teclado). Dos
@@ -672,6 +718,18 @@ Esquinas suaves y consistentes por tamaño:
   Portada de cada línea, en Layout).
 - **Números:** 01–04 del recorrido de /consultoria y 1–3 de la sesión de coaching,
   porque ahí el orden importa. No hay numerales decorativos ni en degradado.
+- **Qué pasa después de enviar (/agendar):** debajo del formulario, que sigue arriba,
+  la línea de nodos del recorrido sin JavaScript con tres puntos (envías tus datos,
+  eliges el día y la hora o te escribimos por WhatsApp, conversamos sin costo). Nodos
+  de 12 px iguales y línea de 1 px en blanco tenue (borde al 50 %, línea al 25 %), como
+  el grupo "Coaching o consultoría" de /preguntas: la página es de las dos líneas. En
+  fila desde 640 px; en celular, uno debajo del otro con la línea a la izquierda. Sin
+  números: la línea ya dice el orden.
+- **Enlace a cada línea en /preguntas:** bajo el título del grupo de cada línea, "Ver
+  el coaching" o "Ver la consultoría" (el texto de las puertas del inicio), como "Ver
+  todas las preguntas": 16 px en el tono del grupo, flecha, 44 px de alto. El grupo que
+  decide entre las dos va primero y sin enlace; bajo el h1, la bajada con qué es Daxlo y
+  la regla.
 - **Campos:** casi negro al 70 %, borde blanco al 14 %, foco con borde cian al 60 %; error
   con #FF8A9B. Etiqueta visible siempre.
 - **Barra de navegación (`nav-compact`):** se encoge a píldora al bajar 24 px (lo avisa un
@@ -694,11 +752,28 @@ Esquinas suaves y consistentes por tamaño:
 ### Diagramas y maquetas
 
 - Muestran el mecanismo o lo que el cliente tiene en la mano, no una tecnología.
-  /consultoria no lleva diagrama: "Cómo elegimos el primer proceso" (reunión frente a
-  documentos, y las cuatro preguntas que lo filtran) no cabía en 1,5 pantallas de
-  celular y tres lectores de prueba no le sacaron nada; vive en la pregunta "¿Cómo
-  identifican qué proceso cambiar primero?" y en una cláusula del paso 02. Si vuelve
-  algo visual de ese contraste, tiene que caber en la regla de densidad.
+  /consultoria no lleva un diagrama del método: "Cómo elegimos el primer proceso"
+  (reunión frente a documentos, y las cuatro preguntas que lo filtran) no cabía en 1,5
+  pantallas de celular y tres lectores de prueba no le sacaron nada; vive en la pregunta
+  "¿Cómo identifican qué proceso cambiar primero?" y en una cláusula del paso 02. Si
+  vuelve algo visual de ese contraste, tiene que caber en la regla de densidad.
+- **Escenas del recorrido de /consultoria:** maquetas ilustrativas, una por paso, con el
+  mismo proceso genérico de punta a punta (las cotizaciones, de la lista de "¿Por dónde
+  empieza…?"), sin cifras ni resultados y con "Ejemplo" a la vista. Fichas de 8 px de
+  radio (#12141C, borde blanco al 14 %, Inter 500 de 13 px blanco al 85 %), íconos de
+  16 px en azul claro con trazo de 1,5, trazos de 1 px en azul claro al 50 % con
+  bifurcaciones en ángulo recto, personas como círculos de 28 px sin cara ni nombre, y
+  menta solo en las marcas de "probado" y "funciona". Guion:
+  01 llega la tarea que se demora ("Cotizaciones"), el reloj corre y debajo aparecen las
+  dos causas del texto (un cliente que espera, un error que se repite);
+  02 cuatro procesos llegan en ola, la selección los recorre y se queda en las
+  cotizaciones ("Primero") mientras los otros se apagan;
+  03 hojas de cálculo y documentos regados se juntan en una sola tabla, que se llena,
+  se prueba fila por fila y recibe a dos personas del equipo;
+  04 el proceso ya funciona y se corre a un lado, llega "Tu equipo" a operarlo y una
+  flecha lleva al "Siguiente proceso", en borde punteado.
+  Cada escena se dibuja en una caja de 260 × 172 px que se agranda con `zoom` (1, 1.2
+  desde 375 px, 1.45 desde 640 px, 1.6 desde 1024 px): el texto nunca baja de 13 px.
 - Rótulos genéricos y estructura honesta: sin cifras, porcentajes, horas, nombres de
   empresa ni pantallas de clientes. Un ejemplo lleva el rótulo de ejemplo a la vista.
 - Panel (`diagram-panel`): casi negro al 95 %, borde blanco al 14 %, 16 px de radio.
@@ -716,7 +791,11 @@ Esquinas suaves y consistentes por tamaño:
   sesión no los lleva, ni "En vivo" ni un pulso animado: es un ejemplo y no debe leerse
   como una sesión real. Es solo el chat, sin barra lateral de temas (el ojo la
   emparejaba con los pasos 1-2-3), y el ejemplo no es de contabilidad: un informe de
-  cada semana con datos de tres hojas de cálculo.
+  cada semana con datos de tres hojas de cálculo. Desde el 2026-11-06 la conversación
+  termina con una ficha de las maquetas ("Instrucciones guardadas para el próximo
+  lunes": 8 px de radio, borde blanco al 14 %, ícono cian y la marca menta de listo),
+  alineada con las burbujas de Daxlo y que crece como ellas: muestra lo que te llevas
+  para repetirlo (paso 3).
 
 ## Motion
 
@@ -783,11 +862,16 @@ que entraban igual, un halo que respiraba sin fin, un barrido de brillo).
 | Ícono del menú | ☰ y ✕ en la misma celda: opacidad, escala 0.8 y 2 px de desenfoque, 150 ms; con teclado de una vez | `Nav` |
 | Preguntas | el "+" gira 45° en 200 ms; abrir: alto 260 ms y opacidad 200 ms con 60 ms de retraso; cerrar: alto 200 ms y opacidad 120 ms; la respuesta que abre fuera de la pantalla se trae a la vista a los 280 ms (de una vez con teclado o "reducir movimiento") | `Pregunta`, `PreguntasLinea` |
 | Escritura | letra i: 26 ms + (0, 18, 6, 30, 12, 24, 4, 34)[i mod 8]; +120 ms después de coma o punto; +60 ms después de cada tercer espacio; 1,8 s quieta; seleccionada 260 ms y borrada de una vez; 300 ms vacía. Al borrarse, la frase sale en un solo bloque, todavía seleccionada: una copia sube 6 px y se apaga en 150 ms (`--dur-rapida`) dentro de esa pausa, así el ritmo del bucle no cambia (con "reducir movimiento" no hay salida). El cursor parpadea solo en las pausas (opacidad) y es el borde final de una capa quieta que repite el texto en transparente: no se corre con cada letra, sin layout shift | `TextoQueSeEscribe`: maqueta del hero y ventana de /coaching |
-| Burbujas | crecen desde su cola: 6 px y 0.96, opacidad 0,2 s (`--dur-ui`) y forma 0,3 s (`--dur-mover`); retrasos de conversación (0,3 / 1,05 / 1,8 s). La ventana solo funde | `.burbuja` en /coaching |
+| Búsqueda tachada (hero) | lo primero que escribe el recuadro del hero es una búsqueda (`hero.busqueda`), con el ritmo de la escritura. No se selecciona: 400 ms después de escrita la cruza la raya del "Hoy" (1 px blanco al 40 %, `scaleX` de 0 a 1 en 600 ms, `--dur-entrada` con la curva de salida; una raya por renglón, la del segundo 150 ms después) y el texto baja al 75 % en el mismo tiempo (opacidad); tachada se queda 1 s y sale como las demás frases (la copia, todavía tachada, sube 6 px y se apaga en 150 ms). Después vienen las tareas y el bucle vuelve a la búsqueda. Las rayas se miden una vez, al terminar de escribirse; nada por cuadro. Con "reducir movimiento" no aparece: queda la primera tarea, quieta. Con colores forzados la raya va en `CanvasText` | `TextoQueSeEscribe busqueda`, `.raya-busqueda`, `.texto-tachado` |
+| Burbujas | crecen desde su cola: 6 px y 0.96, opacidad 0,2 s (`--dur-ui`) y forma 0,3 s (`--dur-mover`); retrasos de conversación (0,3 / 1,05 / 1,8 s; la ficha de las instrucciones, 2,55 s). La ventana solo funde | `.burbuja` en /coaching |
 | Éxito del formulario | el panel llega desde 8 px y 0.98 en 300 ms (`--dur-mover`); el chulo entra desde 0.9 a los 120 ms (funde en 200 ms, crece en 300 ms), sin rebote; "Enviar" ↔ "Enviando" con 2 px de desenfoque en 150 ms. Los errores no se animan | `.exito-panel`, `.exito-icono`, `.cambio-etiqueta` |
 | Tachado del "Hoy" | raya de 1 px, `scaleX` de 0 a 1 en 600 ms con la curva de salida, 0.35 s después de su fila (solo desde 1024 px; fijo por debajo y con "reducir movimiento"; con colores forzados, la raya se pinta en `CanvasText`) | `.tachado-linea` en /consultoria |
 | Flecha del hoy → después | llega con el tachado: 0,55 s después de su fila (0,2 s después de que arranca la raya), se corre 8 px hacia "Después" en 300 ms (`--dur-mover`) y funde en 200 ms; solo desde 1024 px; quieta con "reducir movimiento" y sin JavaScript | `.flecha-cambio` en /consultoria |
-| Línea del recorrido | se traza desde su nodo con `scale` (origen en el nodo). Por debajo de 1024 px baja 0,12 s después de su paso, en 0,6 s; desde 1024 px los tres tramos van seguidos como un solo trazo de 01 a 04: 300 ms cada uno, a los 0,2 / 0,42 / 0,64 s (termina a los 0,94 s). Entera sin JavaScript y con "reducir movimiento" | `.linea-recorrido` en /consultoria |
+| Recorrido animado: ritmo | 5 / 5,5 / 6 / 5 s por paso (21,5 s en total, `DURACION_PASO`). Cada escena termina su acción entre los 2,4 y los 3 s y el resto es una pausa sobre el cuadro terminado, para ir del dibujo al título y a "Te llevas"; el 03 dura más porque hace más y su texto es el más largo. Arranca cuando se ve la mitad del escenario; se pausa si deja de verse la mitad o si la pestaña se oculta, y sigue al volver. Al terminar se queda en el 04 | `Recorrido`, `src/lib/recorrido.ts` |
+| Recorrido animado: barra | el tramo del paso se llena lineal en lo que dura el paso (es tiempo, como en un video) y al llenarse pasa al siguiente; nodo y halo funden en 200 ms. Pausar congela escena y barra en el mismo cuadro (`animation-play-state`). Un nodo salta a su paso: corriendo, sigue desde ahí; en pausa, muestra el paso con su escena completa y quieta, y "Seguir" lo corre desde el principio | `.recorrido-relleno`, `[data-estado]`, `[data-cuadro]` |
+| Recorrido animado: escenas | solo CSS, con `--t` por pieza. Lo que llega: 6 px y 0.96, opacidad 200 ms y forma 300 ms, curva de salida (como las burbujas). Trazos: crecen desde su origen en 150 a 300 ms. Lo que ya está y cambia de lugar (las hojas que se juntan, la ficha que se corre, la selección que salta): curva de mover, 600 ms o 300 ms por salto. Lo que se apaga: a 0,4 en 300 ms. El reloj: dos vueltas en 1,4 s y despacio hasta el final del paso. Del segundo paso en adelante la escena entra fundiéndose en 200 ms, como un corte | `.ce-*`, `.escena-corte` |
+| Recorrido animado: texto | el paso que sale se apaga en 150 ms; el que entra sube 6 px y aparece en 300 ms, 100 ms después | `.recorrido-paso[data-activo]` |
+| Recorrido animado: sin movimiento | con "reducir movimiento" nada avanza solo: no hay botón de pausa, los nodos cambian de paso, cada escena queda en su cuadro final y el texto solo funde (200 ms). Sin JavaScript, la línea de tiempo de antes con los cuatro pasos a la vista. Si React no carga (`.forzar-visible`), la escena queda en su cuadro final | `globals.css` |
 | Marquesina | 44 s lineal; se detiene bajo el mouse (solo puntero fino) | solo /herramientas |
 | Flotar / pasear | 6 px en 9 s / 6 s, curva de ida y vuelta de CSS (ease in-out) | orbes del cierre, /agendar, /herramientas y la 404 (la portada ya no lleva orbe) |
 | Líneas de flujo | 2.4 s lineal (solo desde 768 px) | hoy sin uso; la regla sigue en el CSS |
@@ -802,10 +886,11 @@ en más secciones, titulares letra por letra ni un segundo imán.
 
 **Un momento de autor por página.** En el inicio, la cinta del hero; en /coaching, la
 ventana de la sesión (los mensajes entran uno tras otro y la instrucción se escribe
-sola); en /consultoria, el tachado del "Hoy" en el hoy → después. El resto del
-movimiento responde a lo que hace el usuario o es una sola entrada por bloque. El
-escalonado queda para listas que se leen como lista. Nada infinito nuevo, y todo el
-contenido se ve sin JavaScript.
+sola); en /consultoria, desde el 2026-11-06, el recorrido animado (antes era el tachado
+del "Hoy", que sigue como la entrada de su sección). El resto del movimiento responde
+a lo que hace el usuario o es una sola entrada por bloque. El escalonado queda para
+listas que se leen como lista. Nada infinito nuevo (el recorrido termina y se queda
+quieto), y todo el contenido se ve sin JavaScript.
 
 **Movimiento ligado al scroll y "reducir movimiento".** `MotionConfig
 reducedMotion="user"` no detiene los valores atados a `style`: lo que se ate al scroll

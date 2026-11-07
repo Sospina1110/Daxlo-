@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { JSDOM } from "jsdom";
 import { describe, expect, it } from "vitest";
-import { agendar, faq, nav, paginas, preguntasLinea, rutas, servicios } from "@/content/copy";
+import { agendar, consultoria, faq, nav, paginas, preguntasLinea, rutas, servicios } from "@/content/copy";
 import { OUT } from "../apoyo/proyecto";
 
 // Revisa el sitio tal como sale del build (out/): lo que publica Cloudflare y
@@ -161,6 +161,32 @@ describe.skipIf(!HAY_BUILD)(HAY_BUILD ? "salida del build (out/)" : "salida del 
         expect(texto, q.p).toContain(q.r);
       }
     }
+  });
+
+  // El recorrido de /consultoria se ve como un video corto (un paso a la
+  // vez), pero el HTML del servidor trae los cuatro pasos completos en un
+  // <ol>: es lo que leen los buscadores, los lectores de pantalla y quien
+  // entra sin JavaScript. El escenario es decorativo y los controles no
+  // apuntan a nada con aria-controls (esos son las preguntas, que se cuentan
+  // arriba).
+  it("/consultoria: el recorrido trae los cuatro pasos completos en el HTML, con el escenario decorativo", () => {
+    const doc = pagina("consultoria");
+    const seccion = doc.getElementById("como-trabajamos");
+    expect(seccion).not.toBeNull();
+    const pasos = [...(seccion?.querySelectorAll("ol > li") ?? [])];
+    expect(pasos).toHaveLength(consultoria.recorrido.pasos.length);
+    consultoria.recorrido.pasos.forEach((p, i) => {
+      const texto = pasos[i].textContent ?? "";
+      expect(pasos[i].querySelector("h3")?.textContent).toBe(p.titulo);
+      for (const parte of [p.numero, p.texto, p.rotulo, p.llevas]) expect(texto, p.numero).toContain(parte);
+    });
+    // El primero sale marcado como el que se ve: no hay salto al hidratar.
+    expect(pasos.map((li) => li.hasAttribute("data-activo"))).toEqual([true, false, false, false]);
+    expect(seccion?.querySelector(".recorrido-escenario")?.getAttribute("aria-hidden")).toBe("true");
+    const botones = [...(seccion?.querySelectorAll("button") ?? [])];
+    expect(botones).toHaveLength(consultoria.recorrido.pasos.length + 1);
+    expect(botones.filter((b) => b.hasAttribute("aria-controls"))).toEqual([]);
+    expect(botones.every((b) => b.getAttribute("type") === "button")).toBe(true);
   });
 
   it("Service de /coaching y /consultoria: el nombre del servicio es el de las migas, con su @id fijo", () => {

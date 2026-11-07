@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { agendar, contacto, faq, nosotros } from "@/content/copy";
+import { agendar, cierre, contacto, faq, nosotros } from "@/content/copy";
+import { hayAgenda } from "@/lib/agenda";
 import { Badge, GlowButton, Orb } from "@/components/ui/primitives";
 import { SectionHeading } from "@/components/ui/blocks";
 import { Reveal } from "@/components/ui/reveal";
@@ -59,16 +61,18 @@ export function Nosotros({ migas }: { migas?: React.ReactNode }) {
 
 // ------------------------------------------------ Preguntas frecuentes
 
-// Página /preguntas. Cada grupo lleva su ancla (#coaching, #consultoria,
-// #elegir) para que las páginas de cada línea enlacen directo a sus
-// preguntas. El grupo "Coaching o consultoría" no es de ninguna línea: su
-// título va en blanco, sin cian ni azul.
+// Página /preguntas. Bajo el h1, qué es Daxlo y la regla de las dos líneas
+// (faq.sub). Cada grupo lleva su ancla (faq.grupos[].ancla: #elegir,
+// #coaching, #consultoria) para que las páginas enlacen directo a sus
+// preguntas, y va primero el que decide entre las dos líneas. El grupo
+// "Coaching o consultoría" no es de ninguna línea: su título va en blanco, sin
+// cian ni azul, y no lleva enlace. Los de cada línea llevan, bajo el título,
+// el enlace a su página (el de "Ver todas las preguntas", al revés).
 const tituloGrupo = { cyan: "text-cyan", blue: "text-blue-soft", dual: "text-white/70" } as const;
 const puntoGrupo = { cyan: "bg-cyan", blue: "bg-blue-bright", dual: "bg-white/50" } as const;
 
 export function Faq({ migas }: { migas?: React.ReactNode }) {
   const f = faq;
-  const anclas = ["coaching", "consultoria", "elegir"];
   return (
     <section className="relative pb-20 pt-28 md:pb-32 md:pt-36">
       {migas && <div className="container-page">{migas}</div>}
@@ -78,16 +82,28 @@ export function Faq({ migas }: { migas?: React.ReactNode }) {
           las preguntas. */}
       <div className="container-page mt-10 grid gap-12 md:mt-14 lg:grid-cols-[0.8fr_1.2fr] lg:grid-rows-[auto_1fr] lg:gap-x-16 lg:gap-y-8">
         <div className="lg:col-start-1 lg:row-start-1">
-          <SectionHeading badge={f.badge} titulo={f.titulo} alineacion="izquierda" nivel={1} />
+          <SectionHeading badge={f.badge} titulo={f.titulo} sub={f.sub} alineacion="izquierda" nivel={1} />
         </div>
         <div className="space-y-10 lg:col-start-2 lg:row-span-2 lg:row-start-1">
-          {f.grupos.map((g, gi) => (
-            <div key={g.nombre} id={anclas[gi]}>
+          {f.grupos.map((g) => (
+            <div key={g.nombre} id={g.ancla}>
               <Reveal>
                 <h2 className={cn("flex items-center gap-2.5 font-display text-[15px] font-medium uppercase tracking-[0.12em]", tituloGrupo[g.tono])}>
                   <span aria-hidden className={cn("h-2 w-2 rounded-full", puntoGrupo[g.tono])} />
                   {g.nombre}
                 </h2>
+                {g.enlace && (
+                  <Link
+                    href={g.enlace.h}
+                    className={cn(
+                      "group mt-1 inline-flex min-h-[44px] items-center gap-2 text-[16px] font-medium transition-colors hover:text-white",
+                      g.tono === "cyan" ? "text-cyan" : "text-blue-soft",
+                    )}
+                  >
+                    {g.enlace.t}
+                    <ArrowRight size={17} aria-hidden className="transition-[translate] ease-salida motion-safe:group-hover:translate-x-1" />
+                  </Link>
+                )}
               </Reveal>
               {/* Las preguntas entran en ola, con un escalón más corto
                   (0,05 s): son muchas y se leen de corrido. */}
@@ -147,8 +163,37 @@ export function Agendar({ migas }: { migas?: React.ReactNode }) {
         <Reveal delay={0.14} className="mx-auto mt-10 max-w-[720px] md:mt-12">
           <FormularioContacto />
         </Reveal>
+        <PasosAgendar />
       </div>
     </section>
+  );
+}
+
+// Qué pasa después de enviar, debajo del formulario (que sigue arriba y a la
+// vista): la línea de nodos del recorrido de /consultoria (la de sin
+// JavaScript), con tres puntos. Todos los nodos iguales; en blanco tenue, como
+// el grupo "Coaching o consultoría" de /preguntas, porque la página es de las
+// dos líneas. En celular, lista vertical con la línea a la izquierda; desde
+// 640 px, tres columnas unidas por la línea de 1 px. El paso del medio dice lo
+// mismo que la nota del cierre (con agenda de Cal.com o sin ella).
+function PasosAgendar() {
+  const p = agendar.pasos;
+  const pasos = [{ texto: p.enviar }, { texto: hayAgenda() ? cierre.meta.agenda : cierre.meta.whatsapp }, { texto: p.conversar, nota: p.duracion }];
+  return (
+    <Reveal delay={0.14} className="mx-auto mt-12 max-w-[720px] md:mt-14">
+      <ol aria-label={p.titulo} className="pasos-agendar grid gap-6 sm:grid-cols-3">
+        {pasos.map((paso, i) => (
+          <li key={paso.texto} className="relative pl-10 sm:pl-0 sm:pt-8">
+            {i < pasos.length - 1 && (
+              <span aria-hidden className="absolute bottom-[-36px] left-[15px] top-3 w-px bg-white/25 sm:bottom-auto sm:left-3 sm:right-[-24px] sm:top-[5.5px] sm:h-px sm:w-auto" />
+            )}
+            <span aria-hidden className="absolute left-[9.5px] top-1.5 h-3 w-3 rounded-full border border-white/50 bg-[#08090e] sm:left-0 sm:top-0" />
+            <p className="text-[17px] leading-snug text-white">{paso.texto}</p>
+            {paso.nota && <p className="mt-1 text-[15px] leading-snug text-muted">{paso.nota}</p>}
+          </li>
+        ))}
+      </ol>
+    </Reveal>
   );
 }
 

@@ -233,8 +233,93 @@ test.describe("texto que se escribe solo (hero)", () => {
     expect(new Set(muestras.map((m) => Math.round(m.alto))).size, `altos vistos: ${[...new Set(muestras.map((m) => m.alto))].join(", ")}`).toBe(1);
     // Lo que sigue al hero no se movió.
     expect(new Set(muestras.map((m) => Math.round(m.abajo))).size).toBe(1);
-    // El alto reservado alcanza para la frase más larga.
-    for (const t of muestras.map((m) => m.texto)) expect(hero.tareas.some((f) => f.startsWith(t))).toBe(true);
+    // El alto reservado alcanza para la frase más larga (la búsqueda también
+    // tiene su fantasma).
+    for (const t of muestras.map((m) => m.texto)) expect([hero.busqueda, ...hero.tareas].some((f) => f.startsWith(t))).toBe(true);
+  });
+
+  // I4 (2026-11-06): lo primero que escribe es una búsqueda; no se selecciona,
+  // se tacha con la raya del "Hoy" de /consultoria (1 px blanco al 40 %, 600 ms
+  // con la curva de salida, 400 ms después de escrita), baja al 75 %, sale como
+  // las demás y da paso a la primera tarea.
+  test("primero escribe una búsqueda, la tacha con la raya de 1 px y da paso a la primera tarea", async ({ page }) => {
+    await irA(page, "/");
+    await caja(page).evaluate((c) => c.scrollIntoView({ block: "center", behavior: "instant" }));
+    const visible = caja(page).locator(":scope > span").last();
+    const texto = visible.locator(":scope > span").first();
+    // Escribe la búsqueda, entera.
+    await expect(visible).toHaveText(hero.busqueda);
+    const raya = visible.locator(".raya-busqueda").first();
+    await expect(raya).toBeAttached();
+    // La raya: la del "Hoy", por renglón; arranca recogida desde la izquierda
+    // y termina entera (sin transform).
+    const estilo = await raya.evaluate((r) => {
+      const cs = getComputedStyle(r);
+      // El color pasa por un lienzo: Chrome lo da en oklab (Tailwind 4) y
+      // aquí se compara en RGBA.
+      const lienzo = document.createElement("canvas").getContext("2d")!;
+      lienzo.fillStyle = cs.backgroundColor;
+      lienzo.fillRect(0, 0, 1, 1);
+      const [rr, g, b, a] = lienzo.getImageData(0, 0, 1, 1).data;
+      return {
+        alto: r.getBoundingClientRect().height,
+        color: `rgba(${rr}, ${g}, ${b}, ${Math.round((a / 255) * 100) / 100})`,
+        origen: cs.transformOrigin.split(" ")[0],
+        nombre: cs.animationName,
+        duracion: cs.animationDuration,
+        curva: cs.animationTimingFunction,
+        retraso: cs.animationDelay,
+      };
+    });
+    expect(estilo).toEqual({ alto: 1, color: "rgba(255, 255, 255, 0.4)", origen: "0px", nombre: "raya-busqueda", duracion: "0.6s", curva: "cubic-bezier(0.22, 1, 0.36, 1)", retraso: "0.4s" });
+    // Cruza el texto: del borde izquierdo de la búsqueda a su última letra, a
+    // media altura.
+    const medidas = await visible.evaluate((v) => {
+      const t = (v.firstElementChild as HTMLElement).getClientRects();
+      const ultima = t[t.length - 1];
+      const rayas = [...v.querySelectorAll<HTMLElement>(".raya-busqueda")].map((r) => {
+        const b = r.getBoundingClientRect();
+        // El ancho sin la escala que va animando.
+        return { left: b.left, top: b.top, ancho: r.offsetWidth };
+      });
+      return { renglones: t.length, izquierda: t[0].left, arriba: t[0].top, abajo: t[0].bottom, derecha: ultima.right, rayas };
+    });
+    expect(medidas.rayas).toHaveLength(medidas.renglones);
+    expect(Math.abs(medidas.rayas[0].left - medidas.izquierda)).toBeLessThanOrEqual(1);
+    expect(medidas.rayas[0].top).toBeGreaterThan(medidas.arriba + 4);
+    expect(medidas.rayas[0].top).toBeLessThan(medidas.abajo - 4);
+    const ultima = medidas.rayas.at(-1)!;
+    expect(Math.abs(ultima.left + ultima.ancho - (medidas.derecha - 4))).toBeLessThanOrEqual(1.5);
+    // La copia que sale vive solo los 300 ms de la pausa: se espera desde la
+    // página, sin perderla entre dos sondeos.
+    const salida = caja(page).evaluate(
+      (c) =>
+        new Promise<{ texto: string; rayas: number; seleccionada: boolean }>((listo) => {
+          const mirar = () => {
+            const copia = c.querySelector(".salida-escritura");
+            if (!copia) return false;
+            listo({ texto: copia.textContent ?? "", rayas: copia.querySelectorAll(".raya-busqueda-quieta").length, seleccionada: copia.innerHTML.includes("bg-cyan/35") });
+            return true;
+          };
+          if (mirar()) return;
+          const o = new MutationObserver(() => mirar() && o.disconnect());
+          o.observe(c, { childList: true, subtree: true });
+        }),
+    );
+    // La raya termina de cruzar y el texto queda al 75 % (a 1 s de escrita;
+    // sale a los 2 s: se mira seguido).
+    // (Al terminar, la animación queda rellenando con la escala 1: Chrome da
+    // la matriz identidad en vez de "none".)
+    await expect.poll(() => raya.evaluate((r) => getComputedStyle(r).transform), { intervals: [50] }).toMatch(/^(none|matrix\(1, 0, 0, 1, 0, 0\))$/);
+    await expect.poll(() => texto.evaluate((t) => getComputedStyle(t).opacity), { intervals: [50] }).toBe("0.75");
+    // No se selecciona: el cian de ::selection es de las tareas.
+    expect(await texto.evaluate((t) => t.className)).not.toContain("bg-cyan/35");
+    // Sale en un solo bloque, todavía tachada, como las demás frases.
+    expect(await salida).toEqual({ texto: hero.busqueda, rayas: medidas.renglones, seleccionada: false });
+    // Y la primera tarea se escribe en el mismo recuadro.
+    await expect.poll(() => visible.textContent(), { timeout: 5_000 }).toMatch(new RegExp(`^${hero.tareas[0].slice(0, 6)}`));
+    expect(hero.tareas[0].startsWith((await visible.textContent()) ?? "")).toBe(true);
+    await expect(visible.locator(".raya-busqueda")).toHaveCount(0);
   });
 });
 
@@ -423,11 +508,14 @@ test.describe("con 'reducir movimiento'", () => {
     for (const e of await estado()) expect(e).toEqual({ transform: "none", transicion: "0s" });
   });
 
-  test("/consultoria: la flecha del hoy → después y las líneas del recorrido ya están en su lugar", async ({ page }) => {
+  // (El recorrido de /consultoria ya no traza su línea al aparecer: desde el
+  // 2026-11-06 es una secuencia animada con su propia prueba de "reducir
+  // movimiento" en recorrido.spec.ts.)
+  test("/consultoria: la flecha del hoy → después ya está en su lugar", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await irA(page, "/consultoria");
-    const piezas = page.locator("#que-automatizamos .flecha-cambio, #como-trabajamos .linea-recorrido");
-    await expect(piezas).toHaveCount(consultoria.cambios.filas.length + 3);
+    const piezas = page.locator("#que-automatizamos .flecha-cambio");
+    await expect(piezas).toHaveCount(consultoria.cambios.filas.length);
     // Fuera de pantalla todavía (sus filas no han aparecido): enteras y quietas.
     const estado = () =>
       piezas.evaluateAll((els) =>
@@ -443,6 +531,28 @@ test.describe("con 'reducir movimiento'", () => {
     await expect(visible).toHaveText(hero.tareas[0]);
     await page.waitForTimeout(1_000);
     await expect(visible).toHaveText(hero.tareas[0]);
+  });
+
+  // I4: la búsqueda que se tacha es movimiento. Con "reducir movimiento" no se
+  // escribe ni se tacha: el recuadro muestra la primera tarea desde el
+  // principio, como antes, y la búsqueda solo existe como fantasma invisible
+  // (reserva el alto).
+  test("hero: la búsqueda no se escribe ni se tacha; queda la primera tarea, quieta", async ({ page, vigilancia }) => {
+    vigilancia.tolerar(ERROR_HIDRATACION);
+    await irA(page, "/");
+    const grilla = page.locator("#top span.grid").first();
+    await grilla.evaluate((c) => c.scrollIntoView({ block: "center", behavior: "instant" }));
+    const visible = grilla.locator(":scope > span").last();
+    await expect(visible).toHaveText(hero.tareas[0]);
+    // Más de lo que tardaría en escribirse y tacharse la búsqueda.
+    for (let i = 0; i < 8; i++) {
+      await page.waitForTimeout(500);
+      await expect(visible).toHaveText(hero.tareas[0]);
+      await expect(grilla.locator(".raya-busqueda, .raya-busqueda-quieta, .salida-escritura, .texto-tachado")).toHaveCount(0);
+    }
+    const fantasma = grilla.locator(":scope > span", { hasText: hero.busqueda });
+    await expect(fantasma).toHaveCount(1);
+    expect(await fantasma.evaluate((f) => getComputedStyle(f).visibility)).toBe("hidden");
   });
 
   // Con "reducir movimiento", TextoQueSeEscribe pintaba frases[0] desde el
@@ -500,50 +610,17 @@ test.describe("regresiones de movimiento", () => {
     expect(await puerta.evaluate((a) => a.hasAttribute("data-revelar"))).toBe(false);
   });
 
-  test("/consultoria: el recorrido entra en ola (cada intervalo más corto, nunca más de 0,32 s)", async ({ page }) => {
+  // El recorrido de /consultoria entraba en ola y trazaba su línea de nodo a
+  // nodo al aparecer. Desde el 2026-11-06 es una secuencia animada que entra
+  // como un solo bloque y avanza sola: sus pruebas (avance, pausa, nodos,
+  // "reducir movimiento", texto completo y CLS) están en recorrido.spec.ts.
+  test("/consultoria: el recorrido entra como un solo bloque, sin ola ni trazo al aparecer", async ({ page }) => {
     await irA(page, "/consultoria");
-    const pasos = page.locator("#como-trabajamos ol > li[data-revelar]");
-    await expect(pasos).toHaveCount(4);
-    // En celular los pasos van uno debajo del otro: se trae cada uno a la vista.
-    for (let i = 0; i < 4; i++) await pasos.nth(i).evaluate((p) => p.scrollIntoView({ block: "center", behavior: "instant" }));
-    await expect.poll(() => pasos.evaluateAll((ps) => ps.every((p) => p.hasAttribute("data-visible")))).toBe(true);
-    const retrasos = await pasos.evaluateAll((ps) => ps.map((p) => (p as HTMLElement).style.getPropertyValue("--retraso")));
-    expect(retrasos).toEqual(["0s", "0.08s", "0.148s", "0.206s"]);
-    const s = retrasos.map(parseFloat);
-    const pasosEntre = s.slice(1).map((v, i) => v - s[i]);
-    for (let i = 1; i < pasosEntre.length; i++) expect(pasosEntre[i]).toBeLessThan(pasosEntre[i - 1]);
-    for (const v of s) expect(v).toBeLessThanOrEqual(0.32);
-  });
-
-  test("/consultoria: la línea del recorrido se traza desde cada nodo al aparecer su paso", async ({ page }) => {
-    await irA(page, "/consultoria");
-    const lineas = page.locator("#como-trabajamos .linea-recorrido");
-    await expect(lineas).toHaveCount(3);
-    const ancho = page.viewportSize()?.width ?? 0;
-    // A lo ancho desde 1024 px (cuatro columnas); hacia abajo por debajo.
-    const escala = () =>
-      lineas.evaluateAll(
-        (els, horizontal) =>
-          els.map((e) => {
-            const m = getComputedStyle(e).transform;
-            if (m === "none") return 1;
-            const d = new DOMMatrixReadOnly(m);
-            return horizontal ? d.a : d.d;
-          }),
-        ancho >= 1024,
-      );
-    expect(await escala()).toEqual([0, 0, 0]);
-    // Crece desde su nodo: el origen está en el borde izquierdo (o el de arriba).
-    const origen = await lineas.first().evaluate((e) => getComputedStyle(e).transformOrigin.split(" ").map(parseFloat));
-    expect(origen[ancho >= 1024 ? 0 : 1]).toBe(0);
-    if (ancho >= 1024) {
-      // Un solo trazo de 01 a 04: cada tramo empieza cuando el anterior ya casi llegó.
-      const retrasos = await lineas.evaluateAll((els) => els.map((e) => getComputedStyle(e).transitionDelay));
-      expect(retrasos).toEqual(["0.2s", "0.42s", "0.64s"]);
-    }
-    const pasos = page.locator("#como-trabajamos ol > li");
-    for (let i = 0; i < 4; i++) await pasos.nth(i).evaluate((p) => p.scrollIntoView({ block: "center", behavior: "instant" }));
-    await expect.poll(escala, { timeout: 5_000 }).toEqual([1, 1, 1]);
+    const recorrido = page.locator("#como-trabajamos .recorrido");
+    await expect(recorrido).toHaveAttribute("data-revelar", "");
+    await expect(page.locator("#como-trabajamos li[data-revelar], #como-trabajamos [data-escalonar], #como-trabajamos .linea-recorrido")).toHaveCount(0);
+    await recorrido.evaluate((r) => r.scrollIntoView({ block: "center", behavior: "instant" }));
+    await expect(recorrido).toHaveAttribute("data-visible", "");
   });
 
   test("hero: la fila del botón termina de entrar antes de 1 s y la maqueta antes de 1,25 s", async ({ page }) => {
