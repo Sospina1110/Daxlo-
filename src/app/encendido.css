@@ -326,15 +326,21 @@ li:last-child > .puerta { border-bottom: 1px solid var(--color-line-2); }
 @media (min-width: 768px) {
   .cierre { padding-block: 160px; }
 }
+/* El campo es noche con luz, no un azul plano: Santiago descartó el azul de
+   marca a campo completo el 2026-11-11. Azul profundo arriba, que baja al casi
+   negro del pie. Blanco encima: 15:1 o más en todo el campo. */
 .cierre-campo {
-  background: #1b35d0;
+  background: var(--campo-cierre);
   transform-origin: top;
 }
-/* El realce de arriba a la derecha (nivel 4 de superficie). */
+/* La luz: cian arriba a la derecha y azul abajo a la izquierda, bajo el
+   botón. Son resplandores, no relleno. */
 .cierre-realce {
   position: absolute;
   inset: 0;
-  background: radial-gradient(120% 90% at 85% 0%, #3d5aff, transparent 60%);
+  background:
+    radial-gradient(70% 85% at 88% 0%, rgb(41 196 245 / 0.2), transparent 62%),
+    radial-gradient(75% 95% at 8% 100%, rgb(61 90 255 / 0.3), transparent 66%);
 }
 .cierre-domo { display: none; }
 .cierre-contenido { transition: opacity 0.4s var(--ease-salida) 0.25s; }
@@ -390,7 +396,7 @@ li:last-child > .puerta { border-bottom: 1px solid var(--color-line-2); }
       height: 120%;
       margin-left: -160vw;
       border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-      background: #1b35d0;
+      background: var(--campo-cierre);
       animation: domo-sube linear both;
       animation-timeline: --cierre;
       animation-range: entry 0% entry 55%;

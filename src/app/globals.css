@@ -187,8 +187,9 @@
     --placa-encendida: linear-gradient(180deg, #132069 0%, #111949 50%, #0f132e 100%);
     --borde-encendido: rgb(61 90 255 / 0.35);
     --filo: linear-gradient(90deg, transparent, #29c4f5 30%, #7fe0ff 50%, #3d5aff 70%, transparent);
-    /* 4 Campo azul: el cierre de cada página, a todo el ancho. */
-    --campo-azul: radial-gradient(120% 90% at 85% 0%, #3d5aff, transparent 60%), #1b35d0;
+    /* 4 Campo del cierre: noche con luz, a todo el ancho. Nunca el azul de
+       marca en plano (decisión de Santiago, 2026-11-11). */
+    --campo-cierre: linear-gradient(180deg, #121c58 0%, #0f1436 52%, #0d0e14 100%);
 
     /* Ritmo vertical: capítulo, continuación e interior. */
     --ritmo-capitulo: 88px;

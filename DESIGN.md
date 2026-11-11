@@ -480,7 +480,7 @@ Cinco niveles de superficie (variables en `:root`, globals.css):
 | 1 | Penumbra | `#12141C` (`--color-ink-2`) | ventanas, tejas de herramienta, campos |
 | 2 | Placa apagada | sin relleno, borde `--borde-apagado` (blanco al 14 %) | lo que todavía es a mano |
 | 3 | Placa encendida | `--placa-encendida`: `linear-gradient(180deg, #132069, #111949 50%, #0F132E)`, borde `--borde-encendido`, filo `--filo` | el escenario, la fila activa |
-| 4 | Campo azul | `--campo-azul`: #1B35D0 con un realce radial #3D5AFF arriba a la derecha | el cierre de cada página, a todo el ancho |
+| 4 | Campo del cierre | `--campo-cierre`: noche con luz (azul profundo #121C58 que baja al casi negro, con un resplandor cian arriba a la derecha y uno azul abajo a la izquierda). Nunca el azul de marca en plano: Santiago lo descartó el 2026-11-11 | el cierre de cada página, a todo el ancho |
 | 5 | Papel | `#E2F3EE`, texto `#0D0E14` | fichas de trabajo, el botón del cierre |
 
 Contraste: blanco sobre el campo azul, 8,5:1; blanco al 86 % sobre el campo

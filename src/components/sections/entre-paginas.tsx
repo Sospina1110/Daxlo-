@@ -76,7 +76,7 @@ export function CtaFinal({ linea, whatsapp = false }: { linea?: Linea; whatsapp?
           {pasos.map((p, i) => (
             <li key={p} className="relative flex items-start gap-4 pb-6 last:pb-0">
               {i < pasos.length - 1 && <span aria-hidden className="absolute bottom-0 left-[5.5px] top-4 w-px bg-white/35" />}
-              <span aria-hidden className="relative mt-[6px] h-3 w-3 shrink-0 rounded-full border border-white bg-blue" />
+              <span aria-hidden className="relative mt-[6px] h-3 w-3 shrink-0 rounded-full border border-white bg-ink" />
               <span className="text-body-sm leading-snug text-white">{p}</span>
             </li>
           ))}
