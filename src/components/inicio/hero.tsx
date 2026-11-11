@@ -26,10 +26,14 @@ export function Hero() {
   const retraso = (n: number) => ({ "--retraso": `${n * 80}ms` }) as React.CSSProperties;
   return (
     <section id="top" aria-labelledby="titulo-hero" className="hero-limpio">
-      <div aria-hidden className="hero-arco hidden md:block">
-        <svg viewBox="0 0 1440 800" preserveAspectRatio="none" fill="none">
-          <path d="M-20 772 C 560 772, 900 744, 1120 470 S 1370 70, 1460 -40" stroke="var(--color-trazo)" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
-        </svg>
+      <div aria-hidden className="hero-arco max-lg:invisible">
+        <div className="hero-arco-ventana">
+          <div className="hero-arco-lienzo">
+            <svg viewBox="0 0 1440 800" width="1440" height="800" fill="none">
+              <path d="M-1200 772 L-20 772 C 560 772, 900 744, 1120 470 S 1370 70, 1460 -40" stroke="var(--color-trazo)" strokeWidth="1.5" />
+            </svg>
+          </div>
+        </div>
       </div>
 
       <div className="contenedor">

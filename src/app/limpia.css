@@ -338,37 +338,41 @@
 }
 
 /* La línea azul: un solo arco fino, plano, que pasa por detrás de la
-   pieza. Se dibuja una vez al cargar: un paño negro que la tapa se corre
-   hacia la derecha (solo transform). */
-.hero-arco {
-  position: absolute;
-  z-index: -1;
-  top: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-}
-.hero-arco svg {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 1440px;
-  height: 100%;
-  transform: translateX(-50%);
-}
-.hero-arco::after {
-  content: "";
+   pieza. Se dibuja una vez al cargar, de izquierda a derecha: una ventana
+   que recorta entra desde la izquierda y el lienzo de adentro se corre al
+   revés, así la línea no se mueve mientras se descubre (solo transform). Al
+   terminar no queda ningún transform aplicado. */
+.hero-arco,
+.hero-arco-ventana,
+.hero-arco-lienzo {
   position: absolute;
   inset: 0;
-  background: var(--color-fondo);
-  transform: translateX(101%);
-  animation: arco-destapa 1800ms var(--ease-base) 300ms backwards;
+  overflow: hidden;
+  pointer-events: none;
 }
-@keyframes arco-destapa {
-  from { transform: translateX(0); }
-  to { transform: translateX(101%); }
+.hero-arco { z-index: -1; }
+.hero-arco-ventana { animation: arco-ventana 1800ms var(--ease-base) 300ms backwards; }
+.hero-arco-lienzo { animation: arco-lienzo 1800ms var(--ease-base) 300ms backwards; }
+/* El dibujo mide 1440 × 800 px y no se estira: va centrado y apoyado en el
+   borde de abajo del hero. En pantallas más anchas la línea sigue recta
+   hacia la izquierda (el trazo se sale del lienzo a propósito). */
+.hero-arco svg {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 1440px;
+  height: 800px;
+  max-width: none;
+  overflow: visible;
+  transform: translateX(-50%);
+}
+@keyframes arco-ventana {
+  from { transform: translateX(-100%); }
+  to { transform: none; }
+}
+@keyframes arco-lienzo {
+  from { transform: translateX(100%); }
+  to { transform: none; }
 }
 
 /* ---------------------------------------------------------------- Pieza
@@ -610,7 +614,8 @@
 @media (prefers-reduced-motion: reduce) {
   .limpia [data-revelar] { transition: opacity 300ms var(--ease-base); }
   .hero-entra { animation-name: hero-funde; animation-duration: 300ms; }
-  .hero-arco::after { animation: none; }
+  .hero-arco-ventana,
+  .hero-arco-lienzo { animation: none; }
   .pieza-cursor,
   .pieza-cambia { animation: none; }
   .pieza-paso[data-estado="hecho"] .pieza-tramo-lleno,

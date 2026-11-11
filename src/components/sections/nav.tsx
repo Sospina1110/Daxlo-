@@ -43,12 +43,12 @@ const fila: Variants = {
     transform: "translateY(0px)",
     transition: { duration: 0.5, ease: EASE, delay: Math.min(i * PASO, TOPE) },
   }),
-  salida: { opacity: 0, transition: { duration: 0.15, ease: EASE } },
+  salida: { opacity: 0, transition: { duration: 0.2, ease: EASE } },
 };
 const filaQuieta: Variants = {
   oculto: { opacity: 0 },
   visible: { opacity: 1, transition: { duration: 0.2, ease: EASE } },
-  salida: { opacity: 0, transition: { duration: 0.1, ease: EASE } },
+  salida: { opacity: 0, transition: { duration: 0.2, ease: EASE } },
 };
 
 export function Nav() {
