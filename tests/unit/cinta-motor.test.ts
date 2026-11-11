@@ -183,6 +183,33 @@ describe("trayectoria", () => {
     expect(trayectoria(1440, 1300, false, "hero", 900)).toEqual(trayectoria(1440, 1300, false));
   });
 
+  // Desde el 2026-11-11 el recuadro que escribe va a la derecha, dentro de la
+  // primera pantalla, y la cinta pasa por detrás de él (es opaco): la cola
+  // sale por su lado izquierdo, cerca del borde de abajo, y la subida cruza su
+  // borde de arriba a dos tercios del ancho.
+  it("hero con recuadro: la curva entra por su lado izquierdo, abajo, y sale por su borde de arriba a dos tercios", () => {
+    const recuadro = { left: 752, top: 398, right: 1312, bottom: 758 };
+    const [x0, x1, y0, y1] = trayectoria(1440, 900, false, "hero", 0, recuadro);
+    // La misma curva del shader: un smoothstep entre x0 y x1.
+    const y = (x: number) => {
+      const u = Math.min(1, Math.max(0, (x - x0) / (x1 - x0)));
+      return y0 + (y1 - y0) * u * u * (3 - 2 * u);
+    };
+    expect(x0).toBeLessThan(recuadro.left);
+    expect(y0).toBeGreaterThan(recuadro.top + (recuadro.bottom - recuadro.top) / 2);
+    expect(y0).toBeLessThan(recuadro.bottom);
+    const salida = recuadro.left + 0.66 * (recuadro.right - recuadro.left);
+    expect(Math.abs(y(salida) - recuadro.top)).toBeLessThan(1);
+    // Sigue subiendo hasta salir por arriba, pasado el recuadro.
+    expect(y1).toBeLessThan(0);
+    expect(x1).toBeGreaterThan(recuadro.right);
+    // Sin recuadro, o en celular, la trayectoria de siempre.
+    expect(trayectoria(1440, 900, false, "hero", 0, null)).toEqual(trayectoria(1440, 900, false));
+    expect(trayectoria(390, 1400, true, "hero", 0, recuadro)).toEqual(trayectoria(390, 1400, true));
+    // La portada de cada línea no mira el recuadro.
+    expect(trayectoria(1440, 960, false, "portada", 900, recuadro)).toEqual(trayectoria(1440, 960, false, "portada", 900));
+  });
+
   // Centro de la seda en x (la curva del shader: smoothstep entre x0 y x1).
   const centro = ([x0, x1, y0, y1]: number[], x: number) => {
     const u = Math.min(1, Math.max(0, (x - x0) / (x1 - x0)));

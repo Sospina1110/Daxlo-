@@ -192,7 +192,8 @@ export async function marcarDocumento(page: Page) {
 
 // Espera a que el elemento deje de moverse: que ningún ancestro siga en su
 // aparición ([data-revelar] sin data-visible, transición en curso) ni en la
-// animación de entrada (.entrada, .subir). Un toque a mitad de esa subida cae
+// animación de entrada (.entrada, .subir). Las animaciones atadas al scroll no
+// cuentan. Un toque a mitad de esa subida cae
 // unos píxeles más abajo que el elemento, igual que el dedo de una persona.
 export async function quieto(elemento: Locator) {
   await elemento.scrollIntoViewIfNeeded();
@@ -203,6 +204,10 @@ export async function quieto(elemento: Locator) {
           for (let a: Element | null = el; a; a = a.parentElement) {
             if (a.hasAttribute("data-revelar") && !a.hasAttribute("data-visible")) return false;
             for (const an of a.getAnimations()) {
+              // Lo que va atado al scroll (el contenido del cierre, que funde
+              // mientras la sección entra) no es movimiento propio: con la
+              // página quieta está quieto, aunque figure como "running".
+              if (an.timeline && !(an.timeline instanceof DocumentTimeline)) continue;
               if (an.playState === "running" && an.effect?.getTiming().iterations !== Infinity) return false;
             }
           }
@@ -334,6 +339,12 @@ export async function textosInvisibles(page: Page, excluir?: string) {
       vistos.add(el);
       if (el.closest("script, style, noscript, template, [role=region][inert]")) continue;
       if (el.closest(".recorrido-escenario, .recorrido-paso:not([data-activo])")) continue;
+      // Decorativos del inicio «Encendido», todos aria-hidden: el escenario
+      // del ecosistema (una imagen para lectores de pantalla; sus piezas
+      // aparecen por pasos y sus pruebas están en ecosistema.spec.ts), el
+      // papel que sale del recuadro del hero y la copia rellena del eslogan
+      // del pie, que funde al llegar al final.
+      if (el.closest("[data-escenario], .hero-papel, .pie-lema-relleno")) continue;
       if (otra && el.closest(otra)) continue;
       if (el.getClientRects().length === 0) continue;
       if (getComputedStyle(el).visibility === "hidden") continue;

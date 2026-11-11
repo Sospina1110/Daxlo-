@@ -9,9 +9,29 @@ export const PASOS_ECOSISTEMA = 4;
 // se queda en su cuadro final: es el valor por defecto del marcado y del CSS.
 export const PASO_FINAL = PASOS_ECOSISTEMA - 1;
 
-// En el paso "Hoy" los papeles están amontonados junto a cada persona: tres,
-// dos y uno. En los demás pasos circula uno por carril.
+// En el paso "Hoy" los papeles están regados: tres, dos y uno por carril,
+// girados y montados unos sobre otros. En "Lo montamos" cada uno endereza y
+// viaja al arranque de su carril, delante del lector; de ahí en adelante
+// circula uno por carril. El desorden se ve y el orden también.
 export const PAPELES_A_MANO = [3, 2, 1] as const;
+
+// Dónde cae cada papel regado, medido desde el arranque de su carril (la
+// salida de la herramienta): x en centésimas del ancho del marco (cqw), para
+// que el desorden ocupe lo mismo en cualquier ancho; y en fracciones del alto
+// de un carril (se salen de su carril a propósito); r en grados, entre -7 y 9.
+export type Regado = { x: number; y: number; r: number };
+export const REGADOS: readonly (readonly Regado[])[] = [
+  [
+    { x: 45, y: -0.08, r: -7 },
+    { x: 35, y: 0.3, r: 6 },
+    { x: 48, y: 0.46, r: 9 },
+  ],
+  [
+    { x: 49, y: -0.16, r: 4 },
+    { x: 39, y: 0.26, r: -5 },
+  ],
+  [{ x: 44, y: -0.2, r: 8 }],
+];
 
 // Un papel sale de la herramienta cada CICLO segundos por carril; los tres
 // carriles van desfasados un tercio para que no se muevan a la vez. Con el

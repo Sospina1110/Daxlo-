@@ -394,7 +394,9 @@ test("el botón del hero destaca y cumple AA: relleno de marca, texto blanco a 4
   });
   const ancho = page.viewportSize()?.width ?? 0;
   expect(datos.fuente).toBe(ancho < 360 ? "16px" : "17px");
-  expect(datos.peso).toBe("500");
+  // Peso 600 desde el cambio de letra del 2026-11-11 (botones, rótulos y
+  // titulares van en 600).
+  expect(datos.peso).toBe("600");
   expect(datos.alto).toBeGreaterThanOrEqual(ancho < 360 ? 44 : 60);
   expect(datos.texto).toBe("rgb(255, 255, 255)");
   const lin = (v: number) => ((v /= 255) <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);

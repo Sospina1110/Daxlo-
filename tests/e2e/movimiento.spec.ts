@@ -32,13 +32,20 @@ async function animadas(page: Page): Promise<Animada[]> {
   }, INFINITAS);
 }
 
-// La política de datos es texto de lectura: no tiene animaciones.
+// La política de datos es texto de lectura: no tiene animaciones. Desde
+// noviembre de 2026 (dirección «Encendido») tampoco /nosotros, /preguntas ni
+// /agendar: salieron el orbe y los resplandores que derivaban en el cierre.
+const SIN_INFINITAS = ["/nosotros", "/preguntas", "/agendar"];
 for (const ruta of RUTAS.filter((r) => r !== rutas.privacidad)) {
   test(`${ruta}: quieta arriba, las animaciones infinitas fuera de pantalla quedan en pausa (y detenidas de verdad)`, async ({ page }) => {
     await irA(page, ruta);
     // Dos segundos sin tocar nada, como quien lee el comienzo.
     await page.waitForTimeout(2_000);
     const todas = await animadas(page);
+    if (SIN_INFINITAS.includes(ruta)) {
+      expect(todas, "la página ya no lleva nada que se mueva sin fin").toEqual([]);
+      return;
+    }
     expect(todas.length, "la página no tiene animaciones infinitas que revisar").toBeGreaterThan(0);
     const fuera = todas.filter((a) => a.fuera);
     for (const a of fuera) {
@@ -50,29 +57,31 @@ for (const ruta of RUTAS.filter((r) => r !== rutas.privacidad)) {
   });
 }
 
-test("al bajar al cierre se pausan las de arriba y arrancan las de abajo", async ({ page }) => {
+test("al bajar al ecosistema se pausan las de arriba y arrancan las de abajo", async ({ page }) => {
   await irA(page, "/");
-  // Arriba: el cursor del texto que se escribe solo en la maqueta del hero
-  // (animate-caret). Antes la referencia era el halo que respiraba en el botón
-  // del hero, que salió en noviembre de 2026 (un brillo que late solo delata
-  // una plantilla). Abajo: el orbe del cierre (animate-float), antes del pie.
-  // (La cinta de luz del fondo tiene su propia prueba: cinta.spec.ts.)
+  // Arriba: el cursor del texto que se escribe solo en el recuadro del hero
+  // (animate-caret). Abajo: el escenario del ecosistema, donde circula el
+  // trabajo (antes la referencia era el orbe del cierre, que salió en
+  // noviembre de 2026). El escenario se pausa entero con data-pausa, que le
+  // pone PiezaPasos. (La cinta de luz tiene su propia prueba: cinta.spec.ts.)
   const cursor = page.locator("#top .animate-caret");
-  const orbeCierre = page.locator('section[aria-labelledby="titulo-cierre"] .animate-float');
+  const escenario = page.locator("[data-escenario]");
+  const circulando = () => escenario.evaluate((e) => e.getAnimations({ subtree: true }).filter((a) => a.playState === "running" && a.effect?.getTiming().iterations === Infinity).length);
   await expect(cursor).toHaveCount(1);
-  // En celulares bajos la maqueta queda debajo del pliegue: primero se trae a
+  // En celulares bajos el recuadro queda debajo del pliegue: primero se trae a
   // la vista.
   await cursor.evaluate((c) => c.scrollIntoView({ block: "center", behavior: "instant" }));
   await expect(cursor).toBeVisible();
   await expect(cursor).not.toHaveAttribute("data-pausa", "");
-  await expect(orbeCierre).toHaveAttribute("data-pausa", "");
+  await expect(escenario).toHaveAttribute("data-pausa", "");
+  expect(await circulando()).toBe(0);
 
-  // Se baja hasta el orbe (al fondo del todo no: en celular el pie es alto y
-  // el orbe queda arriba, fuera de pantalla, con razón en pausa).
-  await orbeCierre.evaluate((o) => o.scrollIntoView({ block: "center", behavior: "instant" }));
-  await expect(orbeCierre).not.toHaveAttribute("data-pausa", "");
+  // Se baja hasta el tercer paso: el escenario a la vista y el trabajo
+  // circulando.
+  await page.locator("[data-paso-texto]").nth(2).evaluate((p) => p.scrollIntoView({ block: "center", behavior: "instant" }));
+  await expect(escenario).not.toHaveAttribute("data-pausa", "");
   await expect(cursor).toHaveAttribute("data-pausa", "");
-  await expect.poll(() => orbeCierre.evaluate((e) => e.getAnimations().filter((a) => a.playState === "running").length)).toBeGreaterThan(0);
+  await expect.poll(circulando).toBeGreaterThan(0);
   expect(await cursor.evaluate((e) => e.getAnimations().every((a) => a.playState !== "running"))).toBe(true);
 });
 
@@ -95,8 +104,9 @@ test.describe("animaciones caras en celular", () => {
   // Desde noviembre de 2026 ninguna página usa líneas punteadas (el diagrama
   // de consultoría del inicio salió): la regla de CSS sigue, por si vuelven, y
   // aquí se revisan las que haya. La deriva sí está: el resplandor de la zona
-  // de cada línea y los del cierre.
-  for (const ruta of ["/", "/consultoria"]) {
+  // de cada línea. (Los del cierre salieron con el campo azul, así que el
+  // inicio ya no lleva ninguna.)
+  for (const ruta of ["/coaching", "/consultoria"]) {
     test(`${ruta}: debajo de 768 px no corre ninguna animación de líneas punteadas ni de deriva, aunque estén a la vista`, async ({ page }) => {
       const ancho = page.viewportSize()?.width ?? 0;
       test.skip(ancho >= 768, "solo pantallas de celular");
@@ -118,7 +128,7 @@ test.describe("animaciones caras en celular", () => {
   test("control en escritorio: la deriva sí corre a la vista (la prueba de arriba no pasa por no ver nada)", async ({ page }) => {
     const ancho = page.viewportSize()?.width ?? 0;
     test.skip(ancho < 768, "solo pantallas anchas");
-    await irA(page, "/");
+    await irA(page, "/coaching");
     await llevarALaVista(page, ".animate-deriva");
     await expect.poll(async () => (await flujoYRespirar(page)).filter((e) => e.clase === "animate-deriva" && e.corriendo > 0).length).toBeGreaterThan(0);
   });

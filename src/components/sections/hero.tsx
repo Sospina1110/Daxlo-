@@ -74,9 +74,11 @@ export function Hero() {
         </h1>
 
         <div className="mt-6 grid gap-x-6 gap-y-10 max-[359px]:mt-5 md:mt-9 lg:mt-[clamp(28px,5vh,52px)] lg:grid-cols-12">
-          <div className="lg:col-span-5">
+          {/* La nota va al lado del botón, no debajo: debajo le caía encima
+              el halo del botón y perdía contraste. */}
+          <div className="lg:col-span-6">
             <Entrada retraso={0.28}>
-              <p data-cinta-tope="0.055" className="max-w-[34em] text-body-md text-muted max-[359px]:leading-normal md:text-[19px]">
+              <p data-cinta-tope="0.055" className="max-w-[29em] text-body-md text-muted max-[359px]:leading-normal md:text-[19px]">
                 {hero.sub}
               </p>
             </Entrada>
@@ -85,14 +87,14 @@ export function Hero() {
                 de tocarlo. En celular el botón ocupa el ancho: se toca con el
                 pulgar. Con mouse, el botón se corre hacia el puntero (Iman) en
                 vez de subir 2 px; la flecha avanza 2 px. */}
-            <Entrada retraso={0.36} className="mt-7 flex flex-col items-stretch gap-4 max-[359px]:mt-6 sm:flex-row sm:items-center sm:gap-6 md:mt-9 lg:flex-col lg:items-start lg:gap-4">
+            <Entrada retraso={0.36} className="mt-7 flex flex-col items-stretch gap-4 max-[359px]:mt-6 sm:flex-row sm:items-center sm:gap-6 md:mt-9">
               <Iman>
                 <GlowButton href={rutas.agendar} tamano="lg" variante="principal" elevar={false}>
                   {hero.cta}
                   <ArrowRight size={18} className="transition-[translate] ease-salida motion-safe:group-hover:translate-x-0.5" />
                 </GlowButton>
               </Iman>
-              <p data-cinta-tope="0.04" className="flex items-center justify-center gap-2 text-body-xs text-white/65 sm:justify-start">
+              <p data-cinta-tope="0.04" className="flex items-center justify-center gap-2 text-body-xs text-white/65 sm:justify-start lg:leading-snug">
                 <Check size={16} className="text-mint" aria-hidden />
                 {hero.meta}
               </p>

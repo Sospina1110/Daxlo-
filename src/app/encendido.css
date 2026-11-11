@@ -316,32 +316,121 @@ li:last-child > .puerta { border-bottom: 1px solid var(--color-line-2); }
 }
 
 /* ---------------------------------------------------------------- Cierre
-   El campo azul. Crece desde su borde de arriba (scaleY, 700 ms) cuando la
-   sección entra en pantalla y el contenido funde encima (400 ms). La sección
-   lleva data-revelar para que el script del layout la marque visible, pero no
-   usa la aparición general (no se oculta ni sube). */
+   El campo azul, a todo el ancho. Por defecto está completo y plano: es lo
+   que se ve sin JavaScript, con «reducir movimiento» o si nada de lo de abajo
+   aplica.
+   La sección lleva data-revelar para que el script del layout la marque
+   visible, pero no usa la aparición general (no se oculta ni sube): el
+   contenido funde una vez, encima del campo (400 ms). */
 .cierre { padding-block: 96px; }
 @media (min-width: 768px) {
   .cierre { padding-block: 160px; }
 }
 .cierre-campo {
-  background: var(--campo-azul);
+  background: #1b35d0;
   transform-origin: top;
-  transition: transform 0.7s var(--ease-salida);
 }
+/* El realce de arriba a la derecha (nivel 4 de superficie). */
+.cierre-realce {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 90% at 85% 0%, #3d5aff, transparent 60%);
+}
+.cierre-domo { display: none; }
 .cierre-contenido { transition: opacity 0.4s var(--ease-salida) 0.25s; }
 .cierre[data-revelar] { transition: none; }
 .js .cierre[data-revelar]:not([data-visible]) {
   opacity: 1;
   transform: none;
 }
-.js .cierre:not([data-visible]) .cierre-campo { transform: scaleY(0); }
 .js .cierre:not([data-visible]) .cierre-contenido { opacity: 0; }
 /* Si el foco del teclado llega antes que el scroll, completo y quieto. */
 .js .cierre:not([data-visible]):focus-within :is(.cierre-campo, .cierre-contenido) {
   opacity: 1;
   transform: none;
   transition: none;
+}
+
+/* Sin líneas de tiempo de scroll (Firefox, Safari anterior a 26): el campo
+   crece desde su borde de arriba cuando la sección entra en pantalla. */
+@supports not (animation-timeline: view()) {
+  .cierre-campo { transition: transform 0.7s var(--ease-salida); }
+  .js .cierre:not([data-visible]) .cierre-campo { transform: scaleY(0); }
+}
+
+/* El amanecer. El campo no aparece como un rectángulo: sube con el frente
+   curvo y ese frente lleva el filo de luz. Es un domo (media elipse) mucho
+   más ancho que la pantalla, que sube (translateY) y se ensancha (scaleX)
+   atado al paso de la sección por la pantalla; cuando termina, su frente
+   queda plano y fuera de la vista, por encima de la sección, y el campo es
+   el rectángulo completo de siempre. El contenido y el realce funden con la
+   misma línea de tiempo. Solo transform y opacity, en el compositor. */
+@keyframes domo-sube {
+  from { transform: translate3d(0, 100%, 0) scaleX(1); }
+  to { transform: translate3d(0, 0, 0) scaleX(1.35); }
+}
+@keyframes cierre-funde {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .js .cierre {
+      view-timeline-name: --cierre;
+      view-timeline-axis: block;
+      view-timeline-inset: 0;
+    }
+    .js .cierre-campo { background: none; }
+    .js .cierre-domo {
+      display: block;
+      position: absolute;
+      left: 50%;
+      top: -20%;
+      width: 320vw;
+      height: 120%;
+      margin-left: -160vw;
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+      background: #1b35d0;
+      animation: domo-sube linear both;
+      animation-timeline: --cierre;
+      animation-range: entry 0% entry 55%;
+    }
+    /* El contenido funde cuando el campo ya lo sostiene: el frente del domo
+       va pasando por detrás del titular mientras aparece. Con el foco del
+       teclado adentro, completo de una vez. */
+    .js .cierre-contenido {
+      animation: cierre-funde linear both;
+      animation-timeline: --cierre;
+      animation-range: entry 38% entry 68%;
+    }
+    .js .cierre:focus-within .cierre-contenido {
+      animation: none;
+      opacity: 1;
+    }
+    /* El filo: el borde de arriba del domo, en cian claro. */
+    .js .cierre-domo::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border-top: 2px solid var(--color-cyan-light);
+      box-shadow: inset 0 18px 30px -18px rgb(127 224 255 / 0.55);
+    }
+    .js .cierre-realce {
+      animation: cierre-funde linear both;
+      animation-timeline: --cierre;
+      animation-range: entry 60% entry 100%;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+    /* En pantalla ancha el domo es más bajo de curva y sube más despacio. */
+    .js .cierre-domo {
+      width: 220vw;
+      margin-left: -110vw;
+      animation-range: entry 0% entry 80%;
+    }
+    .js .cierre-contenido { animation-range: entry 32% entry 72%; }
+  }
 }
 
 /* ---------------------------------------------------------------- Pie
@@ -853,29 +942,28 @@ li:last-child > .puerta { border-bottom: 1px solid var(--color-line-2); }
   }
 }
 
-/* ---- El trabajo. En el cuadro final, un papel junto a cada persona. */
+/* ---- El trabajo. La pila arranca donde arranca el carril (la salida de la
+   herramienta): desde ahí se riega cada papel en "Hoy" y ahí vuelve, derecho,
+   en "Lo montamos". Va por encima de los nodos: el desorden tapa lo que hay. */
+/* x0 va en cqw: centésimas del ancho del escenario. */
+.eco-escenario { container-type: inline-size; }
 .eco-pila {
   position: absolute;
-  z-index: 1;
-  right: calc(var(--persona-w) / 2 + var(--forma-h) / 2 + 6px);
+  z-index: 3;
+  left: calc(var(--tool-w) + 6px);
   top: calc(var(--eje) - 13px);
   width: 0;
   height: 26px;
+  pointer-events: none;
 }
-/* El papel de encima (el primero) lleva la letra; los de debajo asoman
-   corridos, sin letra. */
-.eco-pila { transition: opacity var(--dur-mover) var(--ease-salida); }
+/* Fuera de "Hoy" los papeles regados no existen: en el cuadro final hay un
+   papel junto a cada persona (el que circula, quieto). */
 .eco-papel {
   position: absolute;
-  right: 0;
+  left: 0;
   top: 0;
-  z-index: calc(5 - var(--k));
-  transform: translate(calc(var(--k) * 5px), calc(var(--k) * -6px)) rotate(calc(var(--k) * -3deg));
-  box-shadow: 0 0 0 1px rgb(13 14 20 / 0.28);
-}
-.eco-papel:not(:first-child) {
-  color: transparent;
   opacity: 0;
+  box-shadow: 0 0 0 1px rgb(13 14 20 / 0.22), 0 6px 14px -8px rgb(13 14 20 / 0.7);
 }
 .eco-viaje {
   position: absolute;
@@ -884,7 +972,7 @@ li:last-child > .puerta { border-bottom: 1px solid var(--color-line-2); }
   right: calc(var(--persona-w) / 2);
   top: calc(var(--eje) - 13px);
   height: 26px;
-  opacity: 0;
+  transform: translateX(86%);
   pointer-events: none;
 }
 .eco-viaje .ficha-papel {
@@ -893,24 +981,26 @@ li:last-child > .puerta { border-bottom: 1px solid var(--color-line-2); }
   top: 0;
   translate: -50% 0;
 }
-@media (min-width: 1024px) {
-  .eco-pila { right: calc(var(--persona-w) / 2 + 24px + 8px); }
-}
 @media (max-width: 1023px) {
   /* En celular los papeles son hojas chicas, sin letra: un rótulo de menos
-     de 13 px no se lee. */
+     de 13 px no se lee. La palabra sigue en el HTML, recortada y sin color. */
   .eco-carril .ficha-papel {
     width: 26px;
     height: 16px;
     padding: 0;
+    overflow: hidden;
     border-radius: 4px;
-    font-size: 0;
+    color: transparent;
+    text-indent: 30px;
   }
   .eco-pila,
   .eco-viaje {
     top: calc(var(--eje) - 8px);
     height: 16px;
   }
+  .eco-pila { left: calc(var(--tool-w) / 2 + 26px); }
+  /* Cuatro papeles regados en vez de seis. */
+  .eco-carril[data-carril="0"] .eco-papel:nth-child(3) { display: none; }
 }
 
 /* ---- "Ajusta": la persona de Ventas le corrige algo al agente. */
@@ -1125,11 +1215,34 @@ li:last-child > .puerta { border-bottom: 1px solid var(--color-line-2); }
   transform: scaleX(0);
 }
 
-/* Paso 0, "Hoy": los papeles amontonados junto a cada persona, tenues. */
-.eco[data-vivo] [data-paso="0"] .eco-pila { opacity: 0.62; }
-.eco[data-vivo] [data-paso="0"] .eco-papel { opacity: 1; }
-/* Pasos 1 a 3: los papeles circulan; la pila se apaga. */
-.eco[data-vivo] :is([data-paso="1"], [data-paso="2"], [data-paso="3"]) .eco-pila { opacity: 0; }
+/* Paso 0, "Hoy": el desorden. Cada papel está regado (girado y fuera de su
+   carril) y llegan uno por uno cuando el escenario entra en pantalla: 8 px de
+   caída, 240 ms cada uno y 70 ms entre uno y otro (--n es su turno). Con el
+   escenario fuera de la vista ([data-pausa]) esperan arriba, apagados. El que
+   circula todavía no existe. */
+.eco[data-vivo] [data-paso="0"] .eco-viaje { opacity: 0; }
+.eco[data-vivo] [data-paso="0"] .eco-papel {
+  opacity: 1;
+  transform: translate(var(--x0), calc(var(--y0) * var(--carril-h))) rotate(var(--r0));
+  transition:
+    opacity 0.24s var(--ease-salida) calc(var(--n) * 70ms),
+    transform 0.24s var(--ease-salida) calc(var(--n) * 70ms);
+}
+.eco[data-vivo] [data-paso="0"][data-pausa] .eco-papel {
+  opacity: 0;
+  transform: translate(var(--x0), calc(var(--y0) * var(--carril-h) - 8px)) rotate(var(--r0));
+  transition: none;
+}
+/* Pasos 1 a 3: el orden. Cada papel endereza y viaja al arranque de su
+   carril en 520 ms con la curva de mover, 60 ms entre uno y otro, y se apaga
+   al llegar: de ahí en adelante circula uno por carril. */
+.eco[data-vivo] :is([data-paso="1"], [data-paso="2"], [data-paso="3"]) .eco-papel {
+  opacity: 0;
+  transform: none;
+  transition:
+    transform 0.52s var(--ease-mover) calc(var(--n) * 60ms),
+    opacity 0.2s var(--ease-salida) calc(0.5s + var(--n) * 60ms);
+}
 
 /* Un papel sale de la herramienta, pasa por detrás del agente (que sube de
    brillo mientras lo trabaja) y llega a la persona. La posición del agente es
@@ -1148,8 +1261,9 @@ li:last-child > .puerta { border-bottom: 1px solid var(--color-line-2); }
   44%, 54% { opacity: 1; }
   66%, 100% { opacity: 0; }
 }
+/* El primero sale cuando los papeles regados ya llegaron a su carril. */
 .eco[data-vivo] :is([data-paso="1"], [data-paso="2"], [data-paso="3"]) .eco-viaje {
-  animation: eco-viaje 2.4s linear var(--fase, 0s) infinite;
+  animation: eco-viaje 2.4s linear calc(0.9s + var(--fase, 0s)) infinite backwards;
 }
 .eco[data-vivo] :is([data-paso="1"], [data-paso="2"], [data-paso="3"]) .eco-brillo {
   animation: eco-brillo 2.4s linear var(--fase, 0s) infinite;
@@ -1223,7 +1337,7 @@ li:last-child > .puerta { border-bottom: 1px solid var(--color-line-2); }
   .mini-ficha { transition: none; }
   .puerta-flecha,
   .mini-ficha { translate: none; }
-  /* El campo azul está completo desde el principio. */
+  /* El campo azul está completo y plano desde el principio. */
   .cierre-campo,
   .cierre-contenido { transition: none; }
   .js .cierre:not([data-visible]) .cierre-campo { transform: none; }
@@ -1232,7 +1346,7 @@ li:last-child > .puerta { border-bottom: 1px solid var(--color-line-2); }
   .eco-funde,
   .eco-llega,
   .eco-traza,
-  .eco-pila,
+  .eco-papel,
   .eco-daxlo-solida,
   .eco-daxlo-acciones span { transition: none; }
 }

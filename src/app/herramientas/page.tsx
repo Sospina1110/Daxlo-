@@ -12,7 +12,7 @@ export const metadata = metadatosPagina("herramientas");
 export default function PaginaHerramientas() {
   return (
     <div>
-      <Herramientas migas={<Migas actual="Herramientas" centro />} />
+      <Herramientas migas={<Migas actual="Herramientas" />} />
       <OtraLinea hacia="coaching" />
       <OtraLinea hacia="consultoria" />
       <CtaFinal />

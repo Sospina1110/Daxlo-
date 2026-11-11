@@ -2,7 +2,7 @@ import { Calculator, Check, Mail, Table2 } from "lucide-react";
 import { ecosistema } from "@/content/copy";
 import { LineaCapitulo, SectionHeading } from "@/components/ui/blocks";
 import { PiezaPasos } from "@/components/ui/pieza-pasos";
-import { desfase, PAPELES_A_MANO, PASO_FINAL } from "@/lib/ecosistema";
+import { desfase, PASO_FINAL, REGADOS } from "@/lib/ecosistema";
 
 // La pieza del inicio: cómo queda una empresa. Un escenario de ejemplo pasa de
 // "a mano" a "encendido" en cuatro pasos mientras se baja, y los tres pilares
@@ -91,11 +91,18 @@ function Escenario() {
               {/* Automatizaciones: se dibujan desde la herramienta. */}
               <span data-desde="1" className="eco-via eco-traza" style={t(0.08)} />
 
-              {/* El trabajo: amontonado junto a la persona en "Hoy"; después
-                  circula de la herramienta a la persona, por detrás del agente. */}
+              {/* El trabajo. En "Hoy" está regado: cada papel girado y fuera
+                  de lugar (--x0, --y0, --r0), y llegan uno por uno cuando el
+                  escenario entra en pantalla. En "Lo montamos" enderezan y
+                  viajan al arranque de su carril; de ahí en adelante circula
+                  uno, de la herramienta a la persona, por detrás del agente. */}
               <span className="eco-pila">
-                {Array.from({ length: PAPELES_A_MANO[i] }, (_, k) => (
-                  <span key={k} className="ficha-papel eco-papel" style={{ ["--k" as string]: k } as React.CSSProperties}>
+                {REGADOS[i].map((p, k) => (
+                  <span
+                    key={k}
+                    className="ficha-papel eco-papel"
+                    style={{ ["--x0" as string]: `${p.x}cqw`, ["--y0" as string]: p.y, ["--r0" as string]: `${p.r}deg`, ["--n" as string]: i + k * 2 } as React.CSSProperties}
+                  >
                     {c.papel}
                   </span>
                 ))}

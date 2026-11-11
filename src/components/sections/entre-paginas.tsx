@@ -28,17 +28,24 @@ type Linea = "coaching" | "consultoria";
 // (/preguntas ya tiene el suyo en la ayuda). Es un enlace, nunca un botón
 // flotante. Sin orbe y sin resplandores sueltos.
 //
-// Movimiento (globals.css, .cierre): el campo crece desde su borde de arriba
-// (scaleY, 700 ms) cuando la sección entra en pantalla y el contenido funde
-// encima (400 ms). La marca [data-visible] la pone el script del layout, como
-// en cualquier [data-revelar]; sin JavaScript o con «reducir movimiento», el
-// campo está completo. El botón es magnético (Iman). data-hilo-fin: ahí
+// Movimiento (encendido.css, .cierre): el cierre amanece. El campo azul sube
+// con el frente curvo, como un domo de luz con su filo cian, atado al scroll:
+// mientras la sección entra, el domo pasa de asomar a cubrirla entera y el
+// contenido funde cuando el campo ya lo sostiene. Sin soporte de
+// animation-timeline el campo crece desde arriba (scaleY, 700 ms) y el
+// contenido funde una vez (la marca [data-visible] la pone el script del
+// layout, como en cualquier [data-revelar]); sin
+// JavaScript o con «reducir movimiento» está completo y plano, que es el
+// valor por defecto del CSS. El botón es magnético (Iman). data-hilo-fin: ahí
 // muere el hilo.
 export function CtaFinal({ linea, whatsapp = false }: { linea?: Linea; whatsapp?: boolean }) {
   const pasos = [agendar.pasos.enviar, hayAgenda() ? cierre.meta.agenda : cierre.meta.whatsapp, agendar.pasos.conversar];
   return (
     <section aria-labelledby="titulo-cierre" data-revelar="" className="cierre relative isolate overflow-hidden">
-      <div aria-hidden className="cierre-campo absolute inset-0 -z-10" />
+      <div aria-hidden className="cierre-campo absolute inset-0 -z-10">
+        <span className="cierre-domo" />
+        <span className="cierre-realce" />
+      </div>
       <div className="cierre-contenido container-page grid gap-x-6 gap-y-12 lg:grid-cols-12 lg:items-end">
         <div className="lg:col-span-8">
           <h2 id="titulo-cierre" className="max-w-[13em] text-headline-lg text-white">

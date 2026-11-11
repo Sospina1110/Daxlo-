@@ -1,7 +1,7 @@
 ---
 version: alpha
 name: Daxlo
-description: Sitio daxlo.co. Fondo casi negro, luz azul y cian, superficies de vidrio y bordes degradados. La cinta de luz del hero es la firma en movimiento de la marca.
+description: Sitio daxlo.co. Dirección «Encendido» — lo que se hace a mano está apagado y lo que ya funciona, encendido. Fondo casi negro, placas azules con filo de luz, papeles menta y un campo azul en el cierre. La cinta de luz del hero es la firma y de ella sale el hilo que baja por la página.
 colors:
   primary: "#1B35D0"
   primary-bright: "#3D5AFF"
@@ -26,137 +26,120 @@ colors:
   error: "#FF8A9B"
 typography:
   display-hero:
-    fontFamily: Outfit
-    fontSize: 5rem
-    fontWeight: 500
-    lineHeight: 1.02
-    letterSpacing: -0.03em
-  display-hero-mobile:
-    fontFamily: Outfit
-    fontSize: 2.7rem
-    fontWeight: 500
-    lineHeight: 1.02
-    letterSpacing: -0.03em
+    fontFamily: Schibsted Grotesk
+    fontSize: clamp(2.625rem, 6.2vw, 5.25rem)
+    fontWeight: 600
+    lineHeight: 0.98
+    letterSpacing: -0.035em
   display-giant:
-    fontFamily: Outfit
-    fontSize: 10.5rem
-    fontWeight: 500
-    lineHeight: 0.9
-    letterSpacing: -0.045em
+    fontFamily: Schibsted Grotesk
+    fontSize: clamp(3.25rem, 14.5vw, 9rem)
+    fontWeight: 800
+    lineHeight: 0.88
+    letterSpacing: -0.04em
   headline-page:
-    fontFamily: Outfit
-    fontSize: 4rem
+    fontFamily: Schibsted Grotesk
+    fontSize: clamp(2.25rem, 5vw, 4rem)
+    fontWeight: 600
+    lineHeight: 1.02
+    letterSpacing: -0.03em
+  statement:
+    fontFamily: Schibsted Grotesk
+    fontSize: clamp(1.75rem, 3.1vw, 2.75rem)
     fontWeight: 500
-    lineHeight: 1.05
-    letterSpacing: -0.025em
+    lineHeight: 1.18
+    letterSpacing: -0.02em
   headline-lg:
-    fontFamily: Outfit
-    fontSize: 3.5rem
-    fontWeight: 500
-    lineHeight: 1.05
-    letterSpacing: -0.02em
+    fontFamily: Schibsted Grotesk
+    fontSize: clamp(2.1rem, 4.2vw, 3.5rem)
+    fontWeight: 600
+    lineHeight: 1.04
+    letterSpacing: -0.025em
   headline-support:
-    fontFamily: Outfit
-    fontSize: 2.5rem
-    fontWeight: 500
+    fontFamily: Schibsted Grotesk
+    fontSize: clamp(1.7rem, 2.9vw, 2.5rem)
+    fontWeight: 600
     lineHeight: 1.1
-    letterSpacing: -0.02em
-  headline-support-mobile:
-    fontFamily: Outfit
-    fontSize: 1.75rem
-    fontWeight: 500
-    lineHeight: 1.1
-    letterSpacing: -0.02em
-  headline-quote:
-    fontFamily: Outfit
-    fontSize: 28px
-    fontWeight: 500
-    lineHeight: 1.25
-    letterSpacing: -0.02em
-  headline-md:
-    fontFamily: Outfit
-    fontSize: 32px
-    fontWeight: 500
-    lineHeight: 1.25
+    letterSpacing: -0.022em
+  headline-row:
+    fontFamily: Schibsted Grotesk
+    fontSize: clamp(1.45rem, 2.5vw, 2.25rem)
+    fontWeight: 600
+    lineHeight: 1.12
     letterSpacing: -0.02em
   headline-sm:
-    fontFamily: Outfit
-    fontSize: 22px
-    fontWeight: 500
-    lineHeight: 1.375
+    fontFamily: Schibsted Grotesk
+    fontSize: 1.375rem
+    fontWeight: 600
+    lineHeight: 1.25
+    letterSpacing: -0.015em
+  numeral:
+    fontFamily: Schibsted Grotesk
+    fontSize: clamp(3rem, 6vw, 4.5rem)
+    fontWeight: 700
+    lineHeight: 1
     letterSpacing: -0.02em
+  label:
+    fontFamily: Schibsted Grotesk
+    fontSize: 0.8125rem
+    fontWeight: 600
+    lineHeight: 1.4
+    letterSpacing: 0.08em
   body-lg:
-    fontFamily: Inter
-    fontSize: 19px
+    fontFamily: Schibsted Grotesk
+    fontSize: 1.25rem
     fontWeight: 400
-    lineHeight: 1.625
+    lineHeight: 1.55
+    letterSpacing: 0
   body-md:
-    fontFamily: Inter
-    fontSize: 18px
+    fontFamily: Schibsted Grotesk
+    fontSize: 1.125rem
     fontWeight: 400
     lineHeight: 1.6
+    letterSpacing: 0
   body-sm:
-    fontFamily: Inter
-    fontSize: 17px
+    fontFamily: Schibsted Grotesk
+    fontSize: 1.0625rem
     fontWeight: 400
     lineHeight: 1.6
+    letterSpacing: 0
   body-xs:
-    fontFamily: Inter
-    fontSize: 15px
+    fontFamily: Schibsted Grotesk
+    fontSize: 0.9375rem
     fontWeight: 400
-    lineHeight: 1.6
-  label-button:
-    fontFamily: Inter
-    fontSize: 17px
-    fontWeight: 500
-    lineHeight: 1.6
-  label-button-md:
-    fontFamily: Inter
-    fontSize: 16px
-    fontWeight: 500
-    lineHeight: 1.6
-  label-button-sm:
-    fontFamily: Inter
-    fontSize: 15px
-    fontWeight: 500
-    lineHeight: 1.6
-  label-caps:
-    fontFamily: Inter
-    fontSize: 12px
-    fontWeight: 500
-    lineHeight: 1.6
-    letterSpacing: 0.12em
-  label-eyebrow:
-    fontFamily: Inter
-    fontSize: 14px
-    fontWeight: 500
-    lineHeight: 1.6
-    letterSpacing: 0.16em
-  label-fase:
-    fontFamily: Outfit
-    fontSize: 15px
-    fontWeight: 500
-    lineHeight: 1.6
-    letterSpacing: 0.1em
+    lineHeight: 1.55
+    letterSpacing: 0
   caption:
-    fontFamily: Inter
-    fontSize: 13px
+    fontFamily: Schibsted Grotesk
+    fontSize: 0.8125rem
     fontWeight: 400
-    lineHeight: 1.375
+    lineHeight: 1.4
+    letterSpacing: 0.005em
+  label-button:
+    fontFamily: Schibsted Grotesk
+    fontSize: 1.0625rem
+    fontWeight: 600
+    lineHeight: 1
+    letterSpacing: 0
 rounded:
-  sm: 8px
-  md: 12px
-  lg: 16px
-  card-sm: 22px
-  card: 24px
-  card-lg: 26px
-  card-xl: 28px
+  ficha: 8px
+  control: 12px
+  placa: 20px
   full: 9999px
 spacing:
   unit: 4px
-  container-max: 1200px
+  container-max: 1280px
   gutter-mobile: 20px
-  gutter-desktop: 32px
+  gutter-tablet: 32px
+  gutter-desktop: 48px
+  rhythm-chapter-mobile: 88px
+  rhythm-chapter-desktop: 144px
+  rhythm-continue-mobile: 64px
+  rhythm-continue-desktop: 96px
+  rhythm-inner-mobile: 32px
+  rhythm-inner-desktop: 48px
+  closing-y-mobile: 96px
+  closing-y-desktop: 160px
   section-y-mobile: 56px
   section-y-desktop: 96px
   section-y-desktop-lg: 128px
@@ -331,129 +314,250 @@ avisa: no se inventan valores nuevos sin decidirlos.
 `Paleta de Colores Daxlo.txt` (raíz del repo) es la paleta del sitio anterior (naranja
 #ff6b35, azul #64CEFB, "hero negro con video"). Ya no rige: no usar sus valores.
 
+## Dirección «Encendido» (noviembre de 2026)
+
+Esta sección manda sobre todo lo que sigue. Las secciones de más abajo
+(Components, Diagramas, Motion) describen también las páginas que todavía no
+se rediseñan (/coaching, /consultoria y las de apoyo): donde contradigan lo de
+aquí, vale lo de aquí.
+
+**La idea, en una frase.** Lo que hoy se hace a mano está apagado; lo que tu
+gente ya sabe hacer con IA queda encendido. El sitio hace lo mismo: nace de la
+cinta de luz del hero, un hilo de esa luz baja por la página y va encendiendo
+lo que toca, y el final es un campo azul.
+
+**Dos estados para todo.**
+
+| | Apagado (a mano, todavía no) | Encendido (funciona, lo maneja tu gente) |
+|---|---|---|
+| Superficie | sin relleno, borde de 1 px blanco al 14 % | placa azul profunda con filo de luz cian arriba |
+| Texto | blanco al 35 % (pasos y palabras que esperan su turno) | blanco |
+| Número de paso | contorno | relleno |
+| Movimiento | quieto | el filo se dibuja de izquierda a derecha y la placa funde |
+
+**Cuatro objetos, siempre con la misma forma y el mismo color.** Es el
+vocabulario propio de Daxlo: el escenario del ecosistema, los mini diagramas de
+las puertas y la leyenda usan estos y solo estos.
+
+| Objeto | Forma | Color | Qué es |
+|---|---|---|---|
+| Tu gente | círculo | blanco (en contorno hasta que aprende) | las personas de la empresa |
+| El trabajo | ficha de 8 px de radio | menta #E2F3EE con texto casi negro (16,8:1) | una factura, una cotización, un informe. Es lo más claro de la pantalla y lo que se mueve |
+| Agentes | placa de 12 px de radio | azul #3D5AFF a #1B35D0 con filo cian claro | la IA que hace una tarea completa |
+| Automatizaciones | línea de 1 px | cian #29C4F5 | lo que lleva el trabajo de un lado a otro |
+
+Las herramientas de la empresa son tejas oscuras (#12141C con borde): ya
+estaban. Daxlo es su equis, al lado y fuera del marco de la empresa, unida por
+una línea (sólida mientras monta; punteada cuando se queda al lado).
+
+**El inicio, en cinco secciones** (src/app/page.tsx):
+
+1. **Hero** (`hero.tsx`): cabe en la primera pantalla (`min(100svh, 900px)`,
+   mínimo 640). La frase y el titular a todo el ancho; debajo, a la izquierda
+   el sub, el botón y su nota, y a la derecha el recuadro que escribe, entero.
+   La cinta pasa por detrás del recuadro (que es opaco) y lo rodea de luz. Al
+   terminar de escribirse la primera tarea, un papel menta sale del borde
+   inferior del recuadro: ahí nace el hilo. El fondo se funde en sus últimos
+   160 px.
+2. **Qué es Daxlo** (`manifiesto.tsx`): un solo párrafo en `statement`. El
+   arranque es el h2, en blanco; lo que sigue se enciende palabra por palabra
+   al cruzar la pantalla. Nada más: ni icono, ni botón, ni etiqueta.
+3. **El ecosistema** (`ecosistema.tsx`, `pieza-pasos.tsx`): la pieza. Un
+   escenario fijo, rotulado «Ejemplo», pasa de «a mano» a «encendido» en cuatro
+   pasos mientras se baja. Ver «La pieza del ecosistema», abajo.
+4. **Las dos puertas** (`intro.tsx`): dos filas a todo el ancho, no dos
+   tarjetas. Cada fila es un solo enlace: la regla en `headline-row`, el
+   servicio y su línea, un mini diagrama con los cuatro objetos y la flecha en
+   un círculo. Apagada por defecto; se enciende con el puntero, con el foco o,
+   en táctil, al cruzar el centro de la pantalla.
+5. **Cierre** (`CtaFinal`): campo azul a todo el ancho. Es de todas las
+   páginas.
+
+Desde el 2026-11-11 no hay sección de quiénes somos: salió la parte de los
+socios. Con nombre aparece solo el fundador, en la última línea de
+/nosotros (que pasó a ser «Cómo trabajamos») y en los textos legales.
+
+**La pieza del ecosistema.** HTML y CSS, sin SVG, canvas ni librerías.
+
+- Tres carriles rectos (dos en celular): herramienta, agente y persona, con la
+  línea de la automatización entre ellos y los papeles viajando. Por eso todo
+  se mueve con `translate`, `scaleX` y `opacity`.
+- Cuatro estados en `data-paso`: 0 Hoy (huecos punteados «A mano» y el
+  desorden: seis papeles regados, girados entre -7° y 9° y fuera de su carril,
+  que llegan uno por uno cuando el escenario entra en pantalla; cuatro en
+  celular), 1 Lo montamos (cada papel endereza y viaja al arranque de su
+  carril en 520 ms, delante del lector; llegan los agentes, las líneas se
+  dibujan, el trabajo circula, aparece Daxlo), 2 Lo aprende tu gente
+  (los círculos se rellenan, «Aprueba», el pulso de «Ajusta»), 3 Nos quedamos
+  (la línea de Daxlo pasa a punteada, su rótulo alterna «Lo revisa» y «Lo
+  mejora», aparece el carril «Siguiente proceso»).
+- El marcado sale del servidor en el cuadro final (paso 3) con los cuatro pasos
+  encendidos. `PiezaPasos` solo decide el paso activo con un
+  `IntersectionObserver` que ve una línea de la pantalla (el centro en
+  escritorio; el 72 % en celular, donde el escenario va fijo arriba) y marca
+  `data-vivo`, `data-paso`, `data-activo` y `data-pausa`. Nada de scroll ni de
+  trabajo por cuadro en JavaScript.
+- Composición: en escritorio, los pasos en las columnas 1 a 4 (64vh cada uno)
+  y el escenario en las columnas 5 a 12, `sticky` a 112 px; en celular, el
+  escenario fijo arriba, a sangre y opaco, con una barra de cuatro puntos y el
+  rótulo del paso. La composición fija la decide el CSS (`.js` y sin «reducir
+  movimiento»), no la hidratación: nada cambia de lugar cuando React carga.
+- Lo infinito (un papel por carril cada 2,4 s, desfasados; el pulso de Daxlo
+  cada 6 s) corre solo en los pasos 1 a 3 y con el escenario a la vista.
+- Con «reducir movimiento» o sin JavaScript: nada se fija, el escenario queda
+  arriba en su cuadro final y los pasos van debajo, todos encendidos, en dos
+  columnas.
+- Accesibilidad: el escenario es `role="img"` con su descripción; lo de adentro
+  y la leyenda no se anuncian. Los pasos son h3 y párrafos reales. Ningún
+  rótulo baja de 13 px (en celular los papeles no llevan letra).
+- Se apartó de la especificación en dos cosas: el escenario no sale a sangre
+  por la derecha (en pantallas anchas quedaba una placa con un tercio vacío) y
+  Daxlo va centrado bajo la columna de agentes también en celular.
+
+**El hilo de luz** (`src/components/fondos/`). Una línea cian de 1 px que nace
+en `[data-hilo-origen]` (el borde inferior del recuadro del hero), cruza al
+margen izquierdo por el borde inferior del hero, baja por el margen (24 px a la
+izquierda del texto desde 1280 px; a 10 px del borde de la pantalla por
+debajo), alimenta cada línea de capítulo (`[data-hilo-capitulo]`) con una rama
+que se apaga hacia la derecha, entra al campo azul y muere en el botón del
+cierre (`[data-hilo-fin]`) con un punto de luz menta. Se dibuja con
+`animation-timeline: scroll(root)`; JavaScript solo mide la página. Sin
+soporte o con «reducir movimiento» queda dibujado y quieto. Va al final de la
+raíz de la página, que tiene que ser `relative`. Hoy solo lo lleva el inicio.
+
+**Contorno primero, relleno después.** Es «apagado → encendido» hecho
+dibujo, y se usa como sistema: lo apagado va en contorno fino y lo encendido
+se rellena con una capa que solo cambia de opacidad. Hoy lo llevan los
+numerales (`Numeral`), las personas del ecosistema (círculo en contorno hasta
+que aprenden), el hueco punteado que pasa a ser agente, los objetos de los
+mini diagramas de las puertas, el círculo de la flecha de cada puerta y el
+eslogan del pie. Falta el trazado por lados de cada placa al entrar (va con
+el encendido de sección de la fase 4).
+
+**Lo que salió** (no se usa en ninguna página): el orbe y la esfera de vidrio,
+las píldoras sobre los titulares, el pie como tarjeta, la rejilla de fondo del
+hero, el retrato, las cabeceras centradas y el degradado de texto fuera de la
+segunda línea del h1 del inicio.
+
 ## Overview
 
-Consultoría colombiana de IA con dos líneas: coaching 1 a 1 y consultoría de
-implementación. El sitio habla a dueños y profesionales de empresas pequeñas y medianas,
-muchos de más de 45 años: se lee primero, se admira después.
+Daxlo es una consultoría de IA colombiana con dos líneas: coaching 1 a 1 para
+personas y consultoría de implementación para empresas. El sitio tiene siete
+rutas y es estático (Next.js con exportación, Cloudflare Pages).
 
-- **Tono visual:** técnico y sereno. Fondo casi negro, luz de marca (azul y cian) que
-  entra de los bordes, superficies de vidrio, bordes con degradado. Nada de neón saturado
-  ni de colores fuera de la paleta.
-- **Firma en movimiento:** la cinta de luz del hero, una seda translúcida azul y cian que
-  ondula lenta y responde al mouse. Es el único fondo vivo de la primera pantalla. La
-  misma cinta, con el tinte de cada línea, va detrás de la portada de /coaching y
-  /consultoria.
-- **Jerarquía:** texto blanco sobre oscuro, un solo llamado principal por pantalla, el
-  resto en botones oscuros con borde degradado.
-- **Ritmo:** cada página se lee como un argumento (afirmación, dolor, proceso, criterio,
-  cierre). Esas partes las separa el aire y una línea de luz fina, no las cajas. Cada
-  página tiene un momento de movimiento con autoría: la cinta en el inicio, la
-  ventana de la sesión en /coaching y, en /consultoria, el recorrido animado (desde el
-  2026-11-06, pedido de Santiago: "más como una animación, un video animado, algo así,
-  en vez de puro texto"). El tachado del "Hoy" sigue como la entrada de su sección:
-  Santiago decidió el 2026-11-06 dejar las dos animaciones. (En las portadas la cinta es fondo, no el
-  momento de autor.)
-- **Brevedad:** cada página contesta en orden las preguntas de quien lee, un h2 por
-  pregunta y una idea por sección; se entiende leyendo solo los h2 y mirando el objeto
-  visual de cada sección. Lo largo (lo que sirve a buscadores y a las objeciones) va en
-  las preguntas en acordeón, con la respuesta en el HTML pero cerrada.
-- **Contenido:** sin cifras inventadas, sin clientes nombrados, sin pantallas de
-  clientes. Santiago Ospina y Martín Zárate aparecen juntos siempre.
+- Público: gente que lee, muchos de más de 45 años. Texto de 15 px como
+  mínimo para leer y 13 px para rótulos.
+- Tono: tuteo, frases cortas, situaciones de trabajo, sin palabras de
+  consultora. Todo el texto vive en `src/content/copy.ts`.
+- Sin cifras inventadas, sin clientes, sin testimonios, sin logos ni pantallas
+  de clientes. Lo que parezca interfaz va rotulado «Ejemplo».
+- Con nombre aparece solo el fundador, Santiago Ospina, y solo donde toca (la
+  última línea de «Cómo trabajamos» y los textos legales).
+- La cinta de luz del hero es la firma gráfica: grande y una vez. Todo lo
+  demás que brilla ilumina un objeto o no va.
 
 ## Colors
 
-La paleta parte del casi negro y de dos luces de marca. El color va en la luz, no en
-grandes superficies.
+Los colores de marca son fijos: casi negro #0D0E14, azul #1B35D0, cian #29C4F5
+y menta #E2F3EE, con sus derivados. Ninguna paleta nueva. Cada color tiene un
+oficio y dice qué es cada cosa, no en qué página estás (se retiró la regla de
+«un acento por zona»):
 
-- **Azul de marca (#1B35D0, `primary`):** el color de Daxlo. Relleno del botón principal
-  del hero, cuerpo de la cinta de luz, resplandores de la zona de consultoría.
-- **Azul vivo (#3D5AFF, `primary-bright`):** extremo de los degradados, hover del botón
-  principal, borde de la línea de consultoría.
-- **Azul claro (#8EA0FF, `primary-soft`):** texto de acento e iconos sobre oscuro en la
-  línea de consultoría (los números 01–04 del recorrido, enlaces, rótulos, viñetas). En el código es
-  el token `--color-blue-soft` (`text-blue-soft`, `bg-blue-soft`, `stroke-blue-soft`):
-  no se escribe a mano.
-- **Un acento por zona:** la zona de consultoría va solo en azul (azul claro para
-  rótulos y nodos, azul vivo para lo destacado); el cian queda para coaching y para el
-  foco del teclado; el menta, solo para confirmar ("Listo", el chulo de "Sin costo").
-- **Cian (#29C4F5, `secondary`):** la luz. Pliegues brillantes de la cinta, foco del
-  botón, borde del foco del teclado, acentos de la línea de coaching. Nunca de fondo
-  detrás de texto blanco (contraste 2,0:1).
-- **Cian profundo (#0B7EA6) y cian claro (#7FE0FF):** extremos del degradado cian.
-- **Menta (#E2F3EE, `tertiary`):** confirmaciones (el chulo de "Primera conversación sin
-  costo", "Listo") y el brillo más alto de la cinta, en puntos pequeños.
-- **Casi negro (#0D0E14, `neutral`/`surface`):** fondo de todo el sitio y de `<html>`.
-  Capas: #12141C (vidrio, ventanas, las dos puertas del inicio al 60 %), #1A1D28,
-  #10121A (relleno de botones), #0E1019 (panel, hoy sin uso), #08090E (zona de
-  consultoría, más oscura).
-- **Texto:** blanco #FFFFFF (19,3:1 sobre el casi negro); atenuado blanco al 66 % (8,6:1);
-  tenue blanco al 50 % (5,3:1, mínimo para texto de 15 px o más). Líneas: blanco al 8 %
-  y al 14 %. Por debajo de 15 px el texto va al 60 % o más.
-- **Selección y foco:** la selección (cian al 35 %) y el foco (cian de 2 px) también salen
-  de la paleta. La barra de desplazamiento es la del navegador en modo oscuro
-  (`color-scheme: dark`): una propia en #1A1D28 sobre #0D0E14 quedaba en 1,15:1 y no se
-  veía.
-- **Error (#FF8A9B):** borde y mensaje de campos con error.
+- **Blanco:** el texto y la gente.
+- **Menta #E2F3EE:** el trabajo (los papeles), las confirmaciones (los chulos)
+  y el botón del cierre. Es la única superficie clara del sitio y siempre es
+  un objeto pequeño, nunca una banda. Texto casi negro encima: 16,8:1.
+- **Azul #1B35D0 y #3D5AFF:** lo encendido. Placas, agentes, el botón
+  principal del hero y el campo del cierre.
+- **Cian #29C4F5 y #7FE0FF:** la luz que se mueve. El hilo, los pulsos, los
+  filos y el foco del teclado. Nunca de relleno ni detrás de texto.
 
-Degradados de texto (`text-gradient-*`): dual = cian → #7AD7FF → azul vivo (la segunda
-línea del titular del hero); cian = #7FE0FF → cian → #1591C4; azul = #8EA0FF → azul vivo
-→ azul de marca. El extremo azul vivo da 3,8:1 sobre el casi negro: solo en titulares
-grandes, y con el fondo detrás por debajo de luminancia 0,018 (ver Motion).
+Cinco niveles de superficie (variables en `:root`, globals.css):
+
+| Nivel | Nombre | Valor | Dónde |
+|---|---|---|---|
+| 0 | Noche | `#0D0E14` (`--color-ink`) | fondo |
+| 1 | Penumbra | `#12141C` (`--color-ink-2`) | ventanas, tejas de herramienta, campos |
+| 2 | Placa apagada | sin relleno, borde `--borde-apagado` (blanco al 14 %) | lo que todavía es a mano |
+| 3 | Placa encendida | `--placa-encendida`: `linear-gradient(180deg, #132069, #111949 50%, #0F132E)`, borde `--borde-encendido`, filo `--filo` | el escenario, la fila activa |
+| 4 | Campo azul | `--campo-azul`: #1B35D0 con un realce radial #3D5AFF arriba a la derecha | el cierre de cada página, a todo el ancho |
+| 5 | Papel | `#E2F3EE`, texto `#0D0E14` | fichas de trabajo, el botón del cierre |
+
+Contraste: blanco sobre el campo azul, 8,5:1; blanco al 86 % sobre el campo
+azul, 6,6:1; menta sobre azul, 7,4:1; cian sobre azul, 4,2:1 (solo trazos).
+La cinta de luz conserva su tinte por línea en las portadas (shader) y sus
+topes de contraste detrás de cada texto (`data-cinta-tope`).
 
 ## Typography
 
-Dos familias servidas por `next/font` desde el propio sitio.
+**Schibsted Grotesk en todo el sitio**: titulares, rótulos, números y cuerpo
+(estudio de tipografía del 2026-11-11). Razones: su I mayúscula lleva remates,
+así que «la IA» se lee IA y no «la lA»; es un solo archivo variable (peso 400
+a 900, unos 46 KB el subconjunto latino, el único que se precarga) y no es una
+de las letras «por defecto» de los sitios oscuros.
 
-- **Outfit 500** para todos los titulares (h1–h4), con `letter-spacing: -0.02em` y
-  `text-wrap: balance`. El titular del hero baja a -0.03em y la portada gigante de cada
-  línea a -0.045em. Sin cursivas, sin serifas, sin palabras de acento en otra fuente.
-- **Inter 400/500** para el cuerpo y los botones. Cuerpo base 18 px con interlineado 1,6
-  (público mayor: nunca menos de 15 px para texto de lectura).
-- **Tamaños fluidos:** hero `clamp(2.7rem, 6.6vw, 5rem)` (2.15rem por debajo de 360 px);
-  portada de línea `clamp(3.2rem, 17vw, 10.5rem)`; h1 de página
-  `clamp(2.3rem, 5.4vw, 4rem)`; cierre `clamp(2rem, 5vw, 3.4rem)`.
-- **Dos escalas de h2** (`SectionHeading escala`), para que la jerarquía la lleve el
-  tamaño y no nueve cabeceras clonadas:
-  - **Capítulo** (`headline-lg`, `clamp(2rem, 4.6vw, 3.5rem)`, interlineado 1,05, hasta
-    880 px de ancho): los h2 del argumento, los que se leen como respuestas en orden
-    (el problema, qué cambia, la sesión, cómo trabajamos, las dos puertas, quiénes
-    somos). A 880 px el titular queda en dos renglones en escritorio; a 680 px se iba
-    a tres.
-  - **Apoyo** (`headline-support`, `clamp(1.75rem, 3vw, 2.5rem)`: 28 px en celular,
-    40 px en escritorio, interlineado 1,1, hasta 640 px): "¿Esto es para…?" y las
-    preguntas de cada línea. Aplicado en la rama; pendiente del OK de Santiago.
-- **Corte entre frases** (`enLineas`): un h2 de dos frases va con cada frase en su
-  renglón ("Tu gente ya usa IA. / Tu empresa trabaja igual.", "ChatGPT te escribe el
-  correo. / Lo demás, a mano."); "Cambia quién sabe, / quién revisa y quién ajusta." se
-  corta en la coma. El navegador los partía a mitad de frase. Los renglones son spans
-  de bloque separados por un espacio: el texto que leen los lectores de pantalla y los
-  buscadores no cambia. Mismo color en los dos renglones: el h2 en dos tonos sigue
-  pendiente del OK de Santiago y no está aplicado.
-- **Etiquetas:** la píldora (`Badge`) va en Inter 500 de 12 px, mayúsculas, 0.12em; la
-  línea sobre la portada de cada servicio, 14 px, mayúsculas, 0.16em. Los rótulos de los
-  diagramas van en `caption` (Inter de 13 px) en mayúsculas, peso 500, 0.1em, blanco al
-  66 % (azul claro en lo destacado). Un solo par en mayúsculas por página: "Hoy" /
-  "Después". "Te llevas", que se repite en cada paso del recorrido, va en minúscula
-  (Inter 500 de 15 px, azul claro): cuatro veces en mayúsculas espaciadas gritaba más
-  que el entregable.
-  Ninguna etiqueta pequeña va en 600: la jerarquía sale del tamaño, no del peso.
-- **Filas abiertas:** el título de cada escena del problema va en `headline-sm` (22 px) en
-  celular y en `headline-md` (32 px) desde 768 px, y la escena en Inter de 18 px
-  atenuado, hasta 60 caracteres por línea. Las escenas de una sola línea (/coaching) van
-  en Outfit 500 de 22 px (28 px desde 768 px) blanco al 85 %. En el hoy → después, "Hoy"
-  en Inter de 18 px atenuado y "Después" en Outfit 500 de 22 px blanco: el peso cae en el
-  resultado.
-- **Párrafos y puntos de lista** llevan `text-wrap: pretty` (sin palabras sueltas al
-  final), salvo dentro del hero aprobado (`#top`), que conserva sus cortes. "1 a 1" no se parte entre líneas en el texto que se pinta (`sinCorte`, en
-  `src/lib/utils.ts`); los metadatos y los datos estructurados lo conservan igual.
-- **Botones:** Inter 500, 17 px en el grande (16 px por debajo de 360 px), 16 px en el
-  mediano, 15 px en el pequeño de la barra.
+- La carga `src/app/layout.tsx` con `next/font/google` (se descarga al
+  compilar y se sirve desde el propio sitio: la CSP no deja cargar nada de
+  terceros). **Cambiar de familia es cambiar esa línea**: todo el sitio lee
+  `--font-display` y `--font-sans`, que globals.css arma con `--fuente-marca`.
+- Ninguna medida depende de las métricas de una familia: tamaños en rem y vw,
+  tracking en em, anchos de lectura en `ch` y `em`, y `text-wrap: balance` en
+  titulares.
+- No tiene tamaño óptico: el ajuste por tamaño lo hace el tracking de cada
+  nivel.
+- Pesos: 400 cuerpo, 500 manifiesto, 600 titulares, rótulos y botones, 700
+  numerales y el eslogan del pie, 800 portada gigante.
 
-La tipografía no se anima letra por letra ni cambia con el movimiento: las líneas del
-titular solo suben desde una máscara al cargar.
+Cada token es una utilidad `text-*` de Tailwind que trae tamaño, interlineado,
+tracking y peso (`@theme` en globals.css):
+
+| Token | Tamaño | Peso | Interlineado | Tracking | Uso |
+|---|---|---|---|---|---|
+| `display-hero` | `clamp(2.625rem, 6.2vw, 5.25rem)` | 600 | 0,98 | -0.035em | h1 del inicio |
+| `display-giant` | `clamp(3.25rem, 14.5vw, 9rem)` | 800 | 0,88 | -0.04em | «Para ti.» / «Para tu empresa.» |
+| `headline-page` | `clamp(2.25rem, 5vw, 4rem)` | 600 | 1,02 | -0.03em | h1 de las páginas de apoyo |
+| `statement` | `clamp(1.75rem, 3.1vw, 2.75rem)` | 500 | 1,18 | -0.02em | qué es Daxlo |
+| `headline-lg` | `clamp(2.1rem, 4.2vw, 3.5rem)` | 600 | 1,04 | -0.025em | h2 de capítulo |
+| `headline-support` | `clamp(1.7rem, 2.9vw, 2.5rem)` | 600 | 1,1 | -0.022em | h2 de apoyo; título de cada paso |
+| `headline-row` | `clamp(1.45rem, 2.5vw, 2.25rem)` | 600 | 1,12 | -0.02em | la regla de cada puerta |
+| `headline-sm` | 22 px | 600 | 1,25 | -0.015em | h3 |
+| `numeral` | `clamp(3rem, 6vw, 4.5rem)` | 700 | 1 | -0.02em, cifras tabulares | números de paso |
+| `label` (`.rotulo`) | 13 px, mayúsculas | 600 | 1,4 | 0.08em | rótulos |
+| `body-lg` / `md` / `sm` / `xs` | 20 / 18 / 17 / 15 px | 400 | 1,55 / 1,6 | 0 | cuerpo |
+| `caption` | 13 px | 400 | 1,4 | 0.005em | notas |
+
+Reglas: ningún texto de lectura por debajo de 15 px y ninguno por debajo de
+13 px. El degradado de texto queda solo en la segunda línea del h1 del inicio.
+Sin fuente monoespaciada: los rótulos «técnicos» en mono son la marca más
+común de sitio hecho con IA. El contorno de los números apagados y del
+eslogan del pie: relleno del color del fondo y trazo de 2 px con
+`paint-order: stroke fill` (queda 1 px limpio).
 
 ## Layout
+
+**Vigente desde «Encendido»:**
+
+- Contenedor de **1280 px**, 12 columnas, 24 px entre columnas. Márgenes
+  (`--margen`): 20 px en celular, 32 px desde 768 px, 48 px desde 1280 px.
+- A sangre: la cinta del hero, el campo azul del cierre y el escenario del
+  ecosistema en celular.
+- Todo a la izquierda; centrado no queda nada, tampoco el cierre.
+  `SectionHeading` tiene dos formas: titular y bajada una debajo de la otra, o
+  `alineacion="columnas"` (desde 1024 px, el h2 en las columnas 1 a 7 y la
+  bajada en las columnas 9 a 12, alineada con la base del h2).
+- Tres pasos de ritmo vertical (escritorio / celular): capítulo 144 / 88 px
+  (`.seccion-capitulo`), continuación 96 / 64 px (`.seccion-continuacion`),
+  interior 48 / 32 px (`--ritmo-interior`). El cierre lleva 160 / 96 px.
+- Tres radios: 8 px (fichas), 12 px (botones, campos, agentes), 20 px (placas
+  y ventanas). Utilidades `rounded-ficha`, `rounded-control` y `rounded-placa`.
+- Filas antes que tarjetas: lo que es lista va en filas con línea de 1 px
+  (`Fila`). Placa (`Placa`) solo para un objeto: un escenario, una ventana, un
+  formulario.
+- Primitivos (`src/components/ui/primitives.tsx`): `Placa` (`encendida`,
+  `viva`), `Rotulo`, `Fila`, `Numeral`, y `GlowButton` con la variante
+  `papel` (menta, solo sobre el campo azul).
+
+Lo que sigue describe el ritmo de las páginas que todavía no se rediseñan.
 
 - Contenedor de 1200 px de ancho máximo, con 20 px de margen lateral en celular y 32 px
   desde 768 px. Unidad base de 4 px (escala de Tailwind).
@@ -491,9 +595,9 @@ titular solo suben desde una máscara al cargar.
 - **Alternancia:** dos bandas seguidas no repiten el mismo contenedor. En /consultoria:
   escenas en filas abiertas, el hoy → después en filas con rótulos, el recorrido como
   secuencia animada (escenario, barra de capítulos y el texto del paso), "¿Esto es para
-  tu empresa?" (cita, filas y socios) y las preguntas con
+  tu empresa?" (cita y filas) y las preguntas con
   cabecera lateral. En /coaching: escenas, la sesión (ventana y pasos), dos columnas
-  con los socios debajo y preguntas con cabecera lateral. Pendiente del OK de
+  y preguntas con cabecera lateral. Pendiente del OK de
   Santiago, sin aplicar: una banda en #12141C (`surface-container`) detrás del hoy →
   después. Nunca una banda clara ni menta.
 - **Portada de cada línea** (/coaching, /consultoria): migas, nombre del servicio,
@@ -568,7 +672,7 @@ Esquinas suaves y consistentes por tamaño:
 
 - 8 px: fichas y chips de las maquetas.
 - 12 px: botones, campos, tejas de icono.
-- 16 px: ventanas de las maquetas, foto de los socios en cada línea, recuadro de cada
+- 16 px: ventanas de las maquetas, recuadro de cada
   pregunta en /preguntas, barra de navegación, menú.
 - 24 px: las dos puertas del inicio (las únicas tarjetas, porque son enlaces) y el
   retrato de quiénes somos.
@@ -584,7 +688,7 @@ Esquinas suaves y consistentes por tamaño:
 
 - **Botón principal del hero (`button-hero`, `GlowButton variante="principal"`):** relleno
   degradado del azul de marca al azul vivo (120°: #1B35D0 → #2A47EA → #3D5AFF), borde de
-  1 px cian → blanco al 45 % → azul claro, texto blanco Inter 500 de 17 px (8,5:1 sobre
+  1 px cian → blanco al 45 % → azul claro, texto blanco Schibsted Grotesk 500 de 17 px (8,5:1 sobre
   #1B35D0, 5,1:1 en el peor punto del degradado). Halo de luz cian y azul alrededor (por
   debajo de 640 px, corto: no cae sobre el subtítulo ni sobre la nota), foco de luz
   interior arriba, fijo al 85 %. 65 px de alto desde 360 px (60 px por debajo, para
@@ -613,7 +717,7 @@ Esquinas suaves y consistentes por tamaño:
   768 px, sin vidrio ni resplandor. Abre con el pictograma de la regla (SVG de 120 × 56,
   decorativo: un nodo unido a una barra en coaching; tres nodos que llegan a la misma
   barra en consultoría) y la regla escrita en 15 px, en la misma fila; sin píldora de
-  audiencia encima. Después, el h3 en Outfit 28/32 px, la línea en 18 px atenuado y el
+  audiencia encima. Después, el h3 en Schibsted Grotesk 28/32 px, la línea en 18 px atenuado y el
   enlace en el tono de la línea. El enlace se estira sobre toda la tarjeta
   (`after:inset-0`) y conserva su nombre accesible. Con mouse o foco el borde toma el
   tono en 200 ms (con foco del teclado, de una vez); la flecha se corre 4 px solo con el
@@ -645,13 +749,11 @@ Esquinas suaves y consistentes por tamaño:
   50 % y texto de 17 px blanco al 85 %; "Es para ti si", con el chulo del tono. La última
   fila de "No es para… si" termina en el enlace a la otra línea (tono de la zona, 44 px
   de alto; en una línea desde 640 px y partido en celular si no cabe, con la flecha
-  fija). En /consultoria, la pregunta que filtra va como cita. En las dos líneas, abajo,
-  los dos socios: foto cuadrada de 96 × 96 con ancho y alto fijos (72 px en celular; el
-  archivo es un recorte de 240 × 240, no la foto completa), la firma conjunta con
-  "en Colombia" y el enlace "Conoce a Martín y Santiago" a /nosotros (44 px de alto).
+  fija). En /consultoria, la pregunta que filtra va como cita. La franja de los socios
+  salió el 2026-11-11.
   La columna usa una pista que puede encogerse (`minmax(0, 1fr)`): nada se sale en
   320 px. Los límites se escriben como límites, nunca como ventaja.
-- **Cita (`pull-quote`):** Outfit 500 de 22 px (`headline-sm`) en blanco, con regla
+- **Cita (`pull-quote`):** Schibsted Grotesk 500 de 22 px (`headline-sm`) en blanco, con regla
   superior de 1 px blanca al 14 % y 24 px de aire. Para la pregunta que filtra en
   /consultoria (`pull-quote-filter`: 28 px desde 768 px, un escalón por debajo del h2 de
   apoyo de 40 px y dos por encima del cuerpo), el remate de la sesión y la firma de
@@ -679,7 +781,7 @@ Esquinas suaves y consistentes por tamaño:
     video.
   - **Texto del paso:** el `<ol>` de siempre, con los cuatro pasos completos: número en
     `label-fase`, h3 en `headline-sm`, una línea en `body-sm` atenuado y "Te llevas"
-    (Inter 500 de 15 px en azul claro, sin mayúsculas) con el entregable en 17 px
+    (Schibsted Grotesk 500 de 15 px en azul claro, sin mayúsculas) con el entregable en 17 px
     blanco. Los cuatro van apilados en la misma celda (toma el alto del más largo) y se
     ve el del momento; los otros quedan en opacidad 0, en el DOM y para lectores de
     pantalla (no se anuncia el cambio: no hay `aria-live` en algo que avanza solo).
@@ -692,7 +794,7 @@ Esquinas suaves y consistentes por tamaño:
   al 40 %; en celular, lista vertical con la línea a 15 px del borde y 40 px de
   sangría. La clase `.js` la pone el layout antes de pintar: el reproductor sale armado
   del HTML y nada salta al hidratar.
-- **Pregunta (acordeón):** botón dentro de un h3 (Inter 500 de 17/18 px, blanco) con
+- **Pregunta (acordeón):** botón dentro de un h3 (Schibsted Grotesk 500 de 17/18 px, blanco) con
   un "+" blanco al 60 % que gira 45° al abrir (200 ms, antes de que termine de abrir;
   baja a 0.9 al presionar; quieto con "reducir movimiento" y con el teclado). Dos
   formas:
@@ -760,7 +862,7 @@ Esquinas suaves y consistentes por tamaño:
 - **Escenas del recorrido de /consultoria:** maquetas ilustrativas, una por paso, con el
   mismo proceso genérico de punta a punta (las cotizaciones, de la lista de "¿Por dónde
   empieza…?"), sin cifras ni resultados y con "Ejemplo" a la vista. Fichas de 8 px de
-  radio (#12141C, borde blanco al 14 %, Inter 500 de 13 px blanco al 85 %), íconos de
+  radio (#12141C, borde blanco al 14 %, Schibsted Grotesk 500 de 13 px blanco al 85 %), íconos de
   16 px en azul claro con trazo de 1,5, trazos de 1 px en azul claro al 50 % con
   bifurcaciones en ángulo recto, personas como círculos de 28 px sin cara ni nombre, y
   menta solo en las marcas de "probado" y "funciona". Guion:
@@ -798,6 +900,26 @@ Esquinas suaves y consistentes por tamaño:
   para repetirlo (paso 3).
 
 ## Motion
+
+**Lo que suma «Encendido»** (todo con `transform` y `opacity`, o CSS atado al
+scroll; nada por cuadro en JavaScript fuera de la cinta):
+
+| Qué | Cómo | Tiempos | Sin soporte o con «reducir movimiento» |
+|---|---|---|---|
+| El hilo | `animation-timeline: scroll(root)`; cada tramo es una línea que se desliza dentro de su caja | sigue el scroll | dibujado y quieto |
+| La frase que se enciende | cada palabra, de 0,35 a 1 de opacidad en su tramo del paso del párrafo por la pantalla (línea de tiempo con nombre) | sigue el scroll | todas encendidas |
+| Ecosistema | `data-paso` cambia el cuadro; llegadas de 6 px y 0,96 (200 ms opacidad, 300 ms forma), trazos con `scaleX` | por estado; papeles cada 2,4 s; pulso de Daxlo cada 6 s | cuadro final quieto, sin nada fijo |
+| Puertas | `--on` 0 o 1: la placa funde, el filo se dibuja, el mini diagrama se rellena en ola, la flecha avanza 4 px | 200 ms; filo 600 ms | cambia de una vez |
+| Papel del hero | sale de detrás del recuadro y baja 40 px, 400 ms después de escrita la primera tarea | 600 ms y funde | no aparece |
+| El cierre amanece | el campo azul sube con el frente curvo y un filo cian: un domo (media elipse de 220 vw; 320 vw en celular) con `translateY` y `scaleX` atados al paso de la sección por la pantalla (`view-timeline`); el contenido funde con la misma línea de tiempo | sigue el scroll | campo completo y plano. Sin `animation-timeline`: crece desde arriba (`scaleY`, 700 ms) y el contenido funde una vez |
+| Desorden que se ordena | los papeles regados de «Hoy» son transiciones de `transform` disparadas por `data-paso` (posiciones en `src/lib/ecosistema.ts`, en cqw del escenario) | llegada 240 ms, 70 ms entre uno y otro; orden 520 ms con la curva de mover | cuadro final |
+| Eslogan del pie | la capa rellena funde sobre el contorno al entrar del todo en pantalla (`view()`) | sigue el scroll | relleno |
+
+Lo que dispara el teclado sigue sin animarse (`:has(:focus-visible)` y
+`[data-tab]`). Lo infinito se pausa fuera de la vista: las clases `animate-*`,
+con el script del layout; el escenario del ecosistema, con `data-pausa` que le
+pone `PiezaPasos`. Las transiciones entre páginas (View Transitions), el
+barrido de la barra y el punto del enlace activo llegan en la fase 4.
 
 El movimiento acompaña la lectura; nunca la retrasa ni la tapa. Todo lo que entra al
 cargar corre en CSS, sin esperar a React. Todo lo infinito se pausa fuera de pantalla
@@ -873,7 +995,7 @@ que entraban igual, un halo que respiraba sin fin, un barrido de brillo).
 | Recorrido animado: texto | el paso que sale se apaga en 150 ms; el que entra sube 6 px y aparece en 300 ms, 100 ms después | `.recorrido-paso[data-activo]` |
 | Recorrido animado: sin movimiento | con "reducir movimiento" nada avanza solo: no hay botón de pausa, los nodos cambian de paso, cada escena queda en su cuadro final y el texto solo funde (200 ms). Sin JavaScript, la línea de tiempo de antes con los cuatro pasos a la vista. Si React no carga (`.forzar-visible`), la escena queda en su cuadro final | `globals.css` |
 | Marquesina | 44 s lineal; se detiene bajo el mouse (solo puntero fino) | solo /herramientas |
-| Flotar / pasear | 6 px en 9 s / 6 s, curva de ida y vuelta de CSS (ease in-out) | orbes del cierre, /agendar, /herramientas y la 404 (la portada ya no lleva orbe) |
+| Flotar / pasear | 6 px en 9 s / 6 s, curva de ida y vuelta de CSS (ease in-out) | ya no se usa: el orbe salió de todo el sitio en noviembre de 2026 |
 | Líneas de flujo | 2.4 s lineal (solo desde 768 px) | hoy sin uso; la regla sigue en el CSS |
 | Deriva de resplandores | ±24 px, 24 s ida y vuelta, solo desde 768 px | `.animate-deriva`: cierre y el resplandor de arriba de cada zona |
 | Titular gigante de la portada | se corre −6 % / +8 % a lo ancho mientras la portada sale por arriba, sin resorte (la primera línea, al ras del contenedor, nunca a menos de 12 px del borde de la pantalla: en celular se corre 8 px); animación de CSS atada al scroll (`view-timeline` de la portada, rango `exit-crossing`), sin JavaScript por cuadro; sin soporte (Firefox, Safari anterior a 26) y con "reducir movimiento", quieto. La cinta de la portada vuelve a medir sus zonas de lectura con el scroll | `ZonaPortada`, `.paralaje-izquierda`, `.paralaje-derecha` |
