@@ -1,0 +1,176 @@
+/* ------------------------------------------------------------------
+   El hilo de luz (src/components/fondos/fondo-hilo.tsx)
+   Una línea de luz de 1 px que sale del hero y se dibuja con el scroll. Los
+   tramos y las esquinas los escribe el componente al medir la página; aquí
+   van el aspecto y la animación. Un solo tono en todo el sitio: cian.
+   - Rastro: cian al 34 %, tenue, como una línea de capítulo.
+   - Punta: 160 px que se aclaran hasta el cian claro (#7FE0FF), con un punto
+     de luz de 22 px. Solo existe mientras su tramo se dibuja.
+   - Dentro del campo azul del cierre (.hilo-campo) el rastro va en cian
+     claro: sobre azul, el cian al 34 % no se vería.
+   ------------------------------------------------------------------ */
+.fondo-hilo {
+  --hilo-rastro: rgb(41 196 245 / 0.34);
+  --hilo-punta: #7fe0ff;
+  --hilo-halo: 41 196 245;
+}
+.hilo-campo {
+  --hilo-rastro: rgb(127 224 255 / 0.7);
+  --hilo-punta: #e2f3ee;
+  --hilo-halo: 226 243 238;
+}
+
+/* La caja de cada tramo recorta la línea que se desliza dentro. Es más ancha
+   que la línea para que quepa el punto de luz de la punta. */
+.hilo-tramo {
+  position: absolute;
+  overflow: hidden;
+}
+/* La columna del hilo es ancha para dejar salir el halo de la cabeza; la
+   línea va en el medio. */
+.hilo-v {
+  width: 160px;
+  margin-left: -79.5px;
+}
+.hilo-h {
+  height: 24px;
+  margin-top: -11.5px;
+}
+.hilo-linea {
+  position: absolute;
+  inset: 0;
+}
+.hilo-linea::before {
+  content: "";
+  position: absolute;
+  background: var(--hilo-rastro);
+}
+.hilo-v .hilo-linea::before { left: 79.5px; width: 1px; top: 0; bottom: 0; }
+.hilo-h .hilo-linea::before { top: 11.5px; height: 1px; left: 0; right: 0; }
+/* El primer tramo sale del borde del recuadro: se enciende de a poco. */
+.hilo-inicio .hilo-linea::before {
+  background: linear-gradient(to bottom, transparent, var(--hilo-rastro) 60%);
+}
+/* Las ramas alimentan la línea de capítulo desde el hilo y se apagan hacia la
+   derecha: el hilo nunca cierra una caja alrededor de una sección. */
+.hilo-rama .hilo-linea::before {
+  background: linear-gradient(to right, var(--hilo-rastro), rgb(var(--hilo-halo) / 0.12) 45%, transparent 80%);
+}
+
+/* La punta va en el extremo que avanza. */
+.hilo-punta {
+  position: absolute;
+  opacity: 0;
+}
+.hilo-v .hilo-punta {
+  left: 79.5px;
+  width: 1px;
+  bottom: 0;
+  height: 160px;
+  max-height: 100%;
+  background: linear-gradient(to bottom, transparent, var(--hilo-punta));
+}
+.hilo-derecha .hilo-punta,
+.hilo-izquierda .hilo-punta {
+  top: 11.5px;
+  height: 1px;
+  width: 160px;
+  max-width: 100%;
+}
+.hilo-derecha .hilo-punta {
+  right: 0;
+  background: linear-gradient(to right, transparent, var(--hilo-punta));
+}
+.hilo-izquierda .hilo-punta {
+  left: 0;
+  background: linear-gradient(to left, transparent, var(--hilo-punta));
+}
+.hilo-punta::after {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, rgb(var(--hilo-halo) / 0.55), rgb(var(--hilo-halo) / 0.18) 55%, transparent);
+}
+.hilo-v .hilo-punta::after { left: -10.5px; bottom: -11px; }
+/* La cabeza del hilo que baja lleva además un halo ancho y tenue (cian al
+   9 %): la luz se nota viajar. Llega al texto ya casi apagado. */
+.hilo-v .hilo-punta::before {
+  content: "";
+  position: absolute;
+  left: -70px;
+  bottom: -70px;
+  width: 140px;
+  height: 140px;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, rgb(var(--hilo-halo) / 0.09), rgb(var(--hilo-halo) / 0.03) 55%, transparent);
+}
+.hilo-derecha .hilo-punta::after { right: -11px; top: -10.5px; }
+.hilo-izquierda .hilo-punta::after { left: -11px; top: -10.5px; }
+
+.hilo-esquina {
+  position: absolute;
+  border: 0 solid var(--hilo-rastro);
+}
+
+/* Donde muere el hilo: un punto de luz menta junto al botón del cierre. */
+.hilo-llegada {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  margin: -4px 0 0 -5px;
+  border-radius: 9999px;
+  background: #e2f3ee;
+  opacity: 0.9;
+}
+.hilo-llegada::after {
+  content: "";
+  position: absolute;
+  inset: -12px;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, rgb(226 243 238 / 0.45), transparent);
+}
+
+/* En celular el hilo va pegado al borde de la pantalla, sin punto de luz y
+   un poco más tenue: el margen es de 20 px. */
+@media (max-width: 767px) {
+  .fondo-hilo { --hilo-rastro: rgb(41 196 245 / 0.26); }
+  .hilo-campo { --hilo-rastro: rgb(127 224 255 / 0.6); }
+  .hilo-punta::after,
+  .hilo-punta::before { display: none; }
+  .hilo-v .hilo-punta { height: 110px; }
+}
+
+/* El dibujo atado al scroll. Corre en el compositor (solo transform y
+   opacity). Sin soporte o con «reducir movimiento» no entra: el hilo queda
+   entero y quieto, sin punta. */
+@keyframes hilo-baja { from { transform: translateY(-100%); } to { transform: none; } }
+@keyframes hilo-a-la-derecha { from { transform: translateX(-100%); } to { transform: none; } }
+@keyframes hilo-a-la-izquierda { from { transform: translateX(100%); } to { transform: none; } }
+@keyframes hilo-punta { 0% { opacity: 0; } 6% { opacity: 1; } 88% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes hilo-punta-rama { 0% { opacity: 0; } 6% { opacity: 1; } 50% { opacity: 0.85; } 82% { opacity: 0; } 100% { opacity: 0; } }
+@keyframes hilo-aparece { from { opacity: 0; } to { opacity: 1; } }
+@keyframes hilo-llega { from { opacity: 0; transform: scale(0.4); } to { opacity: 0.9; transform: none; } }
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hilo-linea,
+    .hilo-punta,
+    .hilo-esquina,
+    .hilo-llegada {
+      animation-duration: auto;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root);
+      animation-range: var(--a) var(--b);
+    }
+    .hilo-v .hilo-linea { animation-name: hilo-baja; }
+    .hilo-derecha .hilo-linea { animation-name: hilo-a-la-derecha; }
+    .hilo-izquierda .hilo-linea { animation-name: hilo-a-la-izquierda; }
+    .hilo-punta { animation-name: hilo-punta; }
+    .hilo-rama .hilo-punta { animation-name: hilo-punta-rama; }
+    .hilo-esquina { animation-name: hilo-aparece; }
+    .hilo-llegada { animation-name: hilo-llega; }
+  }
+}
