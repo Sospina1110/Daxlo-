@@ -28,7 +28,6 @@ export function ZonaConsultoria({ migas }: { migas?: React.ReactNode }) {
         respuesta={p.respuesta}
         noEs={p.noEs}
         enlace={{ texto: otraLinea.coaching.enlace, href: rutas.coaching }}
-        socios={p.socios}
       />
     </Zona>
   );

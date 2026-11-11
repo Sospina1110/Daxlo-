@@ -39,7 +39,7 @@ página de la que le interesa.
 | `/coaching` | Coaching 1 a 1 completo, sus preguntas y el puente a consultoría |
 | `/consultoria` | Consultoría de implementación completa, sus preguntas y el puente a coaching |
 | `/herramientas` | Las herramientas que enseñamos y qué hacemos con cada una |
-| `/nosotros` | Quiénes somos |
+| `/nosotros` | Cómo trabajamos |
 | `/preguntas` | Todas las preguntas frecuentes (con anclas `#coaching` y `#consultoria`) |
 | `/agendar` | El formulario. `/agendar?linea=coaching` o `?linea=consultoria` llega con la opción elegida |
 

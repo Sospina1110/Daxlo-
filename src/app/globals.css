@@ -1,10 +1,14 @@
 @import "tailwindcss";
+/* Las piezas del inicio «Encendido», el cierre y el pie. */
+@import "./encendido.css";
 
 /* ------------------------------------------------------------------
-   Sistema de diseño
-   Lenguaje visual de Fusion AI (fondo casi negro, resplandores de dos
-   tonos, vidrio, bordes degradados) con la paleta de marca de Daxlo:
-   el naranja de la plantilla pasa a cian, el azul queda en #1B35D0.
+   Sistema de diseño: «Encendido» (DESIGN.md)
+   Lo que se hace a mano está apagado; lo que ya funciona, encendido. Los
+   colores de marca no cambian y cada uno tiene un oficio: blanco, la gente y
+   el texto; menta, el trabajo (los papeles); azul, lo encendido; cian, la luz
+   que se mueve. Cinco niveles de superficie, tres radios y tres pasos de
+   ritmo vertical.
    ------------------------------------------------------------------ */
 
 @theme {
@@ -17,6 +21,8 @@
      de consultoría sobre oscuro. */
   --color-blue-soft: #8ea0ff;
   --color-cyan: #29c4f5;
+  /* Cian claro: la punta del hilo y el centro de los filos. */
+  --color-cyan-light: #7fe0ff;
   --color-cyan-deep: #0b7ea6;
   --color-mint: #e2f3ee;
   --color-fg: #ffffff;
@@ -25,8 +31,73 @@
   --color-line: rgb(255 255 255 / 0.08);
   --color-line-2: rgb(255 255 255 / 0.14);
 
-  --font-display: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* La letra del sitio. La carga src/app/layout.tsx (--fuente-marca):
+     cambiar de familia es cambiar una línea allá. Titulares y cuerpo leen
+     variables distintas por si vuelven a ser dos familias. */
+  --font-display: var(--fuente-marca), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--fuente-marca), ui-sans-serif, system-ui, sans-serif;
+
+  /* Escala tipográfica (DESIGN.md, Typography). Cada token genera una
+     utilidad text-* que trae tamaño, interlineado, tracking y peso. Los
+     tamaños van en rem y vw y el tracking en em: nada depende de las métricas
+     de una familia. La letra no tiene tamaño óptico: el ajuste por tamaño lo
+     hace el tracking de cada nivel. */
+  --text-display-hero: clamp(2.625rem, 6.2vw, 5.25rem);
+  --text-display-hero--line-height: 0.98;
+  --text-display-hero--letter-spacing: -0.035em;
+  --text-display-hero--font-weight: 600;
+  --text-display-giant: clamp(3.25rem, 14.5vw, 9rem);
+  --text-display-giant--line-height: 0.88;
+  --text-display-giant--letter-spacing: -0.04em;
+  --text-display-giant--font-weight: 800;
+  --text-headline-page: clamp(2.25rem, 5vw, 4rem);
+  --text-headline-page--line-height: 1.02;
+  --text-headline-page--letter-spacing: -0.03em;
+  --text-headline-page--font-weight: 600;
+  --text-statement: clamp(1.75rem, 3.1vw, 2.75rem);
+  --text-statement--line-height: 1.18;
+  --text-statement--letter-spacing: -0.02em;
+  --text-statement--font-weight: 500;
+  --text-headline-lg: clamp(2.1rem, 4.2vw, 3.5rem);
+  --text-headline-lg--line-height: 1.04;
+  --text-headline-lg--letter-spacing: -0.025em;
+  --text-headline-lg--font-weight: 600;
+  --text-headline-support: clamp(1.7rem, 2.9vw, 2.5rem);
+  --text-headline-support--line-height: 1.1;
+  --text-headline-support--letter-spacing: -0.022em;
+  --text-headline-support--font-weight: 600;
+  --text-headline-row: clamp(1.45rem, 2.5vw, 2.25rem);
+  --text-headline-row--line-height: 1.12;
+  --text-headline-row--letter-spacing: -0.02em;
+  --text-headline-row--font-weight: 600;
+  --text-headline-sm: 1.375rem;
+  --text-headline-sm--line-height: 1.25;
+  --text-headline-sm--letter-spacing: -0.015em;
+  --text-headline-sm--font-weight: 600;
+  --text-numeral: clamp(3rem, 6vw, 4.5rem);
+  --text-numeral--line-height: 1;
+  --text-numeral--letter-spacing: -0.02em;
+  --text-numeral--font-weight: 700;
+  --text-label: 0.8125rem;
+  --text-label--line-height: 1.4;
+  --text-label--letter-spacing: 0.08em;
+  --text-label--font-weight: 600;
+  --text-body-lg: 1.25rem;
+  --text-body-lg--line-height: 1.55;
+  --text-body-md: 1.125rem;
+  --text-body-md--line-height: 1.6;
+  --text-body-sm: 1.0625rem;
+  --text-body-sm--line-height: 1.6;
+  --text-body-xs: 0.9375rem;
+  --text-body-xs--line-height: 1.55;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.4;
+  --text-caption--letter-spacing: 0.005em;
+
+  /* Tres radios: fichas, controles (botones, campos, agentes) y placas. */
+  --radius-ficha: 8px;
+  --radius-control: 12px;
+  --radius-placa: 20px;
 
   /* Lenguaje de movimiento: dos curvas y un resorte (el resorte del botón
      magnético vive en src/lib/utils.ts, RESORTE_IMAN). Generan las utilidades
@@ -107,6 +178,35 @@
     --dur-entrada: 0.6s;
     /* Titulares que suben, en el hero y en la portada. */
     --dur-titular: 0.8s;
+
+    /* Superficies (DESIGN.md, Colors). 0 Noche es --color-ink y 1 Penumbra,
+       --color-ink-2. La placa apagada no tiene relleno: solo este borde. */
+    --borde-apagado: rgb(255 255 255 / 0.14);
+    /* 3 Placa encendida: el azul de marca al 45 %, 28 % y 14 % sobre el casi
+       negro, escrito como color sólido, y el filo de luz de arriba. */
+    --placa-encendida: linear-gradient(180deg, #132069 0%, #111949 50%, #0f132e 100%);
+    --borde-encendido: rgb(61 90 255 / 0.35);
+    --filo: linear-gradient(90deg, transparent, #29c4f5 30%, #7fe0ff 50%, #3d5aff 70%, transparent);
+    /* 4 Campo azul: el cierre de cada página, a todo el ancho. */
+    --campo-azul: radial-gradient(120% 90% at 85% 0%, #3d5aff, transparent 60%), #1b35d0;
+
+    /* Ritmo vertical: capítulo, continuación e interior. */
+    --ritmo-capitulo: 88px;
+    --ritmo-continuacion: 64px;
+    --ritmo-interior: 32px;
+    /* Margen del contenedor: lo leen las piezas que salen a sangre. */
+    --margen: 20px;
+  }
+  @media (min-width: 768px) {
+    :root {
+      --ritmo-capitulo: 144px;
+      --ritmo-continuacion: 96px;
+      --ritmo-interior: 48px;
+      --margen: 32px;
+    }
+  }
+  @media (min-width: 1280px) {
+    :root { --margen: 48px; }
   }
   html {
     background: var(--color-ink);
@@ -174,7 +274,7 @@
   }
   h1, h2, h3, h4 {
     font-family: var(--font-display);
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: -0.02em;
     text-wrap: balance;
   }
@@ -197,14 +297,80 @@
 }
 
 @layer components {
+  /* Contenedor de 1280 px. Márgenes: 20 px en celular, 32 px desde 768 px y
+     48 px desde 1280 px (--margen). */
   .container-page {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1280px;
     margin-inline: auto;
-    padding-inline: 20px;
+    padding-inline: var(--margen);
   }
-  @media (min-width: 768px) {
-    .container-page { padding-inline: 32px; }
+
+  /* Ritmo vertical de las secciones: capítulo (cambia de tema) y continuación
+     (sigue la idea anterior). */
+  .seccion-capitulo { padding-block: var(--ritmo-capitulo); }
+  .seccion-continuacion { padding-block: var(--ritmo-continuacion); }
+
+  /* Rótulo: la letra de los titulares en 13 px, mayúsculas y abierta. Nunca
+     en fuente monoespaciada. */
+  .rotulo {
+    font-family: var(--font-display);
+    font-size: var(--text-label);
+    line-height: var(--text-label--line-height);
+    letter-spacing: var(--text-label--letter-spacing);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  /* ----------------------------------------------------------------- Placa
+     La superficie de un objeto: un escenario, una ventana, un formulario, una
+     fila que se enciende. Apagada es solo un borde (nivel 2). Encendida
+     (nivel 3) lleva el azul profundo y el filo de luz de arriba. Las dos capas
+     van en pseudoelementos que solo cambian de opacidad y de scaleX: pasar de
+     apagada a encendida no repinta nada.
+     - [data-encendida]: encendida y quieta.
+     - .placa-viva: se enciende con el puntero, con el foco o cuando el
+       script del layout la marca con [data-centro] (la que cruza el centro de
+       la pantalla, en pantallas táctiles). */
+  .placa {
+    position: relative;
+    isolation: isolate;
+    border-radius: var(--radius-placa);
+    border: 1px solid var(--borde-apagado);
+  }
+  .placa::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border-radius: inherit;
+    border: 1px solid var(--borde-encendido);
+    background: var(--placa-encendida);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--dur-mover) var(--ease-salida);
+  }
+  .placa::after {
+    content: "";
+    position: absolute;
+    inset-inline: var(--radius-placa);
+    top: -1px;
+    height: 1px;
+    background: var(--filo);
+    transform: scaleX(0);
+    transform-origin: left;
+    pointer-events: none;
+    transition: transform var(--dur-entrada) var(--ease-salida);
+  }
+  .placa[data-encendida]::before,
+  .placa-viva[data-centro]::before,
+  .placa-viva:focus-within::before { opacity: 1; }
+  .placa[data-encendida]::after,
+  .placa-viva[data-centro]::after,
+  .placa-viva:focus-within::after { transform: none; }
+  @media (hover: hover) and (pointer: fine) {
+    .placa-viva:hover::before { opacity: 1; }
+    .placa-viva:hover::after { transform: none; }
   }
 
   /* Borde degradado en píldoras y botones: capa de relleno + capa de borde. */
@@ -1078,6 +1244,9 @@
   .cinta-lienzo,
   .cinta-respaldo,
   .boton-principal::before { transition: none !important; }
+  /* La placa se enciende de una vez: ni funde ni se dibuja el filo. */
+  .placa::before,
+  .placa::after { transition: none; }
   .iman-movil::after { transition: none; }
   /* Presión sin escala: lo pulsable se atenúa un poco (0.85) en 100 ms. */
   .pulsable,

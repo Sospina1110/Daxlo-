@@ -10,7 +10,7 @@ import { cn, glow, sinCorte } from "@/lib/utils";
 
 // La página contesta en orden: ¿qué es? (portada), ¿me pasa a mí? (escenas),
 // ¿cómo es una clase y qué me llevo? (la sesión) y ¿es para mí y con quién?
-// (dos columnas y los socios). Las preguntas y el cierre los pone la página.
+// (dos columnas). Las preguntas y el cierre los pone la página.
 export function ZonaCoaching({ migas }: { migas?: React.ReactNode }) {
   const c = coaching;
   return (
@@ -25,7 +25,6 @@ export function ZonaCoaching({ migas }: { migas?: React.ReactNode }) {
         es={c.paraTi.es}
         noEs={c.paraTi.noEs}
         enlace={{ texto: otraLinea.consultoria.enlace, href: rutas.consultoria }}
-        socios={c.paraTi.socios}
       />
     </Zona>
   );

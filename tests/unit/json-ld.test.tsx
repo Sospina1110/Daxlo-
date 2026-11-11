@@ -25,8 +25,8 @@ describe("JsonLd", () => {
   });
 
   it("conserva tildes y eñes (el JSON se lee como UTF-8)", () => {
-    const b = bloques(renderToStaticMarkup(<JsonLd datos={{ name: "Martín Zárate, ¿qué pasó con la señal?" }} />));
-    expect(JSON.parse(b[0]).name).toBe("Martín Zárate, ¿qué pasó con la señal?");
+    const b = bloques(renderToStaticMarkup(<JsonLd datos={{ name: "Peñaranda, ¿qué pasó con la señal?" }} />));
+    expect(JSON.parse(b[0]).name).toBe("Peñaranda, ¿qué pasó con la señal?");
   });
 
   // Antes el reemplazo usaba "\u003c", que en JavaScript ya es "<", y no

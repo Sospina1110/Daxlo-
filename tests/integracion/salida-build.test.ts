@@ -339,7 +339,8 @@ describe.skipIf(!HAY_BUILD)(HAY_BUILD ? "salida del build (out/)" : "salida del 
           for (const c of el.classList) if (c.startsWith("animate-")) usadas.add(c);
         }
       }
-      expect(usadas.size).toBeGreaterThan(3);
+      // (animate-float salió en noviembre de 2026 junto con el orbe.)
+      expect(usadas.size).toBeGreaterThan(2);
       expect([...usadas].filter((c) => !pausables.has(c))).toEqual([]);
     });
   });
@@ -367,7 +368,8 @@ describe.skipIf(!HAY_BUILD)(HAY_BUILD ? "salida del build (out/)" : "salida del 
     });
 
     it("en celular (< 768 px) no corren las líneas punteadas ni la deriva de los resplandores", () => {
-      const bloque = css.match(/@media \(max-width:\s*767px\)\s*\{([^@]*?)\}\s*\}/)?.[1] ?? "";
+      // Hay más de un bloque para celular (el del hilo de luz tiene el suyo).
+      const bloque = [...css.matchAll(/@media \(max-width:\s*767px\)\s*\{([^@]*?)\}\s*\}/g)].map((m) => m[1]).join("\n");
       expect(bloque).toMatch(/\.animate-flow,\s*\.animate-deriva\s*\{animation:none/);
     });
 

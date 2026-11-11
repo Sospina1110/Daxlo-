@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import * as copy from "@/content/copy";
-import { agendar, agendarCon, cierre, consultoria, coaching, contacto, dosFormas, faq, footer, hero, herramientas, inicioNosotros, nav, otraLinea, paginas, preguntasLinea, rutas, servicios } from "@/content/copy";
+import { agendar, agendarCon, cierre, consultoria, coaching, contacto, dosFormas, ecosistema, faq, footer, hero, herramientas, manifiesto, nav, nosotros, otraLinea, paginas, preguntasLinea, privacidad, rutas, servicios } from "@/content/copy";
 import { toolLogos } from "@/lib/logos";
 
 // Reglas que el texto del sitio tiene que cumplir siempre. Todo el texto vive
@@ -63,7 +63,9 @@ describe("voz de marca", () => {
   const respuesta = (p: string) => faq.grupos.flatMap((g) => g.preguntas).find((q) => q.p === p)?.r ?? "";
 
   it("frases de referencia de la voz: el hero, la portada de coaching y los límites", () => {
-    expect(hero.sub).toContain("Te enseñamos a resolver tu propio trabajo con IA, o construimos el sistema que lo resuelve");
+    // Desde el 2026-11-11 (dirección «Encendido») el hero dice un sistema
+    // completo con la gente al mando; antes, dos servicios para elegir.
+    expect(hero.sub).toContain("le enseñamos a tu gente a manejarlos");
     expect(coaching.portada.sub).toContain("Traes un trabajo tuyo que hoy te toma horas y lo dejas funcionando antes de colgar");
     // Coaching: el límite en el primer paso, y quien trabaja con otros va a
     // la consultoría desde "No es para ti si".
@@ -78,7 +80,6 @@ describe("voz de marca", () => {
     expect(consultoria.paraQuien.respuesta).toMatch(/«ustedes lo manejan», ahí te decimos que no/);
     expect(consultoria.paraQuien.noEs.items.at(-1)).toMatch(/una sola persona/);
     expect(otraLinea.coaching.enlace).toMatch(/coaching/);
-    expect(consultoria.paraQuien.socios.texto).toMatch(/No vendemos dependencia/);
     // Las 40 horas son referencia, no filtro, y si no da no se cotiza.
     const noDa = respuesta("¿Y si mi proceso no da para un proyecto?");
     expect(noDa).toMatch(/te lo decimos en la primera conversación y no te cotizamos nada/i);
@@ -122,6 +123,8 @@ describe("voz de marca", () => {
     const marca = new RegExp(`\\b(${nombres.join("|")})\\b`, "i");
     const donde = [
       ...cadenas(dosFormas, "dosFormas"),
+      ...cadenas(manifiesto, "manifiesto"),
+      ...cadenas(ecosistema, "ecosistema"),
       ["coaching.portada.sub", coaching.portada.sub],
       ["coaching.sesion.titulo", coaching.sesion.titulo],
       ...cadenas(coaching.sesion.pasos, "coaching.sesion.pasos"),
@@ -275,6 +278,10 @@ describe("listas que el sitio pinta con key de React", () => {
 
   unicas("hero.tareas (texto que se escribe)", hero.tareas);
   unicas("hero.historial", hero.historial);
+  unicas("ecosistema.pasos (rótulo)", ecosistema.pasos.map((p) => p.rotulo));
+  unicas("ecosistema.carriles (agente)", ecosistema.carriles.map((c) => c.agente));
+  unicas("ecosistema.daxlo.acciones", ecosistema.daxlo.acciones);
+  unicas("nosotros.parrafos", nosotros.parrafos);
   unicas("coaching.portada.nota", coaching.portada.nota);
   unicas("coaching.problema.escenas", coaching.problema.escenas);
   unicas("coaching.sesion.pasos (número)", coaching.sesion.pasos.map((p) => p.numero));
@@ -311,14 +318,45 @@ describe("coherencia entre bloques", () => {
     }
   });
 
-  // Juntos y con el país: /consultoria y /coaching apuntan a búsquedas "en
-  // Colombia" y la palabra tiene que verse en el cuerpo, no solo en las
-  // preguntas cerradas.
-  it("los dos socios van juntos, en Colombia, en el inicio, /coaching y /consultoria", () => {
-    for (const t of [inicioNosotros.linea, consultoria.paraQuien.socios.texto, coaching.paraTi.socios.texto]) {
-      expect(t).toMatch(/Martín Zárate y Santiago Ospina/);
-      expect(t).toMatch(/Colombia/);
-    }
+  // Desde el 2026-11-11 (Santiago) salió la parte de los socios. Con nombre
+  // aparece una sola persona, el fundador: en la última línea de "Cómo
+  // trabajamos" y donde la ley pide decir quién responde por los datos. El
+  // país sigue a la vista en el cuerpo ("en Colombia").
+  it("con nombre aparece solo el fundador, y solo donde toca", () => {
+    const FUNDADOR = "Santiago Ospina";
+    expect(nosotros.fundador).toContain(FUNDADOR);
+    expect(nosotros.fundador).toMatch(/Colombia/);
+    const conNombre = TODAS.filter(([, t]) => t.includes(FUNDADOR)).map(([d]) => d);
+    expect(conNombre.sort()).toEqual(["agendar.campos.aviso", "nosotros.fundador", "privacidad.responsable.nombre"]);
+    expect(privacidad.responsable.nombre).toContain(FUNDADOR);
+    // Nadie más: ni "socios" ni "los dos" en lo que se lee.
+    const todo = TODAS.map(([, t]) => t).join(" ");
+    expect(todo).not.toMatch(/\bsocios?\b|estamos los dos/i);
+    expect(nosotros.parrafos[2]).toMatch(/Colombia/);
+  });
+
+  // El inicio «Encendido» (2026-11-11): la frase que se enciende y la pieza
+  // del ecosistema.
+  it("el manifiesto y el ecosistema: cuatro pasos, tres carriles y el ejemplo rotulado", () => {
+    expect(manifiesto.fuerte).toMatch(/^Daxlo es el aliado de IA/);
+    expect(manifiesto.sigue.split(" ").length).toBeGreaterThan(15);
+    expect(ecosistema.pasos).toHaveLength(4);
+    expect(ecosistema.pasos.map((p) => p.rotulo)).toEqual(["Hoy", "Lo montamos", "Lo aprende tu gente", "Nos quedamos"]);
+    expect(ecosistema.carriles).toHaveLength(3);
+    expect(ecosistema.etiqueta).toBe("Ejemplo");
+    expect(ecosistema.descripcion).toMatch(/^Diagrama de ejemplo/);
+    // Un agente se explica una vez, donde aparece.
+    expect(ecosistema.pasos[1].texto).toMatch(/^Un agente es una IA que hace una tarea completa/);
+    // "Nos quedamos" dice las dos cosas juntas: funciona sin nosotros y
+    // seguimos porque quieres. Sin frecuencia ni precio.
+    expect(ecosistema.pasos[3].texto).toMatch(/funciona sin nosotros\. Seguimos porque quieres/);
+    // "Nativa" va una sola vez en todo el sitio; "ecosistema" y "sistemas
+    // agénticos" no se dicen.
+    const todo = TODAS.map(([, t]) => t).join(" ");
+    expect(todo.match(/\bnativ[ao]s?\b/gi)).toHaveLength(1);
+    expect(todo).not.toMatch(/ecosistema|agéntic/i);
+    // El papel que sale del recuadro del hero es el del primer carril.
+    expect(hero.papel).toBe(ecosistema.carriles[0].papel);
   });
 
   it("el formulario ofrece coaching, consultoría y 'todavía no sé'", () => {

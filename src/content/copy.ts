@@ -34,7 +34,8 @@ export const nav = {
     { label: "Coaching", href: rutas.coaching },
     { label: "Consultoría", href: rutas.consultoria },
     { label: "Herramientas", href: rutas.herramientas },
-    { label: "Nosotros", href: rutas.nosotros },
+    // La ruta sigue siendo /nosotros; la página es "Cómo trabajamos" (2026-11-11).
+    { label: "Cómo trabajamos", href: rutas.nosotros },
     { label: "Preguntas", href: rutas.preguntas },
   ],
   cta: { label: "Agendar", href: rutas.agendar },
@@ -86,9 +87,13 @@ export const paginas = {
       "Claude, ChatGPT, Claude Code, Codex, n8n, Obsidian y Base44. Qué hacemos con cada una en el coaching 1 a 1 y en los proyectos de consultoría.",
   },
   nosotros: {
-    titulo: "Quiénes somos: Martín Zárate y Santiago Ospina",
+    // Desde el 2026-11-11 (Santiago) la página es "Cómo trabajamos": habla de
+    // Daxlo y de su forma de trabajar, sin la parte de los socios. La URL no
+    // cambia. Se pierde la búsqueda por el nombre de las personas ("Quiénes
+    // somos: …"), que es lo que llevaba el título anterior.
+    titulo: "Cómo trabajamos: te enseñamos o lo montamos contigo",
     descripcion:
-      "Martín Zárate y Santiago Ospina, socios de Daxlo. Construimos sistemas de IA en tu empresa y no cerramos un proyecto hasta que tu equipo lo sostenga.",
+      "Trabajamos de dos formas, según quién hace el trabajo: te enseñamos a resolverlo tú o lo montamos con tu equipo. Lo que queda funciona sin nosotros.",
   },
   preguntas: {
     titulo: "Preguntas sobre coaching y consultoría de IA",
@@ -111,17 +116,23 @@ export const paginas = {
 // empresa, no un proveedor más. La IA queda dentro de cómo trabaja la empresa
 // y no hay que contratar a alguien nuevo cada vez que la tecnología cambia.
 // "Ir al ritmo" sí; "quedarse atrás" no (lista de miedo de voz-daxlo.md).
+// Desde el 2026-11-11 (dirección «Encendido», aprobada por Santiago) el sub
+// dice un sistema completo con tu gente al mando, y las dos líneas son las dos
+// entradas a eso: antes decía dos servicios para elegir ("te enseñamos o
+// construimos"). La frase de referencia que vigila copy.test.ts pasa a ser
+// "le enseñamos a tu gente a manejarlos". La segunda frase deja entrar a quien
+// trabaja solo.
 export const hero = {
   aliado: "Tu aliado de IA",
   titulo: ["Implementamos la IA.", "Transferimos la capacidad."],
-  sub: "Te enseñamos a resolver tu propio trabajo con IA, o construimos el sistema que lo resuelve dentro de tu empresa. Seguimos contigo al ritmo de la IA, sin que contrates un proveedor nuevo cada vez.",
+  sub: "Montamos en tu empresa los agentes y las automatizaciones que hacen el trabajo repetido, y le enseñamos a tu gente a manejarlos. Si trabajas solo, te enseñamos a ti.",
   cta: "Agendar una conversación",
   meta: "Primera conversación sin costo",
   // Lo primero que escribe el recuadro del hero es una búsqueda: se tacha con
   // la raya del "Hoy" de /consultoria y da paso a las tareas (2026-11-06, I4
-  // de landing-hilo-conductor). Así el titular de abajo ("Usas la IA como un
-  // buscador. El trabajo sigue a mano.") nombra lo que se acaba de ver. Con
-  // "reducir movimiento" no aparece: queda la primera tarea, quieta.
+  // de landing-hilo-conductor). Así el paso "Hoy" del ecosistema ("Usas la IA
+  // como un buscador. El trabajo sigue a mano.") nombra lo que se acaba de
+  // ver. Con "reducir movimiento" no aparece: queda la primera tarea, quieta.
   busqueda: "¿Cómo se registra una factura electrónica?",
   // Después de la búsqueda, el recuadro escribe estas tareas solo, una tras
   // otra (y vuelve a la búsqueda).
@@ -138,43 +149,110 @@ export const hero = {
     "Notas de la reunión",
     "Base de clientes",
   ],
+  // El papel que sale del recuadro cuando termina de escribirse la primera
+  // tarea (la de las facturas): de ahí nace el hilo de luz que baja por la
+  // página. Es el mismo papel del primer carril del ecosistema.
+  papel: "Factura",
 };
 
-// El inicio, debajo del hero, solo reparte: el dolor en una línea (titular) y
-// dos puertas según quién hace el trabajo. Lo que cuenta cada línea vive en su
-// página; aquí no se repite.
+// Qué es Daxlo, en una afirmación de dos tonos (2026-11-11): `fuerte` es el
+// h2 y va en blanco; `sigue` continúa en el mismo párrafo, apagado, y se
+// enciende palabra por palabra al bajar. Es la única sección del inicio sin
+// pieza ni botón: la pantalla casi vacía entre el hero y el ecosistema.
+export const manifiesto = {
+  fuerte: "Daxlo es el aliado de IA de tu empresa.",
+  sigue: "Armamos el sistema completo, se lo enseñamos a tu gente y seguimos ahí cuando haya que revisarlo, mejorarlo o sumar el siguiente proceso.",
+};
+
+// La pieza del inicio (2026-11-11): un diagrama de ejemplo que pasa de "a
+// mano" a "encendido" en cuatro pasos mientras se baja. Los tres pilares
+// (montamos el sistema, tu gente lo aprende, nos quedamos) viven aquí y no en
+// tres columnas de icono y texto.
+// - "Sistemas agénticos" no se dice: se dice "agentes" y se explica una vez,
+//   en el paso 2. "Ecosistema" no va en titulares: lo muestra el dibujo.
+//   "Nativa" va una sola vez en todo el sitio, en el paso 3.
+// - El titular del paso "Hoy" era el de las dos puertas: nombra lo que el
+//   recuadro del hero acaba de mostrar (la búsqueda tachada).
+// - "Nos quedamos" no promete frecuencia ni precio: cada cuánto es la
+//   revisión y si se cobra está pendiente de Santiago. Lleva la idea que
+//   antes iba en quiénes somos: lo que montamos funciona sin nosotros.
+// - Los carriles salen de hero.tareas, ya aprobadas, y sus rótulos son
+//   genéricos a propósito: ninguna marca y ningún cliente. El escenario va
+//   rotulado "Ejemplo".
+export const ecosistema = {
+  titulo: "Lo que hoy se hace a mano, funcionando solo. Con tu gente al mando.",
+  etiqueta: "Ejemplo",
+  // Texto alterno del escenario (role="img").
+  descripcion: "Diagrama de ejemplo. Tres trabajos de una empresa pasan de hacerse a mano a hacerse con agentes y automatizaciones que su equipo maneja, con Daxlo al lado.",
+  pasos: [
+    {
+      rotulo: "Hoy",
+      titulo: "Usas la IA como un buscador. El trabajo sigue a mano.",
+      texto: "Las facturas llegan al correo y alguien las pasa a la hoja de cálculo. Otro arma cada cotización desde cero. El informe de la semana se junta el viernes.",
+    },
+    {
+      rotulo: "Lo montamos",
+      titulo: "Montamos el sistema completo.",
+      texto: "Un agente es una IA que hace una tarea completa y te la deja lista para aprobar. Montamos los agentes, las automatizaciones que mueven los datos entre lo que tu empresa ya usa y las conexiones. No coordinas a un proveedor por cada pieza.",
+    },
+    {
+      rotulo: "Lo aprende tu gente",
+      titulo: "Tu gente se vuelve nativa en IA.",
+      texto: "A cada persona le explicamos cómo funciona y practicamos sobre su propio trabajo. Cada una aprueba, corrige y ajusta. La IA deja de ser de unos pocos.",
+    },
+    {
+      rotulo: "Nos quedamos",
+      titulo: "Y seguimos contigo.",
+      texto: "Lo que montamos funciona sin nosotros. Seguimos porque quieres: una revisión, una mejora, el siguiente proceso o un cambio en la forma de trabajar del equipo.",
+    },
+  ],
+  // El marco que rodea los carriles: lo de adentro es de la empresa; Daxlo va
+  // afuera, al lado.
+  marco: "Tu empresa",
+  carriles: [
+    { herramienta: "Correo", papel: "Factura", agente: "Lee las facturas", persona: "Contabilidad" },
+    { herramienta: "Hojas de cálculo", papel: "Cotización", agente: "Arma la cotización", persona: "Ventas" },
+    { herramienta: "Sistema contable", papel: "Informe", agente: "Resume la semana", persona: "Gerencia" },
+  ],
+  estados: { aMano: "A mano", aprueba: "Aprueba", ajusta: "Ajusta", siguiente: "Siguiente proceso" },
+  daxlo: { nombre: "Daxlo", acciones: ["Lo monta", "Lo revisa", "Lo mejora"] },
+  leyenda: ["Tu gente", "El trabajo", "Agentes", "Automatizaciones"],
+} as const;
+
+// Las dos puertas del inicio: por dónde se entra, según quién hace el trabajo.
+// Lo que cuenta cada línea vive en su página; aquí no se repite.
 // La regla de cada puerta ("Lo haces tú solo" / "Lo hacen varias personas de
 // tu equipo") es la misma con la que se decide en /preguntas#elegir y en el
 // "No es para… si" de cada línea: si se cambia una, se cambian todas, para que
 // nadie entre por la puerta equivocada (lo vigila copy.test.ts).
 // Las cabeceras de sección no llevan etiqueta encima (DESIGN.md): la búsqueda
 // la llevan dosFormas.sub ("coaching o consultoría de inteligencia
-// artificial", el primer párrafo bajo el hero) y los títulos de las puertas.
-// Las puertas no llevan píldora de audiencia: la dicen el pictograma y la regla.
+// artificial") y los títulos de las puertas.
 // Desde el 2026-11-03 (Santiago): ni el titular ni las puertas nombran
-// herramientas. "Clases… con ChatGPT y Claude" y "Elegimos un proceso, lo
-// construimos con IA" no decían nada. El titular es el punto de partida más
-// común (la IA usada como buscador) y cada puerta cuenta cómo trabajamos, en
-// el mismo orden que su página: coaching, resuelves tú y sales sabiendo
-// repetirlo; consultoría, ver dónde se traba el trabajo y qué te cuesta,
-// ordenar, cambiarlo con el equipo cada semana y, cuando el equipo ya lo
-// opera, seguir con el siguiente (2026-11-06: "Después te traemos el siguiente
-// paso" no decía de qué; ahora usa las palabras de la portada de /consultoria).
-// "Construir" sin objeto no dice qué cambia: se dice "lo cambiamos", como en
-// otraLinea. Frecuencia ("cada semana") pendiente de Santiago.
+// herramientas. Cada puerta cuenta cómo trabajamos, en el mismo orden que su
+// página: coaching, resuelves tú y sales sabiendo repetirlo; consultoría, ver
+// dónde se traba el trabajo y qué te cuesta, montar con el equipo cada semana
+// y, cuando el equipo ya lo opera, seguir con el siguiente.
+// Desde el 2026-11-11 (dirección «Encendido»): el titular viejo ("Usas la IA
+// como un buscador…") se mudó al paso "Hoy" del ecosistema y aquí queda la
+// pregunta; la puerta de la consultoría dice qué se monta (agentes y
+// automatizaciones), y la de coaching suma que también es para la gente de
+// una empresa (`equipos`; la oferta la confirmó Santiago, sin precio ni forma
+// de pago). Frecuencia ("cada semana") pendiente de Santiago.
 export const dosFormas = {
-  titulo: "Usas la IA como un buscador. El trabajo sigue a mano.",
-  sub: "Eso lo cambias de dos formas: coaching o consultoría de inteligencia artificial, según quién hace el trabajo.",
+  titulo: "¿Por dónde empiezas?",
+  sub: "Coaching o consultoría de inteligencia artificial: depende de quién hace el trabajo.",
   coaching: {
     regla: "Lo haces tú solo",
     titulo: servicios.coaching,
     linea: "Resuelves en la sesión el trabajo que hoy te quita horas. Escribes tú, te corregimos en el momento y sales sabiendo repetirlo.",
+    equipos: "También para la gente de tu empresa: cada persona, sobre su propio trabajo.",
     enlace: "Ver el coaching",
   },
   consultoria: {
     regla: "Lo hacen varias personas de tu equipo",
     titulo: servicios.consultoria,
-    linea: "Vemos dónde se traba el trabajo y qué te está costando. Ordenamos la información y trabajamos cada semana con tu equipo hasta cambiar ese proceso. Cuando tu equipo ya lo opera, seguimos con el siguiente.",
+    linea: "Vemos dónde se traba el trabajo y qué te está costando. Montamos con tu equipo los agentes y las automatizaciones de ese proceso, cada semana, hasta que lo opera. Después seguimos con el siguiente.",
     enlace: "Ver la consultoría",
   },
 };
@@ -283,10 +361,6 @@ export const coaching = {
     noEs: {
       titulo: "No es para ti si",
       items: ["Buscas un curso grabado.", "No vas a practicar entre sesiones.", "Lo hacen varias personas de tu equipo y buscas cambiarlo para todos."],
-    },
-    // Quién está detrás: "en Colombia", sin ciudad (Santiago, 2026-11-03).
-    socios: {
-      texto: "Martín Zárate y Santiago Ospina, en Colombia. En todo lo que sale de Daxlo estamos los dos.",
     },
   },
 };
@@ -478,7 +552,7 @@ export const consultoria = {
     },
   },
   // ¿Es para mi empresa y con quién hablo? La pregunta que filtra (quién lo
-  // opera), a quién no le servimos y los dos socios, antes del final. La
+  // opera), a quién no le servimos, antes del final. La
   // última línea de "No es para tu empresa si" termina en el enlace al
   // coaching (otraLinea.coaching.enlace). Las 40 horas quedan como referencia
   // en las preguntas ("¿Y si mi proceso no da para un proyecto?").
@@ -499,30 +573,34 @@ export const consultoria = {
       titulo: "No es para tu empresa si",
       items: ["Quieres recibirlo armado, sin que tu equipo participe.", "Solo buscas un bot que conteste mensajes.", "Lo hace de principio a fin una sola persona."],
     },
-    // "En Colombia", nunca una ciudad (Santiago, 2026-11-03).
-    socios: {
-      texto: "Martín Zárate y Santiago Ospina, en Colombia. En todo lo que sale de Daxlo estamos los dos. No vendemos dependencia.",
-    },
   },
 };
 
 // ---------------------------------------------------------------- CIERRE
 
-// Desde el 2026-11-06 (I2 y N2 de landing-hilo-conductor): el titular (h1 de
-// /nosotros y h2 del inicio) nombra las dos líneas, y el tercer párrafo dice
-// las dos formas de trabajar con la regla de las puertas del inicio
-// (dosFormas.*.regla), así presenta las dos tarjetas que siguen. Quien llega
-// desde /coaching ya no lee una página que solo habla de empresas. Si la regla
-// cambia, cambia aquí también.
+// La página /nosotros, que desde el 2026-11-11 (Santiago) es "Cómo
+// trabajamos": habla de Daxlo y de su forma de trabajar. Salió la parte de los
+// socios (retrato, nombres y firma); con nombre aparece solo el fundador, en
+// la última línea. El rediseño fino llega con las páginas de apoyo.
+// - El h1 nombra las dos líneas con las palabras del sitio ("te enseñamos" es
+//   coaching; "lo montamos contigo", consultoría). Antes era "Dos socios que
+//   enseñan y construyen."
+// - Nada es nuevo: los dos primeros párrafos ya estaban; el tercero dice las
+//   dos formas de trabajar con la regla de las puertas del inicio
+//   (dosFormas.*.regla), así presenta las dos tarjetas que siguen (si la regla
+//   cambia, cambia aquí también; lo vigila tests/e2e/hilo.spec.ts); el cuarto
+//   junta lo que el sitio ya dice en la sesión de coaching (tu archivo real) y
+//   en el paso "Nos quedamos" del ecosistema.
 export const nosotros = {
-  badge: "Quiénes somos",
-  titulo: "Dos socios que enseñan y construyen.",
+  etiqueta: "Cómo trabajamos",
+  titulo: "Te enseñamos o lo montamos contigo.",
   parrafos: [
-    "Somos Martín Zárate y Santiago Ospina, egresados de Administración del CESA. Usamos IA todos los días para leer datos, automatizar procesos y armar sistemas que hacen solos lo que antes tomaba horas.",
-    "Fundamos Daxlo por algo que vimos repetido: las empresas compran IA y quedan con un sistema que no entienden, o con un equipo que entendió la teoría y no cambió nada.",
+    "Usamos IA todos los días para leer datos, automatizar procesos y armar sistemas que hacen solos lo que antes tomaba horas.",
+    "Daxlo nació de algo que vimos repetido: las empresas compran IA y quedan con un sistema que no entienden, o con un equipo que entendió la teoría y no cambió nada.",
     "Hay quien te vende un programa y desaparece. Nosotros trabajamos de dos formas, según quién hace el trabajo. Si lo haces tú solo, te enseñamos a resolverlo tú en sesiones 1 a 1. Si lo hacen varias personas de tu equipo, lo construimos con ellas dentro de tu empresa, en Colombia. No cerramos el proyecto hasta que alguien de adentro pueda sostenerlo sin nosotros.",
+    "Trabajamos sobre tu trabajo real: tu archivo, tu proceso, tu gente. Lo que montamos funciona sin nosotros. Seguimos contigo porque quieres, con una revisión, una mejora o el siguiente proceso.",
   ],
-  firma: "En todo lo que sale de Daxlo estamos los dos.",
+  fundador: "Daxlo lo fundó Santiago Ospina, en Colombia.",
 };
 
 // Una pregunta frecuente. `enlace` es opcional y se pinta al final de la
@@ -606,7 +684,7 @@ export const faq: {
         // información en un solo lugar: como EJEMPLOS de lo que se construye,
         // sin precio ni resultado. El tablero es de ese proceso, no de toda la
         // empresa: un proceso a la vez.
-        { p: "¿Qué hace una consultoría de inteligencia artificial?", r: "Te ayuda a decidir en qué proceso de tu empresa la inteligencia artificial cambia el trabajo, y lo deja funcionando con alguien de tu equipo a cargo. En Daxlo primero buscamos dónde se traba el trabajo y elegimos por dónde empezar. Ordenamos la información antes de automatizar y construimos con tu equipo cada semana, para que entienda cómo funciona. Lo que construimos depende del caso: por ejemplo, la información de un proceso en un solo lugar conectado a la IA, o un tablero con ese proceso al día. Avanzamos por fases, un proceso a la vez. Daxlo es una consultoría de inteligencia artificial en Colombia, de Martín Zárate y Santiago Ospina, con dos líneas: coaching de IA 1 a 1 para personas y consultoría de implementación para empresas." },
+        { p: "¿Qué hace una consultoría de inteligencia artificial?", r: "Te ayuda a decidir en qué proceso de tu empresa la inteligencia artificial cambia el trabajo, y lo deja funcionando con alguien de tu equipo a cargo. En Daxlo primero buscamos dónde se traba el trabajo y elegimos por dónde empezar. Ordenamos la información antes de automatizar y construimos con tu equipo cada semana, para que entienda cómo funciona. Lo que construimos depende del caso: por ejemplo, la información de un proceso en un solo lugar conectado a la IA, o un tablero con ese proceso al día. Avanzamos por fases, un proceso a la vez. Daxlo es una consultoría de inteligencia artificial en Colombia, con dos líneas: coaching de IA 1 a 1 para personas y consultoría de implementación para empresas." },
         // "Transformar una empresa con IA" es postura de Daxlo, no un dato. Los
         // procesos son ejemplos genéricos, no de ningún cliente. Ordenar antes
         // de automatizar es el paso 03 (2026-11-03).
@@ -681,7 +759,7 @@ export const agendar = {
     // Aviso de privacidad corto (Decreto 1377 de 2013, art. 15). Sin el correo
     // en texto: la ofuscación de Cloudflare lo reescribiría en el HTML.
     aviso:
-      "Responsable: Daxlo (Martín Zárate y Santiago Ospina). Usamos tus datos solo para lo que autorizas. Se guardan en servicios de Google, Cloudflare y Cal.com y en nuestro sistema interno, con servidores fuera de Colombia. Puedes conocerlos, corregirlos, pedir que los borremos o revocar la autorización cuando quieras; la política explica cómo.",
+      "Responsable: Daxlo (Santiago Ospina). Usamos tus datos solo para lo que autorizas. Se guardan en servicios de Google, Cloudflare y Cal.com y en nuestro sistema interno, con servidores fuera de Colombia. Puedes conocerlos, corregirlos, pedir que los borremos o revocar la autorización cuando quieras; la política explica cómo.",
   },
   // Qué pasa después de enviar, debajo del formulario, en la línea de nodos
   // del recorrido de /consultoria (2026-11-06; reemplaza el párrafo de B-4).
@@ -740,7 +818,9 @@ export const footer = {
       titulo: "Consultoría",
       enlaces: [
         { t: "Consultoría de implementación", h: rutas.consultoria },
-        { t: "Cómo trabajamos", h: `${rutas.consultoria}#como-trabajamos` },
+        // "Cómo trabajamos" es ahora la página /nosotros (columna Daxlo): el
+        // ancla del recorrido se nombra por lo que muestra.
+        { t: "Los cuatro pasos", h: `${rutas.consultoria}#como-trabajamos` },
         // El texto sigue el tema de la sección (qué cambia en la empresa); el
         // ancla no cambia.
         { t: "Qué cambia en tu empresa", h: `${rutas.consultoria}#que-automatizamos` },
@@ -749,7 +829,7 @@ export const footer = {
     {
       titulo: "Daxlo",
       enlaces: [
-        { t: "Quiénes somos", h: rutas.nosotros },
+        { t: "Cómo trabajamos", h: rutas.nosotros },
         { t: "Preguntas frecuentes", h: rutas.preguntas },
         { t: "Agendar una conversación", h: rutas.agendar },
       ],
@@ -806,17 +886,6 @@ export const cierre = {
   whatsapp: "O escríbenos por WhatsApp",
 };
 
-// Quiénes somos, en corto, en el inicio. La página /nosotros tiene el texto
-// completo (nosotros.parrafos). Sin "partimos de cómo trabajas hoy": lo dice
-// cualquier consultora. Desde el 2026-11-04 tampoco "no vendemos
-// dependencia": el eslogan lo dicen muchas consultoras y es la forma más
-// débil. Dice el mecanismo, con las palabras de herramientas.sub. No choca con
-// "Tu aliado de IA": lo hecho funciona sin nosotros y seguimos si quieres.
-export const inicioNosotros = {
-  linea: "Martín Zárate y Santiago Ospina, en Colombia. Te enseñamos o construimos contigo, y lo que hacemos sigue funcionando sin nosotros.",
-  enlace: "Conoce a Martín y Santiago",
-};
-
 // ------------------------------------------------------------- AGENDA
 
 // La agenda de Cal.com (cuenta de Team Daxlo, usuario «daxlo»). Al enviar el
@@ -856,14 +925,17 @@ export const privacidad = {
   // La versión viaja con cada envío como prueba de qué texto aceptó la
   // persona: si cambia el texto, cambia la versión (la prueba de copy.test.ts
   // lo exige). Versiones anteriores: 2026-10-26 = commit de6dfd4 (tag
-  // politica-2026-10-26). Al publicar, la vigencia es el día de publicación.
-  version: "2026-10-26-2",
-  vigencia: "26 de octubre de 2026",
+  // politica-2026-10-26); 2026-10-26-2 = commit 53fe275. Al publicar, la
+  // vigencia es el día de publicación.
+  // 2026-11-11: cambia quién responde por los datos (una sola persona detrás
+  // del nombre comercial). Lo tiene que confirmar Santiago antes de publicar.
+  version: "2026-11-11",
+  vigencia: "11 de noviembre de 2026",
   responsable: {
-    nombre: "Daxlo, nombre comercial con el que trabajan Martín Zárate y Santiago Ospina",
+    nombre: "Daxlo, nombre comercial con el que trabaja Santiago Ospina",
     domicilio: "Colombia",
     whatsapp: "+57 320 384 8586",
-    atiende: "Los dos socios atienden las consultas y reclamos sobre datos personales.",
+    atiende: "Daxlo atiende las consultas y reclamos sobre datos personales.",
   },
   intro:
     "Esta política explica qué datos personales recogemos en daxlo.co, para qué los usamos, dónde los guardamos y cómo puedes consultarlos, corregirlos o pedir que los borremos.",
@@ -945,7 +1017,7 @@ export const privacidad = {
     {
       titulo: "Seguridad",
       parrafos: [
-        "Tomamos medidas razonables para proteger tus datos: el sitio funciona solo por conexión cifrada (HTTPS), el acceso a la hoja de cálculo y al sistema interno está limitado a los dos socios, con verificación en dos pasos, y el formulario no guarda nada en tu navegador.",
+        "Tomamos medidas razonables para proteger tus datos: el sitio funciona solo por conexión cifrada (HTTPS), el acceso a la hoja de cálculo y al sistema interno está limitado al equipo de Daxlo, con verificación en dos pasos, y el formulario no guarda nada en tu navegador.",
       ],
     },
     {

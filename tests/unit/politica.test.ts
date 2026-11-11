@@ -10,6 +10,7 @@ import { agendar, privacidad } from "@/content/copy";
 // texto de cada versión anterior queda en git (tag politica-<versión>).
 const HUELLAS: Record<string, string> = {
   "2026-10-26-2": "e20fdba3a1b5e2c6",
+  "2026-11-11": "54f56c1b76406c81",
 };
 
 function huella() {

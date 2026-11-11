@@ -1,7 +1,6 @@
 import { Plus } from "lucide-react";
 import { herramientas } from "@/content/copy";
 import { toolLogos, type ToolId } from "@/lib/logos";
-import { Orb } from "@/components/ui/primitives";
 import { Marquee, SectionHeading, ToolLogo } from "@/components/ui/blocks";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { cn } from "@/lib/utils";
@@ -13,8 +12,10 @@ function fondoMarca(id: ToolId) {
   return c === "#FFFFFF" ? "rgba(255,255,255,0.08)" : `${c}1f`;
 }
 
-// Las integraciones de la plantilla: orbe detrás del titular y una fila de
-// tejas que pasa por debajo. Abajo, para qué sirve cada herramienta.
+// El titular a la izquierda, una fila de tejas que pasa por debajo y, abajo,
+// para qué sirve cada herramienta. Sin la esfera de vidrio detrás del h1
+// (DESIGN.md, qué no hacer); la marquesina y las fichas salen con el rediseño
+// propio de la página.
 // Con `migas`, la sección abre la página /herramientas: su titular es el h1.
 export function Herramientas({ migas }: { migas?: React.ReactNode }) {
   const h = herramientas;
@@ -24,17 +25,13 @@ export function Herramientas({ migas }: { migas?: React.ReactNode }) {
       className="relative isolate overflow-hidden pb-16 pt-28 md:pb-36 md:pt-36"
       aria-labelledby="titulo-herramientas"
     >
-      <div aria-hidden className={cn("pointer-events-none absolute left-1/2 -z-10 -translate-x-1/2", principal ? "top-40 md:top-24" : "top-16 md:top-6")}>
-        <Orb tamano="min(560px, 96vw)" tono="dual" className="animate-float opacity-60 md:opacity-90" />
-      </div>
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[520px] bg-gradient-to-b from-ink via-transparent to-ink" />
 
       <div className="container-page relative">
         {migas}
-        <SectionHeading id="titulo-herramientas" badge={h.badge} titulo={h.titulo} sub={h.sub} nivel={principal ? 1 : 2} className={principal ? "mt-10" : undefined} />
+        <SectionHeading id="titulo-herramientas" titulo={h.titulo} sub={h.sub} nivel={principal ? 1 : 2} className={principal ? "mt-10 md:mt-14" : undefined} />
       </div>
 
-      <div className="relative mt-16 md:mt-24">
+      <div className="relative mt-12 md:mt-16">
         <Marquee duracion={44} espacio={16}>
           {h.lista.map((t) => (
             <span
@@ -52,7 +49,7 @@ export function Herramientas({ migas }: { migas?: React.ReactNode }) {
 
       <div className="container-page mt-20 md:mt-24">
         <Reveal>
-          <h2 className="text-[26px] text-white md:text-[30px]">{h.subtituloLista}</h2>
+          <h2 className="text-headline-support text-white">{h.subtituloLista}</h2>
         </Reveal>
         {/* En celular cada herramienta es una fila (logo a la izquierda, texto
             a la derecha): como tarjetas, las ocho ocupaban cuatro pantallas.
@@ -63,7 +60,7 @@ export function Herramientas({ migas }: { migas?: React.ReactNode }) {
               {/* Las fichas no se pueden pulsar: sin hover (DESIGN.md: hover
                   solo en lo pulsable). Antes cambiaban de borde y encendían un
                   resplandor con filter: blur(50px), de lo más caro de pintar. */}
-              <article className="glass relative flex h-full flex-row items-start gap-4 overflow-hidden rounded-[20px] p-5 sm:flex-col sm:gap-0 sm:p-6">
+              <article className="glass relative flex h-full flex-row items-start gap-4 overflow-hidden rounded-placa p-5 sm:flex-col sm:gap-0 sm:p-6">
                 <span className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl sm:h-12 sm:w-12" style={{ background: fondoMarca(t.id) }}>
                   <ToolLogo id={t.id} tamano={24} />
                 </span>
@@ -75,7 +72,7 @@ export function Herramientas({ migas }: { migas?: React.ReactNode }) {
             </StaggerItem>
           ))}
           <StaggerItem as="li" className="h-full">
-            <article className="flex h-full flex-row items-start gap-4 rounded-[20px] border border-dashed border-line-2 p-5 sm:flex-col sm:gap-0 sm:p-6">
+            <article className="flex h-full flex-row items-start gap-4 rounded-placa border border-dashed border-line-2 p-5 sm:flex-col sm:gap-0 sm:p-6">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line-2 text-white/70 sm:h-12 sm:w-12">
                 <Plus size={22} />
               </span>

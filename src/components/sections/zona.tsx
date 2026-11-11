@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ArrowRight, Check, Minus } from "lucide-react";
-import { inicioNosotros, rutas } from "@/content/copy";
 import { enLineas, SectionHeading } from "@/components/ui/blocks";
 import { Reveal } from "@/components/ui/reveal";
 import { cn, glow } from "@/lib/utils";
@@ -111,8 +110,6 @@ type ListaPara = { titulo: string; items: readonly string[] };
 // - Consultoría (`cita`): a la izquierda el titular, la pregunta que filtra
 //   como cita y la respuesta; a la derecha "No es para tu empresa si".
 // - Coaching (`es`): dos columnas, "Es para ti si" y "No es para ti si".
-// En las dos, abajo y a todo lo ancho, los dos socios (`socios`): quién está
-// detrás, con el enlace a /nosotros.
 export function ParaQuien({
   id,
   tono,
@@ -122,7 +119,6 @@ export function ParaQuien({
   es,
   noEs,
   enlace,
-  socios,
 }: {
   id: string;
   tono: TonoZona;
@@ -132,7 +128,6 @@ export function ParaQuien({
   es?: ListaPara;
   noEs: ListaPara;
   enlace: { texto: string; href: string };
-  socios?: { texto: string };
 }) {
   const noEsLista = <ListaFiltro lista={noEs} tono={tono} si={false} enlace={enlace} />;
   return (
@@ -165,7 +160,6 @@ export function ParaQuien({
             </Reveal>
           </>
         )}
-        {socios && <FranjaSocios texto={socios.texto} tono={tono} />}
       </div>
     </section>
   );
@@ -213,37 +207,3 @@ function ListaFiltro({ lista, tono, si, enlace }: { lista: ListaPara; tono: Tono
   );
 }
 
-// Los dos socios, a todo lo ancho bajo una regla: la foto chica (96 × 96, con
-// ancho y alto fijos para no mover nada al cargar), la firma conjunta y el
-// enlace a /nosotros, para quien quiere saber quiénes son antes de agendar.
-// La foto es un recorte cuadrado de 240 × 240 (equipo-cuadro.webp, ~8 KB, el
-// mismo encuadre que se veía): la completa (equipo.webp, 54 KB) queda para el
-// inicio y /nosotros, que la muestran grande.
-function FranjaSocios({ texto, tono }: { texto: string; tono: TonoZona }) {
-  return (
-    <Reveal className="mt-12 flex items-center gap-5 border-t border-line pt-8 md:mt-16 md:gap-6">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/img/equipo-cuadro.webp"
-        alt="Martín Zárate y Santiago Ospina, socios de Daxlo"
-        width={96}
-        height={96}
-        loading="lazy"
-        className="h-[72px] w-[72px] shrink-0 rounded-2xl border border-line-2 object-cover sm:h-24 sm:w-24"
-      />
-      <div className="min-w-0">
-        <p className="max-w-[720px] font-display text-[19px] font-medium leading-snug text-white sm:text-[22px]">{texto}</p>
-        <Link
-          href={rutas.nosotros}
-          className={cn(
-            "group -mb-2.5 mt-1 inline-flex min-h-[44px] items-center gap-2 text-[16px] font-medium transition-colors hover:text-white",
-            tono === "cyan" ? "text-cyan" : "text-blue-soft",
-          )}
-        >
-          {inicioNosotros.enlace}
-          <ArrowRight aria-hidden size={16} className="shrink-0 transition-[translate] ease-salida motion-safe:group-hover:translate-x-1" />
-        </Link>
-      </div>
-    </Reveal>
-  );
-}

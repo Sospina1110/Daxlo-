@@ -2,56 +2,38 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { agendar, cierre, contacto, faq, nosotros } from "@/content/copy";
 import { hayAgenda } from "@/lib/agenda";
-import { Badge, GlowButton, Orb } from "@/components/ui/primitives";
+import { GlowButton } from "@/components/ui/primitives";
 import { SectionHeading } from "@/components/ui/blocks";
 import { Reveal } from "@/components/ui/reveal";
 import { Pregunta } from "./pregunta";
 import { FormularioContacto } from "./formulario";
 import { cn, glow } from "@/lib/utils";
 
-// ------------------------------------------------ Quiénes somos
+// ------------------------------------------------ Cómo trabajamos (/nosotros)
 
-// Página /nosotros: el titular es el h1 y la foto carga de una vez, porque se
-// ve apenas abre la página.
+// Página /nosotros, que desde el 2026-11-11 es "Cómo trabajamos": el titular es
+// el h1. Sin retrato ni firma (salió la parte de los socios). El h1 a la
+// izquierda y los párrafos a la derecha: el primero pesa más que los otros, y
+// la última línea dice quién fundó Daxlo. El rediseño fino llega con las
+// páginas de apoyo.
 export function Nosotros({ migas }: { migas?: React.ReactNode }) {
   const n = nosotros;
   return (
-    // overflow-hidden: el halo de la foto se sale de su caja. Sin recortarlo, en
-    // un celular la página queda más ancha que la pantalla y se desliza de lado.
-    <section className="relative overflow-hidden pb-20 pt-28 md:pb-32 md:pt-36">
+    <section className="relative pb-16 pt-28 md:pb-24 md:pt-36">
       {migas && <div className="container-page">{migas}</div>}
-      <div className="container-page mt-10 grid items-center gap-10 md:mt-14 lg:grid-cols-[400px_1fr] lg:gap-20">
-        {/* La foto es adorno: solo funde. */}
-        <Reveal y={0} className="relative mx-auto w-full max-w-[400px] max-lg:order-2">
-          <span aria-hidden className="resplandor absolute -left-12 -top-12 h-72 w-72" style={glow("41 196 245", 0.32, 1.4)} />
-          <span aria-hidden className="resplandor absolute -bottom-12 -right-12 h-80 w-80" style={glow("27 53 208", 0.5, 1.4)} />
-          <div className="relative overflow-hidden rounded-[28px] border border-line-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/img/equipo.webp"
-              alt="Martín Zárate y Santiago Ospina, socios de Daxlo"
-              width={800}
-              height={1200}
-              fetchPriority="high"
-              className="aspect-[4/5] h-auto w-full object-cover object-[50%_30%] lg:aspect-[2/3]"
-            />
-          </div>
-          <p className="mt-4 text-center text-[15px] text-white/65">
-            <span className="text-white">Martín Zárate</span> y <span className="text-white">Santiago Ospina</span>
-          </p>
-        </Reveal>
-        <div>
-          <SectionHeading badge={n.badge} titulo={n.titulo} alineacion="izquierda" nivel={1} />
-          {/* Los párrafos entran en ola (data-escalonar, script del layout). */}
-          <div data-escalonar="0.08" className="mt-7 space-y-5">
-            {n.parrafos.map((p, i) => (
-              <Reveal key={i}>
-                <p className="text-[18px] leading-relaxed text-muted">{p}</p>
-              </Reveal>
-            ))}
-          </div>
-          <Reveal delay={0.2}>
-            <p className="text-gradient-dual mt-8 font-display text-[26px] font-medium leading-snug">{n.firma}</p>
+      <div className="container-page mt-10 grid gap-8 md:mt-14 lg:grid-cols-12 lg:gap-x-6">
+        <div className="lg:col-span-5">
+          <SectionHeading titulo={n.titulo} nivel={1} />
+        </div>
+        {/* Los párrafos entran en ola (data-escalonar, script del layout). */}
+        <div data-escalonar="0.08" className="space-y-6 lg:col-span-6 lg:col-start-7 lg:pt-2">
+          {n.parrafos.map((p, i) => (
+            <Reveal key={i}>
+              <p className={i === 0 ? "font-display text-headline-sm font-medium text-white md:text-[1.75rem] md:leading-[1.25]" : "max-w-[62ch] text-body-md text-muted"}>{p}</p>
+            </Reveal>
+          ))}
+          <Reveal>
+            <p className="border-t border-line-2 pt-6 text-body-xs text-white/70">{n.fundador}</p>
           </Reveal>
         </div>
       </div>
@@ -82,7 +64,7 @@ export function Faq({ migas }: { migas?: React.ReactNode }) {
           las preguntas. */}
       <div className="container-page mt-10 grid gap-12 md:mt-14 lg:grid-cols-[0.8fr_1.2fr] lg:grid-rows-[auto_1fr] lg:gap-x-16 lg:gap-y-8">
         <div className="lg:col-start-1 lg:row-start-1">
-          <SectionHeading badge={f.badge} titulo={f.titulo} sub={f.sub} alineacion="izquierda" nivel={1} />
+          <SectionHeading titulo={f.titulo} sub={f.sub} nivel={1} />
         </div>
         <div className="space-y-10 lg:col-start-2 lg:row-span-2 lg:row-start-1">
           {f.grupos.map((g) => (
@@ -118,7 +100,7 @@ export function Faq({ migas }: { migas?: React.ReactNode }) {
           ))}
         </div>
         <div className="lg:sticky lg:top-28 lg:col-start-1 lg:row-start-2 lg:self-start">
-          <Reveal delay={0.15} className="glass rounded-[22px] p-6">
+          <Reveal delay={0.15} className="glass rounded-placa p-6">
             <p className="font-display text-[20px] text-white">{f.ayuda}</p>
             <p className="mt-2 text-[17px] text-muted">{f.ayudaTexto}</p>
             <GlowButton href={contacto.whatsapp} className="mt-5" tamano="sm">
@@ -135,9 +117,8 @@ export function Faq({ migas }: { migas?: React.ReactNode }) {
 // ------------------------------------------------ Agendar
 
 // Página /agendar: el titular es el h1 y el formulario queda a la vista.
-// Entrada por rol: el orbe y la etiqueta (adornos, solo funden) y el h1 a los
-// 0 s, el sub a los 0,08 s y el formulario a los 0,14 s. Antes era una cola de
-// 0 / 0,05 / 0,1 / 0,15 / 0,2 s.
+// Entrada por rol: el h1 a los 0 s, el sub a los 0,08 s y el formulario a los
+// 0,14 s. Sin orbe ni píldora sobre el titular (DESIGN.md, qué no hacer).
 export function Agendar({ migas }: { migas?: React.ReactNode }) {
   const a = agendar;
   return (
@@ -147,14 +128,8 @@ export function Agendar({ migas }: { migas?: React.ReactNode }) {
       <div className="container-page">
         {migas}
         <div className="mx-auto mt-10 max-w-[760px] text-center md:mt-12">
-          <Reveal y={0} className="flex justify-center">
-            <Orb tamano={64} className="animate-float" />
-          </Reveal>
-          <Reveal y={0} className="mt-6">
-            <Badge>{a.badge}</Badge>
-          </Reveal>
           <Reveal y={16}>
-            <h1 className="mt-5 text-[clamp(2.2rem,5vw,3.6rem)] leading-[1.05] text-white">{a.titulo}</h1>
+            <h1 className="text-headline-page text-white">{a.titulo}</h1>
           </Reveal>
           <Reveal delay={0.08}>
             <p className="mx-auto mt-5 max-w-[600px] text-[18px] leading-relaxed text-muted">{a.sub}</p>

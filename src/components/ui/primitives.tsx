@@ -39,7 +39,9 @@ type GlowButtonProps = {
   tamano?: "sm" | "md" | "lg";
   // "principal": el único botón relleno de azul de marca (el del hero). El
   // resto del sitio usa el botón de luz oscuro.
-  variante?: "luz" | "principal";
+  // "papel": menta con texto casi negro. Solo sobre el campo azul del cierre,
+  // donde el botón principal se invierte (menta sobre azul da 7,4:1).
+  variante?: "luz" | "principal" | "papel";
   className?: string;
   type?: "button" | "submit";
   disabled?: boolean;
@@ -67,8 +69,30 @@ const brilloPrincipal = "radial-gradient(closest-side, rgba(127,224,255,0.95), r
 // (hover de Tailwind) y sin "reducir movimiento".
 export function GlowButton({ children, href, tono = "dual", tamano = "md", variante = "luz", className, type = "button", disabled, onClick, elevar = true }: GlowButtonProps) {
   const principal = variante === "principal";
+  const papel = variante === "papel";
+  if (papel) {
+    // Sin foco de luz ni borde degradado: es un papel, plano. La flecha y el
+    // texto van en casi negro (16,8:1 sobre menta).
+    const clasesPapel = cn(
+      "group pulsable boton-papel relative inline-flex items-center justify-center gap-2 rounded-control px-4 py-4 text-[16px] font-semibold text-ink min-[360px]:px-8 min-[360px]:py-[18px] min-[360px]:text-[17px]",
+      className,
+    );
+    const interiorPapel = <span className="relative inline-flex items-center gap-2">{children}</span>;
+    if (href?.startsWith("/")) {
+      return (
+        <Link href={href} className={clasesPapel}>
+          {interiorPapel}
+        </Link>
+      );
+    }
+    return (
+      <a href={href} className={clasesPapel}>
+        {interiorPapel}
+      </a>
+    );
+  }
   const clases = cn(
-    "group pulsable relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl font-medium text-white disabled:pointer-events-none disabled:opacity-60",
+    "group pulsable relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-control font-semibold text-white disabled:pointer-events-none disabled:opacity-60",
     elevar && "motion-safe:hover:-translate-y-0.5",
     principal ? "boton-principal" : "border-gradient",
     tamano === "sm" && "min-h-[44px] px-4 py-2 text-[15px]",
@@ -126,32 +150,54 @@ export function GlowButton({ children, href, tono = "dual", tamano = "md", varia
   );
 }
 
-// Esfera de vidrio con luz de borde en dos tonos, la pieza visual de la plantilla.
-export function Orb({ tamano = 240, tono = "dual", className }: { tamano?: number | string; tono?: Tono; className?: string }) {
-  const a = tono === "blue" ? "61, 90, 255" : "41, 196, 245";
-  const b = tono === "cyan" ? "11, 126, 166" : "27, 53, 208";
+// ------------------------------------------------ Primitivos de «Encendido»
+
+// Placa: la superficie de un objeto (un escenario, una ventana, un
+// formulario). Apagada es un borde; `encendida`, el azul profundo con el filo
+// de luz arriba. `viva` la enciende con el puntero, con el foco o al cruzar el
+// centro de la pantalla en táctil (globals.css, .placa). Lo que es lista va en
+// filas (Fila), no en placas.
+export function Placa({
+  children,
+  encendida = false,
+  viva = false,
+  className,
+}: {
+  children: React.ReactNode;
+  encendida?: boolean;
+  viva?: boolean;
+  className?: string;
+}) {
   return (
-    <span
-      aria-hidden
-      className={cn("relative inline-block shrink-0 rounded-full", className)}
-      style={{
-        width: tamano,
-        height: tamano,
-        background: [
-          "radial-gradient(circle at 32% 26%, rgba(255,255,255,0.42) 0%, rgba(255,255,255,0.08) 16%, transparent 34%)",
-          `radial-gradient(circle at 74% 82%, rgba(${a},0.75), transparent 46%)`,
-          `radial-gradient(circle at 18% 86%, rgba(${b},0.8), transparent 48%)`,
-          "radial-gradient(circle at 50% 50%, #0a0b11 0%, #05060a 70%)",
-        ].join(","),
-        boxShadow: [
-          "inset 0 0 0 1px rgba(255,255,255,0.08)",
-          `inset -14px -18px 36px rgba(${a},0.5)`,
-          `inset 16px 12px 34px rgba(${b},0.45)`,
-          `0 0 60px 6px rgba(${b},0.28)`,
-          `0 0 110px 20px rgba(${a},0.14)`,
-        ].join(","),
-      }}
-    />
+    <div data-encendida={encendida ? "" : undefined} className={cn("placa", viva && "placa-viva", className)}>
+      {children}
+    </div>
+  );
+}
+
+// Rótulo: 13 px, mayúsculas, la letra de los titulares. Nombra un paso o una
+// columna; nunca va encima de un titular de sección.
+export function Rotulo({ children, className, as: Comp = "p" }: { children: React.ReactNode; className?: string; as?: "p" | "span" }) {
+  return <Comp className={cn("rotulo", className)}>{children}</Comp>;
+}
+
+// Fila: lo que es lista va en filas con una línea de 1 px arriba, no en
+// tarjetas.
+export function Fila({ children, className, as: Comp = "div" }: { children: React.ReactNode; className?: string; as?: "div" | "li" }) {
+  return <Comp className={cn("relative border-t border-line-2", className)}>{children}</Comp>;
+}
+
+// Número de paso en dos capas: el contorno (apagado) y el relleno (encendido),
+// que solo cambia de opacidad. `lleno` lo deja encendido; sin él, lo enciende
+// el contenedor con [data-activo] o [data-encendida] (globals.css, .numeral).
+export function Numeral({ children, lleno = false, className }: { children: React.ReactNode; lleno?: boolean; className?: string }) {
+  return (
+    <span data-lleno={lleno ? "" : undefined} className={cn("numeral text-numeral font-display tabular-nums", className)}>
+      <span aria-hidden className="numeral-contorno">
+        {children}
+      </span>
+      <span className="numeral-relleno">{children}</span>
+    </span>
   );
 }
 

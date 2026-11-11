@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Outfit } from "next/font/google";
+import { Schibsted_Grotesk } from "next/font/google";
 import { MotionProvider } from "@/components/motion-provider";
 import { Nav } from "@/components/sections/nav";
 import { Footer } from "@/components/sections/footer";
@@ -8,10 +8,20 @@ import { paginas } from "@/content/copy";
 import { ldOrganizacion, URL_SITIO } from "@/lib/sitio";
 import "./globals.css";
 
-// Las dos fuentes de marca. next/font las descarga al compilar y las sirve
-// desde el propio sitio: no hay petición a Google en cada visita.
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-outfit", display: "swap" });
+// La letra de marca: Schibsted Grotesk, una sola familia para titulares,
+// rótulos, números y cuerpo (estudio de tipografía del 2026-11-11). Su I
+// mayúscula lleva remates, así que "la IA" se lee IA y no "la lA", y es un
+// solo archivo variable (peso 400 a 900, unos 46 KB el latino). next/font la
+// descarga al compilar y la sirve desde el propio sitio: no hay petición a
+// terceros en cada visita (la CSP no la dejaría pasar) y precarga solo el
+// subconjunto latino.
+//
+// Cambiar de familia es cambiar esta línea: todo el sitio lee --font-display
+// (titulares, rótulos y números) y --font-sans (cuerpo), que globals.css arma
+// con --fuente-marca. Si un día vuelven a ser dos familias, se carga la
+// segunda aquí con otra variable y se apunta --font-sans a ella. Ninguna
+// medida del sitio depende de las métricas de una familia.
+const marca = Schibsted_Grotesk({ subsets: ["latin"], variable: "--fuente-marca", display: "swap" });
 
 // Valores por defecto. Cada página define su título, descripción, URL
 // canónica y tarjeta para redes (metadatosPagina en src/lib/sitio.ts).
@@ -59,7 +69,7 @@ const SCRIPT_CABECERA = [
 // Sin IntersectionObserver (navegadores muy viejos) se quita .js y todo queda
 // visible. El MutationObserver cubre nodos que React cree después.
 //
-// Cinco trabajos:
+// Seis trabajos:
 // 1. En iOS, Safari solo pinta :active si la página escucha touchstart, y
 //    React lo registra recién al hidratar: con un oyente vacío y pasivo, los
 //    botones bajan al presionar desde el HTML, también con red lenta.
@@ -79,6 +89,11 @@ const SCRIPT_CABECERA = [
 // 5. Pausa las animaciones infinitas (.animate-*) fuera de pantalla: marca
 //    [data-pausa] y el CSS las detiene. Corriendo todas a la vez mantenían el
 //    celular trabajando aunque nadie tocara la página.
+// 6. En pantallas táctiles (sin hover) marca con [data-centro] cada
+//    [data-al-centro] que cruza el centro de la pantalla: las filas que con
+//    mouse se encienden al pasar el puntero (las puertas del inicio), aquí se
+//    encienden solas al pasar por el centro. Un observador que solo ve esa
+//    franja: no se escucha el scroll.
 const SCRIPT_APARICIONES = `(function(){
 var d=document.documentElement;
 document.addEventListener('touchstart',function(){},{passive:true});
@@ -103,14 +118,19 @@ var A='.animate-flow,.animate-deriva,.animate-float,.animate-marquee,.animate-ma
 var ia=new IntersectionObserver(function(es){es.forEach(function(e){
 if(e.isIntersecting)e.target.removeAttribute('data-pausa');else e.target.setAttribute('data-pausa','');
 });},{rootMargin:'100px'});
+var ic=matchMedia('(hover: none)').matches?new IntersectionObserver(function(es){es.forEach(function(e){
+if(e.isIntersecting)e.target.setAttribute('data-centro','');else e.target.removeAttribute('data-centro');
+});},{rootMargin:'-45% 0px -45% 0px'}):null;
 function observar(r){
 [].forEach.call(r.querySelectorAll('[data-revelar]:not([data-visible])'),function(el){io.observe(el)});
-[].forEach.call(r.querySelectorAll(A),function(el){ia.observe(el)});}
+[].forEach.call(r.querySelectorAll(A),function(el){ia.observe(el)});
+if(ic)[].forEach.call(r.querySelectorAll('[data-al-centro]'),function(el){ic.observe(el)});}
 observar(document);
 new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(n){
 if(n.nodeType!==1)return;
 if(n.hasAttribute('data-revelar')&&!n.hasAttribute('data-visible'))io.observe(n);
 if(n.matches(A))ia.observe(n);
+if(ic&&n.hasAttribute('data-al-centro'))ic.observe(n);
 observar(n);});});}).observe(document.body,{childList:true,subtree:true});
 })();`;
 
@@ -119,7 +139,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     // data-scroll-behavior: el CSS pone scroll suave en <html>; con este
     // atributo Next lo apaga mientras cambia de página. Sin él, la página
     // nueva se deslizaba hacia abajo en vez de abrir arriba.
-    <html lang="es-CO" data-scroll-behavior="smooth" className={`${inter.variable} ${outfit.variable}`}>
+    <html lang="es-CO" data-scroll-behavior="smooth" className={marca.variable}>
       <head>
         {/* Corre antes de pintar: marca que hay JavaScript (el CSS de las
             apariciones solo oculta contenido bajo .js). Y red de seguridad: lo

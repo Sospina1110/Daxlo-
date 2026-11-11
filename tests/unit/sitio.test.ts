@@ -20,8 +20,7 @@ import { PUBLIC } from "../apoyo/proyecto";
 // El layout importa las fuentes de Google, que solo existen dentro del build
 // de Next. Aquí basta con que devuelvan algo con la misma forma.
 vi.mock("next/font/google", () => ({
-  Inter: () => ({ variable: "fuente-inter", className: "" }),
-  Outfit: () => ({ variable: "fuente-outfit", className: "" }),
+  Schibsted_Grotesk: () => ({ variable: "fuente-marca", className: "" }),
 }));
 
 const { metadata: metadatosLayout } = await import("@/app/layout");
@@ -134,10 +133,10 @@ describe("datos estructurados (JSON-LD)", () => {
       description: paginas.inicio.descripcion,
       areaServed: { "@type": "Country", name: "Colombia" },
     });
-    expect(ldOrganizacion.founder.map((f) => f.name)).toEqual(["Martín Zárate", "Santiago Ospina"]);
+    // Con nombre aparece solo el fundador (2026-11-11).
+    expect(ldOrganizacion.founder.map((f) => f.name)).toEqual(["Santiago Ospina"]);
     expect(ldOrganizacion.founder.every((f) => f["@type"] === "Person")).toBe(true);
-    // Los dos socios se describen igual: ninguno va por delante del otro.
-    expect(ldOrganizacion.founder[0].jobTitle).toBe(ldOrganizacion.founder[1].jobTitle);
+    expect(ldOrganizacion.founder[0].jobTitle).toBe("Fundador");
     expect(ldOrganizacion.sameAs).toContain(contacto.instagram);
     expect(ldOrganizacion.contactPoint.url).toBe(contacto.whatsapp);
     // El teléfono es el mismo WhatsApp de wa.me y de la política de datos.

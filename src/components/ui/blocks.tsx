@@ -1,81 +1,65 @@
 import { Fragment } from "react";
 import { cn, type Tono } from "@/lib/utils";
 import { toolLogos, type ToolId } from "@/lib/logos";
-import { Badge } from "./primitives";
 import { Reveal } from "./reveal";
 
-// Titular + bajada: la cabecera de casi todas las secciones. La etiqueta
-// (`badge`) queda solo para las páginas que la usan como h1 de página
-// (/herramientas, /preguntas, /agendar, /nosotros); las secciones bajo el hero
-// no llevan etiqueta encima del titular (DESIGN.md, Components).
-// Entra como un solo bloque: el escalón interno entre etiqueta, titular y
-// bajada se repetía igual en cada sección.
-// Las cabeceras de sección (h2) centradas van centradas solo desde 640 px: en
-// celular, una bajada de cuatro o cinco líneas centrada cuesta leerla porque
-// cada línea empieza en un punto distinto. El h1 de página centrado
-// (/herramientas, /preguntas) sigue centrado en todos los anchos: sus migas y
-// su fondo van centrados, y la etiqueta y el titular a la izquierda
-// descuadraban la primera pantalla.
+// Titular + bajada: la cabecera de casi todas las secciones. Todo va a la
+// izquierda: centrado no queda nada (DESIGN.md, Layout). Sin etiqueta encima
+// del titular, tampoco en el h1 de las páginas de apoyo.
+// Entra como un solo bloque: el escalón interno entre titular y bajada se
+// repetía igual en cada sección.
 //
-// Dos escalas de h2 (`escala`, DESIGN.md, Typography): los capítulos del
-// argumento (el problema, qué cambia, la sesión, cómo trabajamos, las dos
-// puertas, quiénes somos) van en `headline-lg`, hasta 56 px y 880 px de ancho
-// para que el titular quede en dos renglones; las secciones de apoyo ("¿Esto
-// es para…?" y las preguntas) bajan a `headline-support`, 28–40 px. Antes las
-// nueve cabeceras de /consultoria eran iguales y ninguna mandaba.
+// Tres formas (`alineacion`):
+// - "izquierda": titular y bajada, una debajo de la otra.
+// - "columnas": desde 1024 px, el titular en las columnas 1 a 7 y la bajada
+//   en las columnas 9 a 12, alineada con la base del titular. Ocupa el ancho
+//   sin centrar nada. En celular, una debajo de la otra.
+//
+// Escalas (DESIGN.md, Typography): el h1 de página va en `headline-page`; los
+// capítulos del argumento (h2) en `headline-lg`, y las secciones de apoyo
+// ("¿Esto es para…?" y las preguntas) bajan a `headline-support`. Los anchos
+// máximos van en `ch` y `em`: no dependen de las métricas de una familia.
 export function SectionHeading({
-  badge,
   titulo,
   sub,
-  tono = "dual",
-  alineacion = "centro",
+  alineacion = "izquierda",
   nivel = 2,
   escala = "capitulo",
   className,
   id,
 }: {
-  badge?: string;
   titulo: React.ReactNode;
   sub?: React.ReactNode;
+  // Se conserva por las páginas de línea, que todavía lo pasan: el color ya
+  // no depende de la página (DESIGN.md, Colors).
   tono?: Tono;
-  alineacion?: "centro" | "izquierda";
+  alineacion?: "izquierda" | "columnas";
   nivel?: 1 | 2;
   escala?: "capitulo" | "apoyo";
   className?: string;
   id?: string;
 }) {
-  const centro = alineacion === "centro";
   const Titular = nivel === 1 ? "h1" : "h2";
   const apoyo = nivel === 2 && escala === "apoyo";
-  const anchoIzquierda = nivel === 1 ? "max-w-[680px]" : apoyo ? "max-w-[640px]" : "max-w-[880px]";
-  // Protagonista de su sección: sube 16 px, el doble que el texto de apoyo.
-  return (
-    <Reveal
-      y={16}
+  const columnas = alineacion === "columnas" && Boolean(sub);
+  const titular = (
+    <Titular
+      id={id}
       className={cn(
-        centro ? (nivel === 1 ? "mx-auto max-w-[760px] text-center" : "max-w-[760px] sm:mx-auto sm:text-center") : anchoIzquierda,
-        className,
+        "text-white",
+        nivel === 1 ? "max-w-[16em] text-headline-page" : apoyo ? "max-w-[18em] text-headline-support" : "max-w-[17em] text-headline-lg",
       )}
     >
-      {badge && (
-        <Badge tono={tono} className="mb-5">
-          {badge}
-        </Badge>
+      {titulo}
+    </Titular>
+  );
+  // Protagonista de su sección: sube 16 px, el doble que el texto de apoyo.
+  return (
+    <Reveal y={16} className={cn(columnas && "lg:grid lg:grid-cols-12 lg:items-end lg:gap-x-6", className)}>
+      {columnas ? <div className="lg:col-span-7">{titular}</div> : titular}
+      {sub && (
+        <p className={cn("mt-4 max-w-[56ch] text-body-md text-muted", columnas && "lg:col-span-4 lg:col-start-9 lg:mt-0 lg:pb-[0.35em]")}>{sub}</p>
       )}
-      <Titular
-        id={id}
-        className={cn(
-          "text-white",
-          nivel === 1
-            ? "text-[clamp(2.3rem,5.4vw,4rem)] leading-[1.05] tracking-[-0.025em]"
-            : apoyo
-              ? "text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.1]"
-              : "text-[clamp(2rem,4.6vw,3.5rem)] leading-[1.05]",
-        )}
-      >
-        {titulo}
-      </Titular>
-      {sub && <p className={cn("mt-4 max-w-[620px] text-[18px] leading-relaxed text-muted", centro && (nivel === 1 ? "mx-auto" : "sm:mx-auto"))}>{sub}</p>}
     </Reveal>
   );
 }
@@ -116,7 +100,7 @@ const lineaPorTono: Record<Tono, string> = {
 
 export function LineaCapitulo({ tono = "dual" }: { tono?: Tono }) {
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0">
+    <div aria-hidden data-hilo-capitulo="" className="pointer-events-none absolute inset-x-0 top-0">
       <div className="container-page">
         <div className={cn("h-px bg-gradient-to-r from-transparent to-transparent", lineaPorTono[tono])} />
       </div>

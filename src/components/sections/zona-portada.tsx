@@ -27,7 +27,9 @@ type TonoZona = "cyan" | "blue";
 // data-cinta-tope, la luminancia máxima del fondo en movimiento detrás de él
 // (ver src/lib/cinta y DESIGN.md). La segunda línea del gigante usa el
 // degradado de la línea, no el del hero: el tope punto por punto
-// (TOPE_DEGRADADO) no le sirve, así que lleva uno fijo. En cian, 0,035 da
+// (TOPE_DEGRADADO) no le sirve, así que lleva uno fijo (calculado cuando esa
+// línea iba en degradado; ahora va en color plano, más claro que su extremo
+// oscuro, así que el tope sigue cubriendo). En cian, 0,035 da
 // 3,3:1 contra el extremo más oscuro (#1591c4). En azul, el extremo #1b35d0
 // no llega a 3:1 ni sobre negro: el tope es apenas lo que la bruma de la seda
 // ya pone (0,02 en la cuenta del shader, que supone debajo el centro del
@@ -81,7 +83,7 @@ export function ZonaPortada({
           </span>{" "}
           <span
             data-cinta-esquivar=""
-            className="mt-6 block font-display text-[clamp(3.2rem,17vw,10.5rem)] font-medium leading-[0.9] tracking-[-0.045em] md:mt-8 md:text-[clamp(3.9rem,13.5vw,10.5rem)]"
+            className="mt-6 block font-display text-display-giant md:mt-8"
           >
             {/* El desplazamiento con el scroll y la entrada van en elementos
                 distintos: las dos animaciones usan transform y una taparía a
@@ -103,11 +105,12 @@ export function ZonaPortada({
               </span>
             </span>{" "}
             <span className="paralaje-derecha block pl-[0.5em] md:pl-[1.7em]">
-              {/* El degradado va en el mismo elemento que se anima, como en
-                  el titular del inicio, para no perder el recorte del texto. */}
+              {/* Color plano: el degradado de texto queda solo en el h1 del
+                  inicio (DESIGN.md). Los topes de la cinta se calcularon contra
+                  el extremo más oscuro del degradado de antes: siguen valiendo. */}
               <span
                 data-cinta-tope={cyan ? "0.035" : "0.02"}
-                className={`subir block [--subir-desde:22%] ${cyan ? "text-gradient-cyan" : "text-gradient-blue"}`}
+                className={`subir block [--subir-desde:22%] ${cyan ? "text-cyan" : "text-blue-soft"}`}
                 style={{ ["--retraso" as string]: "0.08s" } as React.CSSProperties}
               >
                 {gigante[1]}

@@ -166,6 +166,6 @@ test.describe("/agendar dice qué pasa después de enviar", () => {
     }
     // No dice lo que no sabemos: ni la duración de la conversación de
     // consultoría ni con quién es.
-    await expect(linea).not.toContainText(/consultoría|socios|Martín|Santiago/);
+    await expect(linea).not.toContainText(/consultoría|socios|fundador/);
   });
 });

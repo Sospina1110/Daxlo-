@@ -40,12 +40,12 @@ const ID_SITIO = `${URL_SITIO}/#sitio`;
 
 type Linea = "coaching" | "consultoria";
 
+// Lo que el sitio dice del fundador: egresado de Administración del CESA.
+const CESA = { "@type": "CollegeOrUniversity", name: "Colegio de Estudios Superiores de Administración", alternateName: "CESA" };
+
 // Cada servicio tiene un @id fijo: la organización los enlaza desde todas las
 // páginas y el bloque completo vive en la página de cada línea.
 export const idServicio = (clave: Linea) => `${URL_SITIO}${rutas[clave]}#servicio`;
-
-// Lo que el sitio dice de los dos socios: egresados de Administración del CESA.
-const CESA = { "@type": "CollegeOrUniversity", name: "Colegio de Estudios Superiores de Administración", alternateName: "CESA" };
 
 // El tipo de cada servicio, el mismo en su bloque Service y en lo que la
 // organización dice que sabe hacer (knowsAbout): así no se separan.
@@ -69,11 +69,8 @@ export const ldOrganizacion = {
   // Sin "Extracción de datos de PDF" ni automatización de procesos: la
   // consultoría habla de la empresa, no de tareas sueltas (octubre de 2026).
   knowsAbout: ["Inteligencia artificial", TIPO_SERVICIO.consultoria, TIPO_SERVICIO.coaching, "Claude", "ChatGPT", "n8n"],
-  // Los dos socios van juntos, siempre en este orden.
-  founder: [
-    { "@type": "Person", name: "Martín Zárate", jobTitle: "Socio fundador", alumniOf: CESA },
-    { "@type": "Person", name: "Santiago Ospina", jobTitle: "Socio fundador", alumniOf: CESA },
-  ],
+  // Con nombre aparece solo el fundador (Santiago, 2026-11-11).
+  founder: [{ "@type": "Person", name: "Santiago Ospina", jobTitle: "Fundador", alumniOf: CESA }],
   // [DATO FALTANTE: la página de empresa en LinkedIn (hoy con la URL
   // /company/https-daxlo.co-) y la confirmación de que la cuenta de TikTok
   // @daxlo.co es de Daxlo. Se suman aquí cuando Santiago lo confirme.]

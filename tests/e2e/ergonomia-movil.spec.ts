@@ -1,4 +1,4 @@
-import { cierre, coaching, consultoria, dosFormas, faq, hero, inicioNosotros, nav, otraLinea, preguntasLinea } from "../../src/content/copy";
+import { cierre, coaching, consultoria, dosFormas, faq, hero, nav, otraLinea, preguntasLinea } from "../../src/content/copy";
 import { bordeBarra, caja, esperarHidratacion, expect, irA, quieto, recorrer, RUTAS, test, type Page } from "./apoyo";
 
 // Lo que hace que el sitio se pueda usar con el pulgar: áreas táctiles de al
@@ -53,16 +53,15 @@ test.describe("ergonomía en celular", () => {
   }
 
   // Los enlaces de texto sueltos que entraron en noviembre de 2026: el atajo
-  // de la portada, el puente a la otra línea en "No es para… si", "Conoce a
-  // Martín y Santiago" (bajo los socios en cada línea y en el inicio), "Ver
+  // de la portada, el puente a la otra línea en "No es para… si", "Ver
   // todas las preguntas", el WhatsApp del cierre y, en el inicio, las dos
   // puertas. Desde el 2026-11-06, en /preguntas, el enlace a cada línea bajo
   // el título de su grupo.
   const ENLACES_SUELTOS: { ruta: string; nombres: (string | RegExp)[] }[] = [
     { ruta: "/preguntas", nombres: [dosFormas.coaching.enlace, dosFormas.consultoria.enlace] },
-    { ruta: "/coaching", nombres: [coaching.portada.accion.enlace, otraLinea.consultoria.enlace, inicioNosotros.enlace, preguntasLinea.todas, cierre.whatsapp] },
-    { ruta: "/consultoria", nombres: [consultoria.portada.accion.enlace, otraLinea.coaching.enlace, inicioNosotros.enlace, preguntasLinea.todas, cierre.whatsapp] },
-    { ruta: "/", nombres: [new RegExp(`^${dosFormas.coaching.enlace}\\b`), new RegExp(`^${dosFormas.consultoria.enlace}\\b`), inicioNosotros.enlace, cierre.whatsapp] },
+    { ruta: "/coaching", nombres: [coaching.portada.accion.enlace, otraLinea.consultoria.enlace, preguntasLinea.todas, cierre.whatsapp] },
+    { ruta: "/consultoria", nombres: [consultoria.portada.accion.enlace, otraLinea.coaching.enlace, preguntasLinea.todas, cierre.whatsapp] },
+    { ruta: "/", nombres: [new RegExp(`^${dosFormas.coaching.enlace}\\b`), new RegExp(`^${dosFormas.consultoria.enlace}\\b`), cierre.whatsapp] },
   ];
   for (const { ruta, nombres } of ENLACES_SUELTOS) {
     test(`${ruta}: los enlaces de texto sueltos miden al menos 44×44`, async ({ page }) => {
