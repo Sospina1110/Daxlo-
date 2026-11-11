@@ -197,7 +197,7 @@ export function TextoQueSeEscribe({ frases, busqueda }: { frases: readonly strin
   // 360 y 375 px la caja ganaba y perdía una línea en cada frase y toda la
   // página de abajo saltaba.
   return (
-    <span ref={ref} className="grid">
+    <span ref={ref} className="grid" data-escrita={!reducir && fase === "sostener" && !esBusqueda ? indice - (busqueda ? 1 : 0) : undefined}>
       {lista.map((f) => (
         <span key={f} aria-hidden className="invisible [grid-area:1/1]">
           {f}

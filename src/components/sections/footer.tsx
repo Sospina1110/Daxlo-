@@ -2,7 +2,6 @@ import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import { CorreoContacto } from "@/components/ui/correo-contacto";
 import { contacto, footer, herramientas, rutas } from "@/content/copy";
-import { glow } from "@/lib/utils";
 
 // Glifo de Instagram de simple-icons: lucide ya no trae iconos de marcas.
 function Instagram({ size = 16 }: { size?: number }) {
@@ -13,29 +12,42 @@ function Instagram({ size = 16 }: { size?: number }) {
   );
 }
 
+// El pie va a todo el ancho sobre el fondo de la página: sin tarjeta, sin
+// esquinas y sin resplandor. Arriba, el logo y las columnas de enlaces bajo
+// una línea. Abajo, el eslogan como última línea del sitio, gigante: en
+// contorno, y se rellena de blanco al llegar al final (una capa encima que
+// solo cambia de opacidad, atada al scroll; globals.css, .pie-lema). Sin
+// soporte, con «reducir movimiento» o sin JavaScript, relleno. Los derechos,
+// la política y el aviso de marcas van a la izquierda, en 13 px.
+// El eslogan se parte entre sus dos frases desde 768 px y fluye solo en
+// celular; el tamaño va en vw para que cada frase quepa en un renglón.
 export function Footer() {
   const f = footer;
+  const [uno, dos] = f.lema.split(/(?<=\.)\s+/);
+  const lema = (
+    <>
+      {uno} <span className="md:block">{dos}</span>
+    </>
+  );
   return (
-    <footer className="container-page pb-8 pt-4">
-      <div className="glass relative overflow-hidden rounded-[28px] p-6 sm:p-8 md:p-12">
-        <span aria-hidden className="absolute -right-24 -top-24 h-72 w-72 resplandor" style={glow("27 53 208", 0.35, 1.69)} />
+    <footer className="relative border-t border-line-2 pb-8 pt-12 md:pt-16">
+      <div className="container-page">
         {/* En celular las columnas de enlaces van de a dos: en una sola
             columna el pie ocupaba casi dos pantallas. */}
-        <div className="relative grid grid-cols-2 gap-x-4 gap-y-10 min-[360px]:gap-x-6 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr]">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-10 min-[360px]:gap-x-6 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr]">
           <div className="col-span-2 lg:col-span-1">
             <Link href="/" aria-label="Daxlo, ir al inicio" className="inline-flex min-h-[44px] items-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/img/daxlo-logo-claro.png" alt="Daxlo" width={126} height={32} className="h-8 w-auto" loading="lazy" />
             </Link>
-            <p className="mt-5 max-w-[280px] text-[17px] leading-relaxed text-muted">{f.lema}</p>
           </div>
           {f.columnas.map((col) => (
             <nav key={col.titulo} aria-label={col.titulo}>
-              <p className="font-display text-[17px] text-white">{col.titulo}</p>
+              <p className="rotulo text-white/55">{col.titulo}</p>
               <ul className="mt-2">
                 {col.enlaces.map((e) => (
                   <li key={e.h}>
-                    <Link href={e.h} className="inline-flex min-h-[44px] items-center py-1 text-[15px] leading-snug text-white/60 transition-colors hover:text-white min-[360px]:text-[16px]">
+                    <Link href={e.h} className="inline-flex min-h-[44px] items-center py-1 text-[15px] leading-snug text-white/75 transition-colors hover:text-white min-[360px]:text-[16px]">
                       {e.t}
                     </Link>
                   </li>
@@ -44,35 +56,44 @@ export function Footer() {
             </nav>
           ))}
           {/* En celular el contacto va a lo ancho y en fila: en media columna
-              el correo no cabía en 320 px. Funden de color en 200 ms, como
-              los demás enlaces del pie (antes saltaban). */}
+              el correo no cabía en 320 px. */}
           <div className="col-span-2 sm:col-span-1">
-            <p className="font-display text-[17px] text-white">Contacto</p>
-            <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-[16px] sm:block sm:space-y-1">
+            <p className="rotulo text-white/55">Contacto</p>
+            <ul className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-[16px] sm:block sm:space-y-1">
               <li>
-                <a href={contacto.whatsapp} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center gap-2 text-white/60 transition-colors hover:text-white">
+                <a href={contacto.whatsapp} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center gap-2 text-white/75 transition-colors hover:text-white">
                   <MessageCircle size={16} /> WhatsApp
                 </a>
               </li>
               <li>
-                <CorreoContacto className="inline-flex min-h-[44px] items-center gap-2 text-white/60 transition-colors hover:text-white" />
+                <CorreoContacto className="inline-flex min-h-[44px] items-center gap-2 text-white/75 transition-colors hover:text-white" />
               </li>
               <li>
-                <a href={contacto.instagram} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center gap-2 text-white/60 transition-colors hover:text-white">
+                <a href={contacto.instagram} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center gap-2 text-white/75 transition-colors hover:text-white">
                   <Instagram size={16} /> Instagram
                 </a>
               </li>
             </ul>
           </div>
         </div>
-        <div className="relative mt-12 flex flex-col gap-2 border-t border-line pt-6 text-[14px] text-dim md:flex-row md:justify-between">
-          <div className="flex flex-col md:max-w-[340px]">
+
+        {/* El eslogan. El texto de verdad es la capa de contorno; la rellena
+            va encima, repetida, y no se anuncia. */}
+        <p className="pie-lema relative mt-14 font-display md:mt-20">
+          <span className="pie-lema-contorno block">{lema}</span>
+          <span aria-hidden className="pie-lema-relleno absolute inset-0 block text-white">
+            {lema}
+          </span>
+        </p>
+
+        <div className="mt-10 flex flex-col gap-3 border-t border-line pt-6 text-caption text-white/60 md:mt-14">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-1">
             <p>{f.derechos}</p>
-            <Link href={rutas.privacidad} className="inline-flex min-h-[44px] items-center self-start text-white/60 underline-offset-2 transition-colors hover:text-white hover:underline md:min-h-0 md:pt-1">
+            <Link href={rutas.privacidad} className="inline-flex min-h-[44px] items-center text-white/75 underline-offset-2 transition-colors hover:text-white hover:underline md:min-h-0">
               {f.privacidad}
             </Link>
           </div>
-          <p className="md:max-w-[520px] md:text-right">{herramientas.aviso}</p>
+          <p className="max-w-[92ch]">{herramientas.aviso}</p>
         </div>
       </div>
     </footer>

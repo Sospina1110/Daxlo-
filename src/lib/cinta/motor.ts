@@ -85,7 +85,34 @@ export function acercar(actual: number, objetivo: number, dt: number, tau: numbe
 //   y "empresa." llega casi al borde. El margen (8 % del ancho) cubre lo que la
 //   segunda línea se corre con el scroll (+8 %). Así no pasa detrás del
 //   gigante; detrás del sub sí puede pasar, sin brillos, por su tope.
-export function trayectoria(ancho: number, alto: number, movil: boolean, variante: Variante = "hero", derecha = 0): [number, number, number, number] {
+// - Hero con recuadro (`recuadro`, medido en el motor, en escritorio): la
+//   cinta pasa por detrás del recuadro que escribe y lo rodea de luz. El
+//   recuadro es opaco, así que la seda se ve por sus bordes: la cola sale por
+//   su lado izquierdo, cerca del borde de abajo (por debajo de la fila del
+//   botón), y la subida sale por su borde de arriba, a dos tercios del ancho,
+//   camino de la esquina de arriba a la derecha. La curva del shader es un
+//   smoothstep entre x0 y x1: x1 sale de pedirle que pase por ese punto.
+export function trayectoria(
+  ancho: number,
+  alto: number,
+  movil: boolean,
+  variante: Variante = "hero",
+  derecha = 0,
+  recuadro: Rect | null = null,
+): [number, number, number, number] {
+  if (variante === "hero" && recuadro && !movil) {
+    const w = recuadro.right - recuadro.left;
+    const h = recuadro.bottom - recuadro.top;
+    const y0 = recuadro.bottom - 0.12 * h;
+    const y1 = -0.06 * alto;
+    const x0 = recuadro.left - 0.03 * ancho;
+    const salida = recuadro.left + 0.66 * w;
+    // Qué fracción del recorrido vertical lleva la curva al cruzar el borde de
+    // arriba, y en qué punto de x0..x1 lo hace (el smoothstep al revés).
+    const s = Math.min(0.95, Math.max(0.05, (y0 - recuadro.top) / (y0 - y1)));
+    const u = 0.5 - Math.sin(Math.asin(1 - 2 * s) / 3);
+    return [x0, x0 + (salida - x0) / u, y0, y1];
+  }
   if (variante === "portada") {
     const entre = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
     if (movil) {
@@ -394,6 +421,9 @@ export function crearMotor({ lienzo, capa, seccion, modo: modoInicial, variante 
   // Portada: borde derecho del titular gigante ([data-cinta-esquivar]), en px
   // CSS de la sección. De él sale la trayectoria (ver trayectoria).
   let derecha = 0;
+  // Hero: la caja del recuadro que escribe ([data-cinta-recuadro]), en px CSS
+  // de la sección. La cinta pasa por detrás (ver trayectoria).
+  let recuadro: Rect | null = null;
 
   // `borde`: también vuelve a medir el borde del titular. Las medidas que
   // dispara el scroll no lo tocan: la trayectoria sale del titular en reposo
@@ -405,6 +435,8 @@ export function crearMotor({ lienzo, capa, seccion, modo: modoInicial, variante 
       for (const el of seccion.querySelectorAll("[data-cinta-esquivar]")) {
         for (const q of lineasDeTexto(el)) derecha = Math.max(derecha, q.right - r.left);
       }
+      const caja = seccion.querySelector("[data-cinta-recuadro]")?.getBoundingClientRect();
+      recuadro = caja && caja.width > 0 ? { left: caja.left - r.left, top: caja.top - r.top, right: caja.right - r.left, bottom: caja.bottom - r.top } : null;
     }
     W = Math.max(1, r.width);
     H = Math.max(1, r.height);
@@ -531,7 +563,7 @@ export function crearMotor({ lienzo, capa, seccion, modo: modoInicial, variante 
     const despertar = modo.animar ? 0.6 + 0.4 * (1 - Math.pow(1 - Math.min(1, t / 1.6), 3)) : 1;
     const fa = fases(tiempo, 1, sc * 1.1);
     const fb = fases(tiempo, TRASERA, sc * 1.1);
-    const [x0, x1, y0, y1] = trayectoria(W, H, modo.movil, variante, derecha);
+    const [x0, x1, y0, y1] = trayectoria(W, H, modo.movil, variante, derecha, recuadro);
     g.uniform2f(U.uRes, W, H);
     g.uniform1f(U.uEsc, escala);
     g.uniform4f(U.uLinea, x0, x1, y0, y1);

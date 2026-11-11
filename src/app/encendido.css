@@ -1,0 +1,1238 @@
+/* ------------------------------------------------------------------
+   «Encendido»: las piezas del inicio y lo que comparten todas las páginas
+   (el cierre en campo azul y el pie). Lo importa globals.css. Va fuera de
+   capa, como el resto del movimiento del sitio: le gana a las utilidades.
+   Todo lo que se mueve anima solo transform y opacity.
+   ------------------------------------------------------------------ */
+
+/* ---------------------------------------------------------------- Numeral
+   El número de paso en dos capas: el contorno (apagado) y el relleno
+   (encendido), que solo cambia de opacidad. */
+.numeral {
+  position: relative;
+  display: inline-block;
+}
+/* El contorno: el relleno, del color del fondo, tapa la mitad interior de un
+   trazo de 2 px y queda 1 px limpio por fuera. */
+.numeral-contorno {
+  color: var(--color-ink);
+  -webkit-text-stroke: 2px rgb(255 255 255 / 0.5);
+  paint-order: stroke fill;
+}
+.numeral-relleno {
+  position: absolute;
+  inset: 0;
+  color: #fff;
+  opacity: 0;
+  transition: opacity var(--dur-mover) var(--ease-salida);
+}
+.numeral[data-lleno] .numeral-relleno,
+[data-activo] .numeral-relleno,
+[data-encendida] .numeral-relleno { opacity: 1; }
+
+/* ---------------------------------------------------------------- Papel
+   El trabajo: una ficha menta con texto casi negro (16,8:1). Es lo más claro
+   de la pantalla y es lo que se mueve. */
+.ficha-papel {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 9px;
+  border-radius: var(--radius-ficha);
+  background: var(--color-mint);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* El botón del cierre: sobre el campo azul, el botón principal se invierte.
+   Menta con texto casi negro; al pasar o enfocar funde a blanco (una capa
+   encima, solo opacidad). */
+.boton-papel {
+  --escala-presion: 0.98;
+  background: var(--color-mint);
+  box-shadow: 0 16px 40px -18px rgb(13 14 20 / 0.6);
+}
+.boton-papel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: #fff;
+  opacity: 0;
+  transition: opacity var(--dur-ui) var(--ease-salida);
+  pointer-events: none;
+}
+.boton-papel:focus-visible::before { opacity: 1; }
+@media (hover: hover) and (pointer: fine) {
+  .boton-papel:hover::before { opacity: 1; }
+}
+/* Foco del teclado sobre el azul: anillo blanco (8,5:1) separado del botón
+   por una banda del propio azul. */
+.boton-papel:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+  border-radius: var(--radius-control);
+  transition-duration: 0s;
+}
+.boton-papel:focus-visible::before,
+:root[data-tab] .boton-papel::before { transition-duration: 0s; }
+
+/* ---------------------------------------------------------------- Hero
+   Cabe en la primera pantalla: el alto de la pantalla, hasta 900 px y nunca
+   menos de 640. Los aires de arriba y entre bloques se encogen con el alto
+   (vh) para que el recuadro quede entero también en un portátil de 768 px. */
+.hero { padding: 104px 0 48px; }
+@media (max-width: 359px) {
+  .hero { padding-top: 96px; }
+}
+@media (min-width: 768px) {
+  .hero { padding: 132px 0 72px; }
+}
+@media (min-width: 1024px) {
+  .hero {
+    min-height: max(640px, min(100svh, 900px));
+    padding: clamp(104px, 14.5vh, 132px) 0 104px;
+  }
+  .hero-recuadro {
+    height: clamp(300px, 40vh, 360px);
+    max-width: 560px;
+    margin-left: auto;
+  }
+}
+/* El fondo se funde en sus últimos 160 px: el hero no termina en un corte. */
+.hero-fondo {
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 160px), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 160px), transparent);
+}
+.hero-recuadro { isolation: isolate; }
+/* El papel que se desprende del borde inferior del recuadro cuando termina
+   de escribirse la primera tarea (data-escrita="0" lo pone
+   TextoQueSeEscribe): sale de detrás del recuadro, baja 40 px en 600 ms, 400 ms
+   después, y se apaga. Es la invitación a bajar: ahí nace el hilo. Con
+   «reducir movimiento» la frase no se escribe y el papel no aparece. */
+.hero-papel {
+  z-index: -1;
+  margin-left: -38px;
+  opacity: 0;
+  pointer-events: none;
+}
+@keyframes papel-cae {
+  0% { opacity: 1; transform: translate3d(0, -26px, 0); }
+  55% { opacity: 1; transform: translate3d(0, 14px, 0); }
+  80% { opacity: 1; transform: translate3d(0, 14px, 0); }
+  100% { opacity: 0; transform: translate3d(0, 14px, 0); }
+}
+.hero-recuadro:has([data-escrita="0"]) .hero-papel {
+  animation: papel-cae 1.1s var(--ease-salida) 0.4s both;
+}
+
+/* ---------------------------------------------------------------- Manifiesto
+   La frase que se enciende. Cada palabra va de 0,35 a 1 de opacidad en su
+   tramo (--a a --b) del paso del párrafo por la pantalla. El estado apagado
+   solo existe dentro de la animación: sin soporte, con «reducir movimiento» o
+   sin JavaScript, todas encendidas. */
+@keyframes palabra-enciende {
+  from { opacity: 0.35; }
+  to { opacity: 1; }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .manifiesto {
+      view-timeline-name: --manifiesto;
+      view-timeline-axis: block;
+      view-timeline-inset: 0;
+    }
+    .manifiesto .palabra {
+      animation-name: palabra-enciende;
+      animation-duration: auto;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --manifiesto;
+      animation-range: cover var(--a) cover var(--b);
+    }
+  }
+}
+
+/* ---------------------------------------------------------------- Puertas
+   Una fila que se enciende. --on vale 0 (apagada) o 1 (encendida): la placa
+   funde (opacity), el filo se dibuja (scaleX) y el mini diagrama y la flecha
+   leen la misma variable. Se enciende con el puntero, con el foco o cuando el
+   script del layout la marca [data-centro] (táctil). */
+.puerta {
+  --on: 0;
+  /* La placa sale del contenedor hasta pasar el hilo de luz, que queda unos
+     píxeles por dentro de su borde: lo que el hilo alcanza se enciende. */
+  --sangre: min(calc(var(--margen) - 4px), 40px);
+  border-top: 1px solid var(--color-line-2);
+}
+li:last-child > .puerta { border-bottom: 1px solid var(--color-line-2); }
+.puerta::before {
+  content: "";
+  position: absolute;
+  inset: -1px calc(-1 * var(--sangre));
+  border-radius: var(--radius-placa);
+  border: 1px solid var(--borde-encendido);
+  background: var(--placa-encendida);
+  opacity: var(--on);
+  pointer-events: none;
+  transition: opacity var(--dur-ui) var(--ease-salida);
+}
+.puerta::after {
+  content: "";
+  position: absolute;
+  inset-inline: calc(var(--radius-placa) - var(--sangre));
+  top: -1px;
+  height: 1px;
+  background: var(--filo);
+  transform: scaleX(var(--on));
+  transform-origin: left;
+  pointer-events: none;
+  transition: transform var(--dur-entrada) var(--ease-salida);
+}
+.puerta:focus-within,
+.puerta[data-centro] { --on: 1; }
+@media (hover: hover) and (pointer: fine) {
+  .puerta:hover { --on: 1; }
+}
+/* La flecha avanza 4 px y su círculo se rellena de blanco. */
+.puerta-flecha {
+  translate: calc(var(--on) * 4px) 0;
+  transition: translate var(--dur-ui) var(--ease-salida);
+}
+.puerta-flecha-llena {
+  position: absolute;
+  inset: -1px;
+  display: grid;
+  place-items: center;
+  border-radius: inherit;
+  background: #fff;
+  color: var(--color-ink);
+  opacity: var(--on);
+  transition: opacity var(--dur-ui) var(--ease-salida);
+}
+
+/* El mini diagrama: la regla dibujada con los objetos del sitio. Apagado, en
+   contorno; encendido, cada objeto se rellena en ola (--i). */
+.mini {
+  display: inline-flex;
+  align-items: center;
+  width: 72px;
+  height: 56px;
+}
+@media (min-width: 1024px) {
+  .mini { width: 136px; height: 72px; }
+}
+.mini-columna {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+.mini-persona {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  border: 1.5px solid rgb(255 255 255 / 0.7);
+}
+.mini-persona::after {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  background: #fff;
+  opacity: var(--on);
+  transition: opacity var(--dur-ui) var(--ease-salida) calc(var(--i, 0) * 80ms);
+}
+.mini-linea {
+  position: relative;
+  flex: 1;
+  min-width: 8px;
+  height: 1px;
+  background: rgb(255 255 255 / 0.22);
+}
+.mini-linea::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--color-cyan);
+  transform: scaleX(var(--on));
+  transform-origin: left;
+  transition: transform var(--dur-mover) var(--ease-salida);
+}
+.mini-agente {
+  position: relative;
+  width: 22px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1px dashed rgb(255 255 255 / 0.45);
+}
+.mini-agente::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border-top: 1px solid var(--color-cyan-light);
+  background: linear-gradient(180deg, #3d5aff, #1b35d0);
+  opacity: var(--on);
+  transition: opacity var(--dur-ui) var(--ease-salida) 0.1s;
+}
+.mini-ficha {
+  width: 20px;
+  height: 11px;
+  border-radius: 3px;
+  background: var(--color-mint);
+  opacity: calc(0.45 + 0.55 * var(--on));
+  translate: calc((var(--on) - 1) * 5px) 0;
+  transition:
+    opacity var(--dur-ui) var(--ease-salida) calc(var(--i, 0) * 80ms + 0.15s),
+    translate var(--dur-mover) var(--ease-salida) calc(var(--i, 0) * 80ms + 0.15s);
+}
+@media (min-width: 1024px) {
+  .mini-persona { width: 18px; height: 18px; }
+  .mini-agente { width: 38px; height: 26px; border-radius: 7px; }
+  .mini-ficha { width: 32px; height: 13px; }
+  .mini-linea { min-width: 14px; }
+}
+/* Con el teclado todo cambia de una vez: lo que dispara el teclado no se
+   anima, ni al llegar el foco ni al irse con Tab. */
+.puerta:has(:focus-visible)::before,
+.puerta:has(:focus-visible)::after,
+.puerta:has(:focus-visible) :is(.puerta-flecha, .puerta-flecha-llena, .mini-ficha),
+:root[data-tab] .puerta::before,
+:root[data-tab] .puerta::after,
+:root[data-tab] .puerta :is(.puerta-flecha, .puerta-flecha-llena, .mini-ficha) {
+  transition-duration: 0s;
+  transition-delay: 0s;
+}
+.puerta:has(:focus-visible) :is(.mini-persona, .mini-linea, .mini-agente)::after,
+:root[data-tab] .puerta :is(.mini-persona, .mini-linea, .mini-agente)::after {
+  transition-duration: 0s;
+  transition-delay: 0s;
+}
+
+/* ---------------------------------------------------------------- Cierre
+   El campo azul. Crece desde su borde de arriba (scaleY, 700 ms) cuando la
+   sección entra en pantalla y el contenido funde encima (400 ms). La sección
+   lleva data-revelar para que el script del layout la marque visible, pero no
+   usa la aparición general (no se oculta ni sube). */
+.cierre { padding-block: 96px; }
+@media (min-width: 768px) {
+  .cierre { padding-block: 160px; }
+}
+.cierre-campo {
+  background: var(--campo-azul);
+  transform-origin: top;
+  transition: transform 0.7s var(--ease-salida);
+}
+.cierre-contenido { transition: opacity 0.4s var(--ease-salida) 0.25s; }
+.cierre[data-revelar] { transition: none; }
+.js .cierre[data-revelar]:not([data-visible]) {
+  opacity: 1;
+  transform: none;
+}
+.js .cierre:not([data-visible]) .cierre-campo { transform: scaleY(0); }
+.js .cierre:not([data-visible]) .cierre-contenido { opacity: 0; }
+/* Si el foco del teclado llega antes que el scroll, completo y quieto. */
+.js .cierre:not([data-visible]):focus-within :is(.cierre-campo, .cierre-contenido) {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+/* ---------------------------------------------------------------- Pie
+   El eslogan, gigante, como última línea del sitio. El tamaño va en vw para
+   que cada frase quepa en un renglón desde 768 px. La capa de contorno es el
+   texto de verdad; la rellena, encima, funde al entrar del todo en pantalla
+   (atada al scroll). Por defecto está rellena: el contorno solo se ve dentro
+   de la animación. */
+.pie-lema {
+  font-size: clamp(2.25rem, 6.5vw, 6rem);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.pie-lema-contorno {
+  color: var(--color-ink);
+  -webkit-text-stroke: 2px rgb(255 255 255 / 0.4);
+  paint-order: stroke fill;
+}
+@supports not (-webkit-text-stroke: 1px #fff) {
+  .pie-lema-contorno { color: rgb(255 255 255 / 0.2); }
+}
+@keyframes lema-rellena {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .pie-lema-relleno {
+      animation-name: lema-rellena;
+      animation-duration: auto;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry 15% entry 100%;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------
+   Ecosistema (src/components/sections/ecosistema.tsx)
+   Tres carriles rectos: herramienta, agente y persona, con el trabajo
+   circulando. Por eso todo se mueve con translate, scaleX u opacity.
+   El CSS por defecto es el cuadro final (paso 3), quieto: es lo que se ve
+   sin JavaScript, con «reducir movimiento» o si React no carga. Con
+   [data-vivo] (lo pone PiezaPasos) el escenario obedece a data-paso.
+   Las medidas cambian de celular a escritorio en las variables de abajo.
+   ------------------------------------------------------------------ */
+.eco {
+  --tool-w: 86px;
+  --agente-w: 100px;
+  --persona-w: 80px;
+  --forma-h: 34px;
+  --eje: 17px;
+  --carril-h: 80px;
+  --carril-gap: 2px;
+  --sig-h: 28px;
+  --marco-px: 10px;
+  --marco-pt: 18px;
+  --marco-pb: 10px;
+  --daxlo-gap: 18px;
+  --daxlo-teja: 36px;
+  /* De debajo del nombre del último agente (dos renglones) a la teja de
+     Daxlo. En escritorio el nombre va dentro de la placa y la línea sale de
+     su borde. */
+  --daxlo-linea: calc(var(--carril-h) - var(--forma-h) - 38px + 4px + var(--sig-h) + var(--marco-pb) + 1px + var(--daxlo-gap));
+  /* El centro de la columna de agentes, medido desde el centro del carril. */
+  --eje-agente: calc(50% + (var(--tool-w) - var(--persona-w)) / 2);
+  --eco-fondo: #111949;
+  --eco-alto: clamp(356px, 46svh, 380px);
+}
+@media (min-width: 1024px) {
+  .eco {
+    --tool-w: 124px;
+    --agente-w: 176px;
+    --persona-w: 100px;
+    --forma-h: 52px;
+    --eje: 28px;
+    --carril-h: 92px;
+    --carril-gap: 6px;
+    --sig-h: 44px;
+    --marco-px: 20px;
+    --marco-pt: 22px;
+    --marco-pb: 14px;
+    --daxlo-gap: 22px;
+    --daxlo-teja: 44px;
+    --daxlo-linea: calc(var(--carril-h) - 2px - var(--forma-h) + 4px + var(--sig-h) + var(--marco-pb) + 1px + var(--daxlo-gap));
+    --eco-alto: clamp(508px, calc(100vh - 200px), 560px);
+  }
+}
+
+/* ---- Composición. Por defecto (sin JavaScript o con «reducir movimiento»):
+   el escenario arriba y los pasos debajo, en dos columnas. */
+.eco-escenario {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  height: var(--eco-alto);
+  border-radius: var(--radius-placa);
+  border: 1px solid var(--borde-encendido);
+  background: var(--placa-encendida);
+}
+/* El filo de arriba y la luz de sección: un solo resplandor, detrás de los
+   carriles, sin filtro. */
+.eco-escenario::before {
+  content: "";
+  position: absolute;
+  inset-inline: var(--radius-placa);
+  top: 0;
+  height: 1px;
+  background: var(--filo);
+}
+.eco-escenario::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 10%;
+  right: 10%;
+  top: -30%;
+  height: 90%;
+  background: radial-gradient(closest-side, rgb(61 90 255 / 0.26), rgb(61 90 255 / 0.08) 60%, transparent);
+  pointer-events: none;
+}
+.eco-pasos {
+  display: grid;
+  gap: 40px 24px;
+  margin-top: 40px;
+}
+@media (min-width: 768px) {
+  .eco-pasos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.eco-paso-rotulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgb(255 255 255 / 0.72);
+}
+.eco-paso-rotulo::before {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: var(--color-cyan);
+}
+
+/* La leyenda: arriba del escenario en celular, debajo en escritorio. */
+.eco-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgb(255 255 255 / 0.72);
+}
+.eco-leyenda li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.eco-leyenda-arriba { margin-bottom: 16px; }
+.eco-leyenda-abajo { display: none; margin-top: 14px; }
+@media (min-width: 1024px) {
+  .eco-leyenda-arriba { display: none; }
+  .eco-leyenda-abajo { display: flex; }
+}
+.eco-leyenda-persona {
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: #fff;
+}
+.eco-leyenda-papel {
+  width: 18px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--color-mint);
+}
+.eco-leyenda-agente {
+  width: 18px;
+  height: 12px;
+  border-radius: 4px;
+  border-top: 1px solid var(--color-cyan-light);
+  background: linear-gradient(180deg, #3d5aff, #1b35d0);
+}
+.eco-leyenda-via {
+  width: 20px;
+  height: 1px;
+  background: var(--color-cyan);
+}
+
+/* ---- Composición viva: el escenario se fija mientras pasan los pasos. La
+   decide el CSS (clase .js del layout, puesta antes de pintar) y no la
+   hidratación: nada cambia de lugar cuando React carga. */
+@media (prefers-reduced-motion: no-preference) {
+  /* Celular: el escenario arriba, fijo bajo la barra, a sangre y opaco. La
+     caja empieza 80 px antes (el alto de la barra) con fondo opaco: cuando
+     está fija, el texto que sube no asoma por encima del escenario. */
+  @media (max-width: 1023px) {
+    .js .eco-caja {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      margin-inline: calc(-1 * var(--margen));
+      padding-top: 80px;
+      background: var(--color-ink);
+    }
+    /* La leyenda va dentro de esos 80 px, pegada al escenario: se lee al
+       llegar y queda detrás de la barra cuando el escenario se fija. */
+    .js .eco-leyenda-arriba {
+      position: absolute;
+      left: var(--margen);
+      right: var(--margen);
+      bottom: calc(100% - 70px);
+      margin-bottom: 0;
+    }
+    .js .eco-escenario {
+      border-radius: 0;
+      border-width: 1px 0;
+      border-color: rgb(61 90 255 / 0.3);
+    }
+    .js .eco-escenario::before { inset-inline: 0; }
+    .js .eco-pasos {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      margin-top: 0;
+    }
+    .js .eco-paso {
+      min-height: 44svh;
+      padding-block: 36px;
+    }
+    /* La barra de puntos reserva su lugar desde el HTML: aparece al hidratar
+       sin mover los carriles. */
+    .js .eco-barra {
+      display: flex;
+      visibility: hidden;
+    }
+    .js .eco[data-vivo] .eco-barra { visibility: visible; }
+  }
+  /* Escritorio: los pasos a la izquierda (columnas 1 a 4), cada uno de 64vh,
+     y el escenario a la derecha (5 a 12), fijo a 112 px de arriba. */
+  @media (min-width: 1024px) {
+    .js .eco {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: 24px;
+    }
+    .js .eco-caja {
+      grid-column: 5 / -1;
+      grid-row: 1;
+      position: sticky;
+      top: 112px;
+      align-self: start;
+    }
+    .js .eco-pasos {
+      grid-column: 1 / span 4;
+      grid-row: 1;
+      display: block;
+      margin-top: 0;
+    }
+    .js .eco-paso {
+      display: flex;
+      min-height: 64vh;
+      flex-direction: column;
+      justify-content: center;
+    }
+  }
+  /* El paso que cruza la línea está encendido; los otros, apagados. */
+  .eco[data-vivo] .eco-paso {
+    opacity: 0.35;
+    transition: opacity var(--dur-mover) var(--ease-salida);
+  }
+  .eco[data-vivo] .eco-paso[data-activo] { opacity: 1; }
+}
+
+/* ---- El lienzo y el marco de la empresa. */
+.eco-lienzo {
+  position: relative;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+  padding: 14px;
+}
+@media (min-width: 1024px) {
+  .eco-lienzo { padding: 20px 24px; }
+}
+.eco-ejemplo {
+  position: absolute;
+  right: 16px;
+  top: 14px;
+  color: rgb(255 255 255 / 0.55);
+}
+@media (min-width: 1024px) {
+  .eco-ejemplo { right: 24px; top: 18px; }
+}
+.eco-barra {
+  display: none;
+  height: 20px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.eco-puntos {
+  display: inline-flex;
+  gap: 6px;
+}
+.eco-punto {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.25);
+}
+[data-paso="0"] .eco-punto:nth-child(1),
+[data-paso="1"] .eco-punto:nth-child(-n + 2),
+[data-paso="2"] .eco-punto:nth-child(-n + 3),
+[data-paso="3"] .eco-punto { background: var(--color-cyan-light); }
+.eco-barra-rotulos {
+  display: grid;
+  color: #fff;
+}
+.eco-barra-rotulos span {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transition: opacity var(--dur-ui) var(--ease-salida);
+}
+[data-paso="0"] .eco-barra-rotulos span:nth-child(1),
+[data-paso="1"] .eco-barra-rotulos span:nth-child(2),
+[data-paso="2"] .eco-barra-rotulos span:nth-child(3),
+[data-paso="3"] .eco-barra-rotulos span:nth-child(4) { opacity: 1; }
+
+.eco-marco {
+  position: relative;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-radius: var(--radius-control);
+  padding: var(--marco-pt) var(--marco-px) var(--marco-pb);
+}
+@media (min-width: 1024px) {
+  .eco-marco { margin-top: 26px; }
+}
+.eco-marco-rotulo {
+  position: absolute;
+  left: 12px;
+  top: -9px;
+  padding: 0 8px;
+  background: #121e60;
+  color: rgb(255 255 255 / 0.62);
+}
+
+/* ---- Un carril: herramienta, agente y persona sobre el mismo eje. */
+.eco-carril {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--tool-w) minmax(8px, 1fr) var(--agente-w) minmax(8px, 1fr) var(--persona-w);
+  height: var(--carril-h);
+  align-items: start;
+}
+.eco-carril + .eco-carril { margin-top: var(--carril-gap); }
+@media (max-width: 1023px) {
+  .eco-carril[data-carril="2"] { display: none; }
+}
+/* La línea va de centro a centro, por detrás de los nodos (que son opacos). */
+.eco-via,
+.eco-via-mano {
+  position: absolute;
+  left: calc(var(--tool-w) / 2);
+  right: calc(var(--persona-w) / 2);
+  top: var(--eje);
+}
+.eco-via {
+  height: 1px;
+  background: linear-gradient(90deg, rgb(41 196 245 / 0.85), rgb(127 224 255 / 0.85));
+  transform-origin: left;
+}
+.eco-via-mano { border-top: 1px dashed rgb(255 255 255 / 0.32); }
+
+.eco-nodo {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+.eco-herramienta { grid-column: 1; }
+.eco-agente { grid-column: 3; }
+.eco-persona { grid-column: 5; }
+.eco-nombre {
+  margin-top: 5px;
+  font-size: 13px;
+  line-height: 1.25;
+  text-align: center;
+  color: rgb(255 255 255 / 0.86);
+  text-wrap: balance;
+}
+
+/* Herramienta: una teja oscura. Ya estaba en la empresa. */
+.eco-herramienta .eco-forma {
+  display: grid;
+  width: 46px;
+  height: var(--forma-h);
+  place-items: center;
+  border-radius: var(--radius-ficha);
+  border: 1px solid rgb(255 255 255 / 0.16);
+  background: var(--color-ink-2);
+  color: rgb(255 255 255 / 0.75);
+}
+/* Agente: una placa azul con el filo cian arriba. En "Hoy", un hueco
+   punteado que dice "A mano". */
+.eco-agente .eco-forma,
+.eco-hueco {
+  position: absolute;
+  left: calc(50% - 32px);
+  top: 0;
+  width: 64px;
+  height: var(--forma-h);
+  border-radius: var(--radius-control);
+}
+.eco-agente .eco-forma {
+  overflow: hidden;
+  border-top: 1px solid var(--color-cyan-light);
+  background: linear-gradient(180deg, #3d5aff, #1b35d0);
+  box-shadow: 0 10px 28px -14px rgb(41 196 245 / 0.8);
+}
+.eco-hueco {
+  display: grid;
+  place-items: center;
+  border: 1px dashed rgb(255 255 255 / 0.42);
+  background: var(--eco-fondo);
+  font-size: 13px;
+  line-height: 1;
+  color: rgb(255 255 255 / 0.7);
+}
+.eco-agente .eco-nombre { margin-top: calc(var(--forma-h) + 5px); }
+.eco-brillo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgb(226 243 238 / 0.55), rgb(127 224 255 / 0.25));
+  opacity: 0;
+}
+/* Persona: un círculo. En contorno hasta que aprende; después, blanco. */
+.eco-persona .eco-forma {
+  position: relative;
+  width: var(--forma-h);
+  height: var(--forma-h);
+  border-radius: 9999px;
+  border: 1.5px solid rgb(255 255 255 / 0.75);
+  background: var(--eco-fondo);
+}
+.eco-lleno {
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  background: #fff;
+}
+.eco-aprueba {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--color-mint);
+}
+@media (min-width: 1024px) {
+  /* En escritorio el nombre va dentro de la teja y de la placa. */
+  .eco-herramienta {
+    height: 44px;
+    margin-top: calc(var(--eje) - 22px);
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 0 12px;
+    border-radius: var(--radius-control);
+    border: 1px solid rgb(255 255 255 / 0.16);
+    background: var(--color-ink-2);
+  }
+  .eco-herramienta .eco-forma {
+    width: auto;
+    height: auto;
+    border: 0;
+    background: none;
+  }
+  .eco-herramienta .eco-nombre {
+    margin-top: 0;
+    text-align: left;
+  }
+  .eco-agente {
+    height: var(--forma-h);
+    margin-top: calc(var(--eje) - var(--forma-h) / 2);
+    justify-content: center;
+  }
+  .eco-agente .eco-forma,
+  .eco-hueco {
+    left: 0;
+    width: 100%;
+  }
+  .eco-agente .eco-nombre {
+    position: relative;
+    margin-top: 0;
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .eco-hueco { font-size: 14px; }
+  .eco-persona .eco-forma {
+    width: 48px;
+    height: 48px;
+    margin-top: calc(var(--eje) - 24px);
+  }
+}
+
+/* ---- El trabajo. En el cuadro final, un papel junto a cada persona. */
+.eco-pila {
+  position: absolute;
+  z-index: 1;
+  right: calc(var(--persona-w) / 2 + var(--forma-h) / 2 + 6px);
+  top: calc(var(--eje) - 13px);
+  width: 0;
+  height: 26px;
+}
+/* El papel de encima (el primero) lleva la letra; los de debajo asoman
+   corridos, sin letra. */
+.eco-pila { transition: opacity var(--dur-mover) var(--ease-salida); }
+.eco-papel {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: calc(5 - var(--k));
+  transform: translate(calc(var(--k) * 5px), calc(var(--k) * -6px)) rotate(calc(var(--k) * -3deg));
+  box-shadow: 0 0 0 1px rgb(13 14 20 / 0.28);
+}
+.eco-papel:not(:first-child) {
+  color: transparent;
+  opacity: 0;
+}
+.eco-viaje {
+  position: absolute;
+  z-index: 1;
+  left: calc(var(--tool-w) / 2);
+  right: calc(var(--persona-w) / 2);
+  top: calc(var(--eje) - 13px);
+  height: 26px;
+  opacity: 0;
+  pointer-events: none;
+}
+.eco-viaje .ficha-papel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  translate: -50% 0;
+}
+@media (min-width: 1024px) {
+  .eco-pila { right: calc(var(--persona-w) / 2 + 24px + 8px); }
+}
+@media (max-width: 1023px) {
+  /* En celular los papeles son hojas chicas, sin letra: un rótulo de menos
+     de 13 px no se lee. */
+  .eco-carril .ficha-papel {
+    width: 26px;
+    height: 16px;
+    padding: 0;
+    border-radius: 4px;
+    font-size: 0;
+  }
+  .eco-pila,
+  .eco-viaje {
+    top: calc(var(--eje) - 8px);
+    height: 16px;
+  }
+}
+
+/* ---- "Ajusta": la persona de Ventas le corrige algo al agente. */
+.eco-ajusta {
+  position: absolute;
+  z-index: 1;
+  left: calc(var(--eje-agente) + var(--agente-w) / 2);
+  right: calc(var(--persona-w) / 2 + var(--forma-h) / 2);
+  top: 0;
+  height: var(--eje);
+  display: none;
+}
+@media (min-width: 1024px) {
+  .eco-ajusta {
+    display: block;
+    right: calc(var(--persona-w) / 2 + 24px);
+  }
+}
+.eco-ajusta-rotulo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--color-cyan-light);
+}
+.eco-ajusta-pulso {
+  position: absolute;
+  inset: auto 0 -3px 0;
+  height: 6px;
+  opacity: 0;
+}
+.eco-ajusta-pulso::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: #fff;
+  box-shadow: 0 0 10px 2px rgb(127 224 255 / 0.8);
+}
+
+/* ---- El cuarto carril, punteado: lo que sigue. */
+.eco-siguiente {
+  position: relative;
+  height: var(--sig-h);
+  margin-top: 4px;
+}
+.eco-siguiente-via {
+  position: absolute;
+  left: calc(var(--tool-w) / 2);
+  right: calc(var(--persona-w) / 2);
+  top: 50%;
+  border-top: 1px dashed rgb(255 255 255 / 0.28);
+}
+.eco-siguiente-teja,
+.eco-siguiente-persona {
+  position: absolute;
+  top: 50%;
+  height: 26px;
+  translate: -50% -50%;
+  border: 1px dashed rgb(255 255 255 / 0.32);
+  background: var(--eco-fondo);
+}
+.eco-siguiente-teja {
+  left: calc(var(--tool-w) / 2);
+  width: 46px;
+  border-radius: var(--radius-ficha);
+}
+.eco-siguiente-persona {
+  left: calc(100% - var(--persona-w) / 2);
+  width: 26px;
+  border-radius: 9999px;
+}
+@media (min-width: 1024px) {
+  .eco-siguiente-teja,
+  .eco-siguiente-persona { height: 32px; }
+  .eco-siguiente-teja { width: var(--tool-w); border-radius: var(--radius-control); }
+  .eco-siguiente-persona { width: 32px; }
+}
+.eco-siguiente-nombre {
+  position: absolute;
+  z-index: 3;
+  left: var(--eje-agente);
+  top: 50%;
+  translate: -50% -50%;
+  padding: 5px 12px;
+  border-radius: var(--radius-control);
+  border: 1px dashed rgb(255 255 255 / 0.42);
+  background: var(--eco-fondo);
+  font-size: 13px;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: rgb(255 255 255 / 0.82);
+}
+@media (min-width: 1024px) {
+  .eco-siguiente-nombre {
+    width: var(--agente-w);
+    padding: 8px 12px;
+    text-align: center;
+    font-size: 14px;
+  }
+}
+
+/* ---- Daxlo: fuera del marco, bajo la columna de agentes. */
+.eco-daxlo {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  width: max-content;
+  align-items: center;
+  gap: 10px;
+  margin-top: var(--daxlo-gap);
+  margin-left: calc(var(--eje-agente) - var(--daxlo-teja) / 2);
+}
+.eco-daxlo-teja {
+  display: grid;
+  width: var(--daxlo-teja);
+  height: var(--daxlo-teja);
+  flex: none;
+  place-items: center;
+  border-radius: var(--radius-control);
+  border: 1px solid rgb(255 255 255 / 0.22);
+  background: var(--color-ink);
+}
+.eco-daxlo-linea {
+  position: absolute;
+  left: calc(var(--daxlo-teja) / 2 - 0.5px);
+  bottom: 100%;
+  width: 1px;
+  height: var(--daxlo-linea);
+}
+.eco-daxlo-solida,
+.eco-daxlo-punteada {
+  position: absolute;
+  inset: 0;
+}
+.eco-daxlo-solida {
+  background: var(--color-cyan);
+  transform-origin: bottom;
+  opacity: 0;
+}
+.eco-daxlo-punteada {
+  background: repeating-linear-gradient(to bottom, var(--color-cyan-light) 0 4px, transparent 4px 8px);
+}
+.eco-daxlo-pulso {
+  position: absolute;
+  left: -2.5px;
+  bottom: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: #fff;
+  box-shadow: 0 0 10px 2px rgb(127 224 255 / 0.8);
+  opacity: 0;
+}
+.eco-daxlo-texto {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  line-height: 1.3;
+}
+.eco-daxlo-nombre {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+.eco-daxlo-acciones {
+  display: grid;
+  color: var(--color-cyan-light);
+}
+.eco-daxlo-acciones span {
+  grid-area: 1 / 1;
+  opacity: 0;
+}
+/* Cuadro final: "Lo revisa". */
+.eco-daxlo-acciones span:nth-child(2) { opacity: 1; }
+
+/* ------------------------------------------------------------------
+   Ecosistema: los cuatro estados. Solo con [data-vivo].
+   ------------------------------------------------------------------ */
+/* Las tres entradas. --t es el retraso de cada pieza dentro de su paso. */
+.eco-funde { transition: opacity var(--dur-mover) var(--ease-salida) var(--t, 0s); }
+.eco-llega {
+  transition:
+    opacity var(--dur-ui) var(--ease-salida) var(--t, 0s),
+    transform var(--dur-mover) var(--ease-salida) var(--t, 0s);
+}
+.eco-traza {
+  transition:
+    transform 0.5s var(--ease-salida) var(--t, 0s),
+    opacity 0.1s linear var(--t, 0s);
+}
+/* Lo que solo existe en "Hoy" (el hueco, la línea a mano). */
+[data-hasta="0"] { opacity: 0; }
+.eco[data-vivo] [data-paso="0"] [data-hasta="0"] { opacity: 1; }
+/* Lo que todavía no llegó: apagado y en su punto de partida. Al apagarse
+   (cuando se sube por la página) no espera su turno. */
+.eco[data-vivo] :is([data-paso="0"] :is([data-desde="1"], [data-desde="2"], [data-desde="3"]), [data-paso="1"] :is([data-desde="2"], [data-desde="3"]), [data-paso="2"] [data-desde="3"]) {
+  opacity: 0;
+  transition-delay: 0s;
+}
+.eco[data-vivo] :is([data-paso="0"] :is([data-desde="1"], [data-desde="2"], [data-desde="3"]), [data-paso="1"] :is([data-desde="2"], [data-desde="3"]), [data-paso="2"] [data-desde="3"]).eco-llega {
+  transform: translate3d(0, 6px, 0) scale(0.96);
+}
+.eco[data-vivo] :is([data-paso="0"] :is([data-desde="1"], [data-desde="2"], [data-desde="3"]), [data-paso="1"] :is([data-desde="2"], [data-desde="3"]), [data-paso="2"] [data-desde="3"]).eco-traza {
+  transform: scaleX(0);
+}
+
+/* Paso 0, "Hoy": los papeles amontonados junto a cada persona, tenues. */
+.eco[data-vivo] [data-paso="0"] .eco-pila { opacity: 0.62; }
+.eco[data-vivo] [data-paso="0"] .eco-papel { opacity: 1; }
+/* Pasos 1 a 3: los papeles circulan; la pila se apaga. */
+.eco[data-vivo] :is([data-paso="1"], [data-paso="2"], [data-paso="3"]) .eco-pila { opacity: 0; }
+
+/* Un papel sale de la herramienta, pasa por detrás del agente (que sube de
+   brillo mientras lo trabaja) y llega a la persona. La posición del agente es
+   el 51 % del recorrido en los dos tamaños. Lineal entre paradas, con la
+   curva de mover en cada tramo. */
+@keyframes eco-viaje {
+  0% { opacity: 0; transform: translateX(7%); animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1); }
+  6% { opacity: 1; }
+  40% { opacity: 1; transform: translateX(51%); }
+  58% { opacity: 1; transform: translateX(51%); animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1); }
+  90% { opacity: 1; transform: translateX(89%); }
+  100% { opacity: 0; transform: translateX(93%); }
+}
+@keyframes eco-brillo {
+  0%, 36% { opacity: 0; }
+  44%, 54% { opacity: 1; }
+  66%, 100% { opacity: 0; }
+}
+.eco[data-vivo] :is([data-paso="1"], [data-paso="2"], [data-paso="3"]) .eco-viaje {
+  animation: eco-viaje 2.4s linear var(--fase, 0s) infinite;
+}
+.eco[data-vivo] :is([data-paso="1"], [data-paso="2"], [data-paso="3"]) .eco-brillo {
+  animation: eco-brillo 2.4s linear var(--fase, 0s) infinite;
+}
+
+/* Pasos 1 y 2: Daxlo monta. La línea es sólida y se dibuja desde la teja. */
+.eco-daxlo-solida { transition: transform var(--dur-mover) var(--ease-salida) 0.2s, opacity var(--dur-ui) var(--ease-salida); }
+.eco[data-vivo] [data-paso="0"] .eco-daxlo-solida { transform: scaleY(0); }
+.eco[data-vivo] :is([data-paso="1"], [data-paso="2"]) .eco-daxlo-solida { opacity: 1; }
+.eco-daxlo-acciones span { transition: opacity var(--dur-ui) var(--ease-salida); }
+.eco[data-vivo] :is([data-paso="0"], [data-paso="1"], [data-paso="2"]) .eco-daxlo-acciones span:nth-child(2) { opacity: 0; }
+.eco[data-vivo] :is([data-paso="1"], [data-paso="2"]) .eco-daxlo-acciones span:nth-child(1) { opacity: 1; }
+
+/* Paso 2: el pulso que va de la persona al agente, una vez. */
+@keyframes eco-ajusta {
+  0% { opacity: 0; transform: none; }
+  12% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-100%); }
+}
+.eco[data-vivo] [data-paso="2"] .eco-ajusta-pulso {
+  animation: eco-ajusta 0.9s var(--ease-mover) 0.5s both;
+}
+
+/* Paso 3: Daxlo se queda al lado. Cada 6 s un pulso sube a los agentes y el
+   rótulo alterna "Lo revisa" y "Lo mejora". */
+@keyframes eco-daxlo-pulso {
+  0% { opacity: 0; transform: none; }
+  3% { opacity: 1; }
+  16% { opacity: 1; transform: translateY(calc(-1 * var(--daxlo-linea))); }
+  20%, 100% { opacity: 0; transform: translateY(calc(-1 * var(--daxlo-linea))); }
+}
+@keyframes eco-alterna {
+  0%, 44% { opacity: 1; }
+  50%, 94% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.eco[data-vivo] [data-paso="3"] .eco-daxlo-pulso {
+  animation: eco-daxlo-pulso 6s var(--ease-mover) 1s infinite;
+}
+.eco[data-vivo] [data-paso="3"] .eco-daxlo-acciones span:nth-child(2) {
+  animation: eco-alterna 12s linear infinite;
+}
+.eco[data-vivo] [data-paso="3"] .eco-daxlo-acciones span:nth-child(3) {
+  animation: eco-alterna 12s linear -6s infinite;
+}
+
+/* Lo infinito se detiene con el escenario fuera de la vista o la pestaña
+   oculta (PiezaPasos marca [data-pausa]). */
+.eco-escenario[data-pausa] * { animation-play-state: paused !important; }
+
+/* Con el puntero sobre un carril, ese sube y los otros bajan al 60 %. */
+@media (hover: hover) and (pointer: fine) {
+  .eco-carril { transition: opacity var(--dur-ui) var(--ease-salida); }
+  .eco-marco:has(.eco-carril:hover) .eco-carril:not(:hover) { opacity: 0.6; }
+}
+
+/* ------------------------------------------------------------------
+   «Reducir movimiento»: todo queda en su cuadro final y nada se desplaza.
+   ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .numeral-relleno,
+  .boton-papel::before,
+  .puerta::before,
+  .puerta::after,
+  .puerta-flecha,
+  .puerta-flecha-llena,
+  .mini-persona::after,
+  .mini-linea::after,
+  .mini-agente::after,
+  .mini-ficha { transition: none; }
+  .puerta-flecha,
+  .mini-ficha { translate: none; }
+  /* El campo azul está completo desde el principio. */
+  .cierre-campo,
+  .cierre-contenido { transition: none; }
+  .js .cierre:not([data-visible]) .cierre-campo { transform: none; }
+  .js .cierre:not([data-visible]) .cierre-contenido { opacity: 1; }
+  .hero-recuadro:has([data-escrita]) .hero-papel { animation: none; }
+  .eco-funde,
+  .eco-llega,
+  .eco-traza,
+  .eco-pila,
+  .eco-daxlo-solida,
+  .eco-daxlo-acciones span { transition: none; }
+}
