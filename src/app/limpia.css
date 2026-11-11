@@ -1,0 +1,635 @@
+/* ------------------------------------------------------------------
+   Sistema «Limpia» (2026-11-11): el inicio, la barra y el pie.
+   Sigue la skill landing-page-design (Parte B) y la lógica de color del
+   video de referencia: dos colores base y una salpicadura.
+   - Base: negro plano y sus grises. Texto blanco y gris #9B9B9B.
+   - Color: el azul de Daxlo, solo como línea y pieza chica.
+   - Salpicadura: mandarina, en el botón principal y dos o tres detalles
+     por pantalla. Vive en un solo token: --color-acento.
+   Fondos planos, sin degradados. El único degradado del sitio es el del
+   texto del titular del hero (.titular-hero).
+   ------------------------------------------------------------------ */
+
+@theme {
+  /* Fondos: solo estos cinco. */
+  --color-fondo: #000000;
+  --color-capa-1: #181818;
+  --color-capa-2: #1f1f1f;
+  --color-capa-3: #272727;
+  --color-capa-4: #313131;
+  /* Texto. */
+  --color-texto: #ffffff;
+  --color-texto-2: #9b9b9b;
+  /* El azul de Daxlo para trazos sobre negro. Nunca en plano grande. */
+  --color-trazo: #3d5aff;
+  /* La salpicadura. Cambiarla es cambiar esta línea. */
+  --color-acento: #ff6500;
+
+  --font-mono: var(--fuente-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  /* Curva base de todo el movimiento (B7). */
+  --ease-base: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ------------------------------------------------------------------
+   Estilos de texto con nombre (B1). Cada uno sale de un paso de la escala
+   de Tailwind, con su interlineado. Los titulares bajan pasos de la misma
+   escala en pantallas chicas; nunca un valor intermedio. Los titulares
+   llevan el tracking apretado de Tailwind (-0.025em), definido aquí una
+   sola vez.
+   ------------------------------------------------------------------ */
+@layer components {
+  .heading-1,
+  .heading-2,
+  .heading-3,
+  .heading-4,
+  .heading-5,
+  .heading-6 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+  .heading-1 { font-size: 2.25rem; line-height: 2.5rem; }
+  .heading-2 { font-size: 1.875rem; line-height: 2.25rem; }
+  .heading-3 { font-size: 1.875rem; line-height: 2.25rem; }
+  .heading-4 { font-size: 1.5rem; line-height: 2rem; }
+  .heading-5 { font-size: 1.25rem; line-height: 1.75rem; }
+  .heading-6 { font-size: 1.25rem; line-height: 1.75rem; }
+  @media (min-width: 640px) {
+    .heading-1 { font-size: 3rem; line-height: 1; }
+    .heading-2 { font-size: 2.25rem; line-height: 2.5rem; }
+  }
+  @media (min-width: 1024px) {
+    .heading-1 { font-size: 3.75rem; line-height: 1; }
+    .heading-2 { font-size: 3rem; line-height: 1; }
+    .heading-3 { font-size: 2.25rem; line-height: 2.5rem; }
+    .heading-4 { font-size: 1.875rem; line-height: 2.25rem; }
+    .heading-5 { font-size: 1.5rem; line-height: 2rem; }
+  }
+
+  .title-1 { font-size: 1.25rem; line-height: 1.75rem; font-weight: 500; }
+  .title-2 { font-size: 1.125rem; line-height: 1.75rem; font-weight: 500; }
+  .title-3 { font-size: 1rem; line-height: 1.5rem; font-weight: 500; }
+  .title-4 { font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; }
+  .title-5 { font-size: 0.75rem; line-height: 1rem; font-weight: 500; }
+
+  .body-1 { font-size: 1rem; line-height: 1.5rem; font-weight: 600; }
+  .body-2 { font-size: 1rem; line-height: 1.5rem; font-weight: 500; }
+  .body-3 { font-size: 1rem; line-height: 1.5rem; font-weight: 400; }
+  .body-4 { font-size: 0.875rem; line-height: 1.25rem; font-weight: 600; }
+  .body-5 { font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; }
+  .body-6 { font-size: 0.875rem; line-height: 1.25rem; font-weight: 400; }
+  /* Body 7: el párrafo de apoyo bajo un titular (18 / 28, regular). */
+  .body-7 { font-size: 1.125rem; line-height: 1.75rem; font-weight: 400; }
+  .body-3,
+  .body-6,
+  .body-7 { text-wrap: pretty; }
+
+  .button-lg { font-size: 1.125rem; line-height: 1.75rem; font-weight: 600; }
+  .button-md { font-size: 1rem; line-height: 1.5rem; font-weight: 600; }
+  .button-sm { font-size: 0.875rem; line-height: 1.25rem; font-weight: 600; }
+  .button-xsm { font-size: 0.75rem; line-height: 1rem; font-weight: 600; }
+
+  .caption-1 { font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; }
+  .caption-2 { font-size: 0.875rem; line-height: 1.25rem; font-weight: 400; }
+  .caption-3 { font-size: 0.75rem; line-height: 1rem; font-weight: 600; }
+  .caption-4 { font-size: 0.75rem; line-height: 1rem; font-weight: 500; }
+  .caption-5 { font-size: 0.75rem; line-height: 1rem; font-weight: 400; }
+
+  /* Geist Mono: solo datos, numerales y rótulos técnicos. Se suma a un
+     estilo con nombre (caption-4 mono, title-4 mono). */
+  .mono {
+    font-family: var(--font-mono);
+    font-feature-settings: "tnum";
+    letter-spacing: 0;
+  }
+  .rotulo-tecnico {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* El único degradado del sitio: el texto del titular del hero (B5). */
+  .titular-hero {
+    background-image: linear-gradient(90deg, #ffffff 0%, #9b9b9b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+  @media (forced-colors: active) {
+    .titular-hero {
+      background-image: none;
+      color: CanvasText;
+      -webkit-text-fill-color: CanvasText;
+    }
+  }
+
+  /* Contenedor del sistema: 1152 px, con 24 px de margen (32 desde 768). */
+  .contenedor {
+    width: 100%;
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: 24px;
+  }
+  @media (min-width: 768px) {
+    .contenedor { padding-inline: 32px; }
+  }
+
+  /* Ritmo vertical de las secciones del inicio: 64 px en celular, 96 px
+     desde 768 px. */
+  .seccion { padding-block: 64px; }
+  @media (min-width: 768px) {
+    .seccion { padding-block: 96px; }
+  }
+
+  /* Línea fina entre filas. Es un elemento propio, a todo el ancho de su
+     grupo: nunca el borde de un solo lado de una tarjeta. */
+  .regla {
+    display: block;
+    height: 1px;
+    width: 100%;
+    background: var(--color-capa-3);
+    border: 0;
+  }
+
+  /* ---------------------------------------------------------------- Botón
+     Principal: mandarina con texto negro (7:1). Secundario: superficie
+     gris. Relleno de la skill: 8 px arriba y abajo, 12 px a los lados.
+     Estados: hover (aclara y la flecha avanza), activo (0.98), foco
+     (anillo blanco). Solo cambian color de fondo, transform y opacity. */
+  .boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 8px 12px;
+    border-radius: 0.5rem;
+    white-space: nowrap;
+    transition:
+      background-color 300ms var(--ease-base),
+      transform 300ms var(--ease-base);
+  }
+  .boton:active:not(:focus-visible) { transform: scale(0.98); }
+  .boton:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 3px;
+    border-radius: 0.5rem;
+  }
+  .boton-principal-limpio {
+    background: var(--color-acento);
+    color: #000000;
+  }
+  .boton-secundario {
+    background: var(--color-capa-3);
+    color: var(--color-texto);
+  }
+  .boton-flecha { transition: transform 500ms var(--ease-base); }
+  @media (hover: hover) and (pointer: fine) {
+    .boton-principal-limpio:hover { background: color-mix(in srgb, var(--color-acento) 84%, #ffffff); }
+    .boton-secundario:hover { background: var(--color-capa-4); }
+    .boton:hover .boton-flecha { transform: translateX(2px); }
+  }
+
+  /* Enlace de texto: blanco, con una línea azul debajo. */
+  .enlace {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    color: var(--color-texto);
+    text-decoration: underline;
+    text-decoration-color: var(--color-trazo);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 6px;
+    transition: text-decoration-color 300ms var(--ease-base);
+  }
+  .enlace .boton-flecha { color: var(--color-trazo); }
+  .enlace:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 3px;
+    border-radius: 0.25rem;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .enlace:hover { text-decoration-color: #ffffff; }
+    .enlace:hover .boton-flecha { transform: translateX(2px); }
+  }
+
+  /* ---------------------------------------------------------------- Barra
+     Compacta, flotante, centrada y del ancho de su contenido. Superficie
+     translúcida sobre desenfoque. Radio 16 con 8 de relleno: lo de adentro
+     lleva radio 8 (fórmula de anidado). */
+  .barra {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 1rem;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    background: rgb(24 24 24 / 0.72);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
+  .barra-enlace {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 8px 12px;
+    border-radius: 0.5rem;
+    color: var(--color-texto-2);
+    transition:
+      color 300ms var(--ease-base),
+      background-color 300ms var(--ease-base);
+  }
+  .barra-enlace[aria-current="page"] {
+    color: var(--color-texto);
+    background: rgb(255 255 255 / 0.08);
+  }
+  .barra-enlace:focus-visible,
+  .barra-logo:focus-visible,
+  .barra-menu:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+    border-radius: 0.5rem;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .barra-enlace:hover { color: var(--color-texto); }
+  }
+  /* El botón del menú: dos líneas que se cruzan en una equis. */
+  .barra-menu {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 0.5rem;
+    color: var(--color-texto);
+    transition: background-color 300ms var(--ease-base), transform 300ms var(--ease-base);
+  }
+  .barra-menu:active:not(:focus-visible) { transform: scale(0.96); }
+  .barra-menu span {
+    position: absolute;
+    width: 18px;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transition: transform 500ms var(--ease-base);
+  }
+  .barra-menu span:first-child { transform: translateY(-4px); }
+  .barra-menu span:last-child { transform: translateY(4px); }
+  .barra-menu[aria-expanded="true"] span:first-child { transform: rotate(45deg); }
+  .barra-menu[aria-expanded="true"] span:last-child { transform: rotate(-45deg); }
+  .barra-menu[data-teclado] span { transition: none; }
+
+  /* ---------------------------------------------------------------- Pie */
+  .pie-enlace {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    color: var(--color-texto-2);
+    transition: color 300ms var(--ease-base);
+  }
+  .pie-enlace:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .pie-enlace:hover { color: var(--color-texto); }
+  }
+}
+
+/* ------------------------------------------------------------------
+   El inicio. Todo va bajo .limpia (la raíz de la página).
+   ------------------------------------------------------------------ */
+
+/* Apariciones de sección (B7): suben 32 px y funden en 700 ms, una sola
+   vez. El script del layout marca [data-visible] con IntersectionObserver;
+   sin JavaScript no se oculta nada. */
+.limpia [data-revelar] {
+  --y: 32px;
+  transition:
+    opacity 700ms var(--ease-base) var(--retraso, 0s),
+    transform 700ms var(--ease-base) var(--retraso, 0s);
+}
+
+/* ---------------------------------------------------------------- Hero */
+.hero-limpio {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding-top: 96px;
+  padding-bottom: 64px;
+}
+@media (min-width: 1024px) {
+  .hero-limpio { padding-bottom: 96px; }
+}
+/* La entrada del hero corre en CSS, sin esperar a React: cada bloque sube
+   32 px y funde, 80 ms después del anterior. */
+.hero-entra {
+  animation: hero-entra 800ms var(--ease-base) var(--retraso, 0s) both;
+}
+@keyframes hero-entra {
+  from { opacity: 0; transform: translate3d(0, 32px, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+/* La línea azul: un solo arco fino, plano, que pasa por detrás de la
+   pieza. Se dibuja una vez al cargar: un paño negro que la tapa se corre
+   hacia la derecha (solo transform). */
+.hero-arco {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+.hero-arco svg {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1440px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+.hero-arco::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--color-fondo);
+  transform: translateX(101%);
+  animation: arco-destapa 1800ms var(--ease-base) 300ms backwards;
+}
+@keyframes arco-destapa {
+  from { transform: translateX(0); }
+  to { transform: translateX(101%); }
+}
+
+/* ---------------------------------------------------------------- Pieza
+   El ejemplo del hero: una tarea repetida pasa a un agente y una persona
+   la aprueba. Plana: superficie #181818, línea fina azul y el punto del
+   paso activo en mandarina. */
+.pieza {
+  position: relative;
+  border-radius: 1rem;
+  border: 1px solid var(--color-capa-3);
+  background: var(--color-capa-1);
+}
+/* El tramo del carril entre un paso y el siguiente: va del punto de este
+   paso al del que sigue (32 px de separación más los 5 px del punto). Se
+   llena de azul cuando el paso queda hecho; al volver a empezar se vacía de
+   una vez. */
+.pieza-tramo {
+  position: absolute;
+  left: 3px;
+  top: 12px;
+  bottom: -37px;
+  width: 1px;
+  background: var(--color-capa-4);
+}
+.pieza-tramo-lleno {
+  position: absolute;
+  inset: 0;
+  background: var(--color-trazo);
+  transform-origin: top;
+  transform: scaleY(0);
+}
+.pieza-paso[data-estado="hecho"] .pieza-tramo-lleno {
+  transform: none;
+  transition: transform 800ms var(--ease-base);
+}
+.pieza-punto {
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: var(--color-capa-4);
+  transition: background-color 300ms var(--ease-base);
+}
+.pieza-paso[data-estado="hecho"] .pieza-punto { background: var(--color-trazo); }
+.pieza-paso[data-estado="activo"] .pieza-punto { background: var(--color-acento); }
+.pieza-paso {
+  position: relative;
+  padding-left: 24px;
+  transition: opacity 500ms var(--ease-base);
+}
+.pieza-paso[data-estado="espera"] { opacity: 0.4; }
+.pieza-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.12em;
+  background: var(--color-acento);
+  animation: pieza-cursor 1s steps(1) infinite;
+}
+@keyframes pieza-cursor {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.pieza-cambia {
+  animation: pieza-cambia 500ms var(--ease-base) both;
+}
+@keyframes pieza-cambia {
+  from { opacity: 0; transform: translate3d(0, 4px, 0); }
+  to { opacity: 1; transform: none; }
+}
+.pieza-control {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 0.5rem;
+  color: var(--color-texto-2);
+  transition: color 300ms var(--ease-base), background-color 300ms var(--ease-base), transform 300ms var(--ease-base);
+}
+.pieza-control:active:not(:focus-visible) { transform: scale(0.96); }
+.pieza-control:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .pieza-control:hover { color: var(--color-texto); background: var(--color-capa-3); }
+}
+
+/* ---------------------------------------------------------------- Frase
+   La frase que se enciende (B11). Con JavaScript arranca apagada (30 %) y
+   cada palabra pasa a blanco cuando cruza la línea de lectura. Sin
+   JavaScript o con «reducir movimiento» está entera en blanco. */
+.frase-palabra { transition: opacity 500ms var(--ease-base); }
+.js .frase .frase-palabra:not([data-on]) { opacity: 0.3; }
+/* Red de seguridad del layout: si React no llega a hidratar, queda entera. */
+.js.forzar-visible .frase .frase-palabra { opacity: 1; }
+
+/* ---------------------------------------------------------------- Pasos
+   El indicador avanza con el scroll: la línea azul crece (scaleX en
+   escritorio, scaleY en celular) y el punto del paso al que se llegó
+   pasa a mandarina. Sin JavaScript está completo. */
+.pasos-via {
+  position: absolute;
+  background: var(--color-capa-3);
+  top: 4px;
+  bottom: 4px;
+  left: 3px;
+  width: 1px;
+}
+.pasos-via-llena {
+  position: absolute;
+  inset: 0;
+  background: var(--color-trazo);
+  transform-origin: top left;
+  transform: scaleY(var(--avance, 1));
+}
+.pasos-punto {
+  position: absolute;
+  top: 6px;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: var(--color-trazo);
+  transition: background-color 300ms var(--ease-base);
+}
+.pasos-item {
+  position: relative;
+  padding-left: 32px;
+  transition: opacity 500ms var(--ease-base);
+}
+.js .pasos[data-lista] { --avance: 0; }
+.js .pasos[data-lista] .pasos-item:not([data-on]) { opacity: 0.4; }
+.js .pasos[data-lista] .pasos-item:not([data-on]) .pasos-punto { background: var(--color-capa-4); }
+.js .pasos[data-lista] .pasos-item[data-actual] .pasos-punto { background: var(--color-acento); }
+@media (min-width: 1024px) {
+  .pasos-via {
+    top: 3px;
+    bottom: auto;
+    left: 0;
+    right: 0;
+    width: auto;
+    height: 1px;
+  }
+  .pasos-via-llena { transform: scaleX(var(--avance, 1)); }
+  .pasos-item { padding-left: 0; padding-top: 32px; }
+  .pasos-punto { top: 0; }
+}
+
+/* ---------------------------------------------------------------- Pilares
+   Las filas de los tres beneficios responden al puntero: el titular se
+   corre 8 px y el numeral pasa a mandarina. */
+.pilar-titulo { transition: transform 500ms var(--ease-base); }
+.pilar-numero { transition: color 300ms var(--ease-base); }
+@media (hover: hover) and (pointer: fine) {
+  .pilar:hover .pilar-titulo { transform: translateX(8px); }
+  .pilar:hover .pilar-numero { color: var(--color-acento); }
+}
+
+/* ---------------------------------------------------------------- Puertas
+   Las dos líneas: un solo marco partido en dos. Cada mitad es un enlace
+   entero; con el puntero, su fondo sube un paso de gris. */
+.puertas {
+  border-radius: 1rem;
+  border: 1px solid var(--color-capa-3);
+  overflow: hidden;
+}
+.puerta-limpia {
+  display: flex;
+  flex-direction: column;
+  padding: 32px 24px;
+  transition: background-color 300ms var(--ease-base);
+}
+@media (min-width: 768px) {
+  .puerta-limpia { padding: 40px; }
+}
+.puerta-limpia:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: -4px;
+  border-radius: 1rem;
+}
+.puerta-limpia:active { background: var(--color-capa-1); }
+@media (hover: hover) and (pointer: fine) {
+  .puerta-limpia:hover { background: var(--color-capa-1); }
+  .puerta-limpia:hover .boton-flecha { transform: translateX(2px); }
+}
+
+/* ---------------------------------------------------------------- Preguntas
+   Acordeón con <details>: funciona sin JavaScript. Al abrir, la respuesta
+   sube 8 px y funde; el alto no se anima. El más gira 45° y queda en
+   equis. */
+.duda summary {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding-block: 24px;
+  cursor: pointer;
+  list-style: none;
+  transition: color 300ms var(--ease-base);
+}
+.duda summary::-webkit-details-marker { display: none; }
+.duda summary:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+.duda-mas {
+  flex: none;
+  margin-top: 4px;
+  color: var(--color-texto-2);
+  transition: transform 500ms var(--ease-base), color 300ms var(--ease-base);
+}
+.duda[open] .duda-mas {
+  transform: rotate(45deg);
+  color: var(--color-acento);
+}
+.duda[open] .duda-respuesta { animation: duda-abre 500ms var(--ease-base) both; }
+@keyframes duda-abre {
+  from { opacity: 0; transform: translate3d(0, 8px, 0); }
+  to { opacity: 1; transform: none; }
+}
+@media (hover: hover) and (pointer: fine) {
+  .duda summary:hover .duda-mas { color: var(--color-texto); }
+}
+
+/* ---------------------------------------------------------------- Menú
+   El panel del menú en celular: alto completo, negro casi opaco sobre un
+   desenfoque fuerte. */
+.menu-panel {
+  background: rgb(0 0 0 / 0.92);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .limpia [data-revelar] { transition: opacity 300ms var(--ease-base); }
+  .hero-entra { animation-name: hero-funde; animation-duration: 300ms; }
+  .hero-arco::after { animation: none; }
+  .pieza-cursor,
+  .pieza-cambia { animation: none; }
+  .pieza-paso[data-estado="hecho"] .pieza-tramo-lleno,
+  .pieza-paso,
+  .barra-menu span,
+  .boton-flecha,
+  .duda-mas { transition: none; }
+  .frase-palabra,
+  .pilar-titulo { transition: none; }
+  .pilar:hover .pilar-titulo { transform: none; }
+  .js .frase .frase-palabra:not([data-on]) { opacity: 1; }
+  .js .pasos[data-lista] .pasos-item:not([data-on]) { opacity: 1; }
+  .js .pasos[data-lista] .pasos-via-llena { transform: none; }
+  .duda[open] .duda-respuesta { animation-name: hero-funde; animation-duration: 300ms; }
+  .boton:active:not(:focus-visible),
+  .barra-menu:active:not(:focus-visible),
+  .pieza-control:active:not(:focus-visible) { transform: none; opacity: 0.85; }
+}
+@keyframes hero-funde {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

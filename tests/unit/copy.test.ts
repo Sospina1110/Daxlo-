@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import * as copy from "@/content/copy";
-import { agendar, agendarCon, cierre, consultoria, coaching, contacto, dosFormas, ecosistema, faq, footer, hero, herramientas, manifiesto, nav, nosotros, otraLinea, paginas, preguntasLinea, privacidad, rutas, servicios } from "@/content/copy";
+import { agendar, agendarCon, cierre, consultoria, coaching, contacto, dosFormas, ecosistema, faq, footer, hero, herramientas, inicio, manifiesto, nav, nosotros, otraLinea, paginas, preguntasLinea, privacidad, rutas, servicios } from "@/content/copy";
 import { toolLogos } from "@/lib/logos";
 
 // Reglas que el texto del sitio tiene que cumplir siempre. Todo el texto vive
@@ -335,8 +335,9 @@ describe("coherencia entre bloques", () => {
     expect(nosotros.parrafos[2]).toMatch(/Colombia/);
   });
 
-  // El inicio «Encendido» (2026-11-11): la frase que se enciende y la pieza
-  // del ecosistema.
+  // La frase que se enciende y los cuatro pasos de `ecosistema`, que el inicio
+  // «Limpia» sigue leyendo: el primero es el problema y los otros tres, los
+  // beneficios.
   it("el manifiesto y el ecosistema: cuatro pasos, tres carriles y el ejemplo rotulado", () => {
     expect(manifiesto.fuerte).toMatch(/^Daxlo es el aliado de IA/);
     expect(manifiesto.sigue.split(" ").length).toBeGreaterThan(15);
@@ -357,6 +358,42 @@ describe("coherencia entre bloques", () => {
     expect(todo).not.toMatch(/ecosistema|agéntic/i);
     // El papel que sale del recuadro del hero es el del primer carril.
     expect(hero.papel).toBe(ecosistema.carriles[0].papel);
+  });
+
+  // El inicio «Limpia» (2026-11-11): lo que agrega `inicio` y lo que la página
+  // toma de otros bloques.
+  it("el inicio: tres pasos, tres historias en la pieza y preguntas que existen en faq", () => {
+    expect(inicio.pasos.lista).toHaveLength(3);
+    expect(inicio.pasos.lista[0].titulo).toMatch(/sin costo/);
+    // La pieza del hero cuenta una historia por carril, con su tarea.
+    expect(inicio.pieza.rotulos).toHaveLength(3);
+    expect(hero.tareas.length).toBeGreaterThanOrEqual(ecosistema.carriles.length);
+    expect(inicio.pieza.descripcion).toMatch(/^Ejemplo\./);
+    // Entre 6 y 8 preguntas, sin repetir, con el texto exacto de faq.
+    const todas = faq.grupos.flatMap((g) => g.preguntas).map((q) => q.p);
+    expect(inicio.preguntas.lista.length).toBeGreaterThanOrEqual(6);
+    expect(inicio.preguntas.lista.length).toBeLessThanOrEqual(8);
+    expect(new Set(inicio.preguntas.lista).size).toBe(inicio.preguntas.lista.length);
+    for (const p of inicio.preguntas.lista) expect(todas, p).toContain(p);
+  });
+
+  // La skill landing-page-design pide texto sin guiones (B1). Se revisa lo que
+  // el inicio pinta: su copy propio y los bloques que toma prestados.
+  it("lo que pinta el inicio no lleva guiones", () => {
+    const respuestas = faq.grupos.flatMap((g) => g.preguntas).filter((q) => (inicio.preguntas.lista as readonly string[]).includes(q.p));
+    const pintado = [
+      ...cadenas(inicio, "inicio"),
+      ...cadenas(hero, "hero"),
+      ...cadenas(manifiesto, "manifiesto"),
+      ...cadenas(ecosistema, "ecosistema"),
+      ...cadenas(dosFormas, "dosFormas"),
+      ...cadenas(consultoria.cambios, "consultoria.cambios"),
+      ...cadenas(cierre, "cierre"),
+      ...cadenas(respuestas, "preguntas"),
+      ...cadenas(footer.columnas, "footer.columnas"),
+      ...cadenas(nav, "nav"),
+    ].filter(([d]) => !/\.(href|h)$/.test(d));
+    expect(pintado.filter(([, t]) => /-/.test(t)).map(([d, t]) => `${d}: ${t}`)).toEqual([]);
   });
 
   it("el formulario ofrece coaching, consultoría y 'todavía no sé'", () => {

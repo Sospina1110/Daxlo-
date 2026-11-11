@@ -14,6 +14,7 @@
     "test:todo": "npm run build && npm test && npm run test:e2e"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "lucide-react": "^1.48.0",
     "motion": "^13.4.4",
     "next": "16.3.6",

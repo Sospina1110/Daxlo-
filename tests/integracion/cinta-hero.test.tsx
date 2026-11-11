@@ -1,7 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { coaching, consultoria, hero, rutas } from "@/content/copy";
-import { Hero } from "@/components/sections/hero";
 import { ZonaPortada } from "@/components/sections/zona-portada";
 import { Reveal } from "@/components/ui/reveal";
 import { simularMovimientoReducido } from "../apoyo/entorno";
@@ -28,82 +27,9 @@ beforeEach(() => {
   motor.devolver = true;
 });
 
-describe("Hero: fondo en movimiento", () => {
-  it("el botón principal sigue siendo el mismo enlace, con el mismo texto, a la agenda", () => {
-    render(<Hero />);
-    const boton = screen.getByRole("link", { name: hero.cta });
-    expect(boton.getAttribute("href")).toBe(rutas.agendar);
-    expect(boton.className).toContain("boton-principal");
-    // Tamaño del texto del botón grande: 16 px y 17 px desde 360 px.
-    expect(boton.className).toContain("text-[16px]");
-    expect(boton.className).toContain("min-[360px]:text-[17px]");
-    // Es el único botón principal del hero.
-    expect(document.querySelectorAll(".boton-principal")).toHaveLength(1);
-  });
-
-  it("el fondo es decorativo: oculto para lectores de pantalla y sin recibir toques", () => {
-    const { container } = render(<Hero />);
-    const capa = container.querySelector(".cinta") as HTMLElement;
-    expect(capa).not.toBeNull();
-    expect(capa.closest("[aria-hidden]")).not.toBeNull();
-    expect(capa.className).toContain("pointer-events-none");
-    expect(capa.querySelector("canvas")).not.toBeNull();
-    // Sale del servidor con la banda CSS a la vista; el lienzo llega después.
-    expect(capa.dataset.cinta).toBe("carga");
-    expect(capa.querySelector(".cinta-quieta")).not.toBeNull();
-  });
-
-  it("el texto no espera al motor: está en el HTML antes de que el fondo arranque", () => {
-    render(<Hero />);
-    expect(crear).not.toHaveBeenCalled();
-    expect(screen.getByRole("heading", { level: 1 }).textContent).toContain(hero.titulo[0]);
-    expect(screen.getByText(hero.sub)).toBeTruthy();
-  });
-
-  it("marca cada texto con su tope de contraste para el fondo", () => {
-    const { container } = render(<Hero />);
-    const topes = [...container.querySelectorAll<HTMLElement>("[data-cinta-tope]")].map((e) => [e.textContent?.trim(), e.dataset.cintaTope]);
-    expect(topes).toEqual([
-      [hero.aliado, "0.16"],
-      [hero.titulo[0], "0.16"],
-      [hero.titulo[1], "degradado"],
-      [hero.sub, "0.055"],
-      [hero.meta, "0.04"],
-    ]);
-  });
-
-  it("sin 'reducir movimiento' arranca el bucle (en pantalla táctil, con pulso al tocar)", async () => {
-    render(<Hero />);
-    await waitFor(() => expect(crear).toHaveBeenCalledTimes(1));
-    const { modo, lienzo, seccion } = crear.mock.calls[0][0];
-    expect(modo.animar).toBe(true);
-    expect(modo.puntero).toBe("toque");
-    expect(lienzo.tagName).toBe("CANVAS");
-    expect(seccion.id).toBe("top");
-  });
-
-  it("con 'reducir movimiento' pide un solo cuadro quieto, sin reacción al puntero", async () => {
-    simularMovimientoReducido(true);
-    render(<Hero />);
-    await waitFor(() => expect(crear).toHaveBeenCalledTimes(1));
-    const { modo } = crear.mock.calls[0][0];
-    expect(modo.animar).toBe(false);
-    expect(modo.puntero).toBe("ninguno");
-  });
-
-  it("al desmontar suelta el motor", async () => {
-    const { unmount } = render(<Hero />);
-    await waitFor(() => expect(crear).toHaveBeenCalled());
-    unmount();
-    expect(motor.destruir).toHaveBeenCalledTimes(1);
-  });
-
-  it("sin WebGL se queda la banda CSS (respaldo), sin errores", async () => {
-    motor.devolver = false;
-    const { container } = render(<Hero />);
-    await waitFor(() => expect((container.querySelector(".cinta") as HTMLElement).dataset.cinta).toBe("respaldo"));
-  });
-});
+// (El hero del inicio ya no lleva la cinta: desde el 2026-11-11 es negro
+// plano, con una línea azul fina. Sus pruebas salieron con él; la cinta sigue
+// detrás de la portada de cada línea hasta que esas páginas se rediseñen.)
 
 describe("Portada de cada línea: la cinta detrás, sin orbe", () => {
   const lineas = [

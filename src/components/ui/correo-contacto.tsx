@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Mail } from "lucide-react";
+import { EnvelopeSimple } from "@phosphor-icons/react/dist/ssr";
 import { contacto } from "@/content/copy";
 
 // El correo se arma en el navegador y no viaja en el HTML. Dos razones:
@@ -14,7 +14,7 @@ export function CorreoContacto({ className }: { className?: string }) {
   useEffect(() => setListo(true), []);
   return (
     <a href={listo ? `mailto:${contacto.correo}` : undefined} className={className}>
-      <Mail size={16} /> {listo ? contacto.correo : "Correo"}
+      <EnvelopeSimple aria-hidden size={16} /> {listo ? contacto.correo : "Correo"}
     </a>
   );
 }

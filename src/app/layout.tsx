@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Schibsted_Grotesk } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import { MotionProvider } from "@/components/motion-provider";
 import { Nav } from "@/components/sections/nav";
 import { Footer } from "@/components/sections/footer";
@@ -8,20 +8,17 @@ import { paginas } from "@/content/copy";
 import { ldOrganizacion, URL_SITIO } from "@/lib/sitio";
 import "./globals.css";
 
-// La letra de marca: Schibsted Grotesk, una sola familia para titulares,
-// rótulos, números y cuerpo (estudio de tipografía del 2026-11-11). Su I
-// mayúscula lleva remates, así que "la IA" se lee IA y no "la lA", y es un
-// solo archivo variable (peso 400 a 900, unos 46 KB el latino). next/font la
-// descarga al compilar y la sirve desde el propio sitio: no hay petición a
-// terceros en cada visita (la CSP no la dejaría pasar) y precarga solo el
-// subconjunto latino.
+// La letra del sitio: Geist, una sola familia para titulares y cuerpo, y
+// Geist Mono solo para datos, numerales y rótulos técnicos (skill
+// landing-page-design, B1). next/font las descarga al compilar y las sirve
+// desde el propio sitio: no hay petición a terceros en cada visita (la CSP no
+// la dejaría pasar).
 //
-// Cambiar de familia es cambiar esta línea: todo el sitio lee --font-display
-// (titulares, rótulos y números) y --font-sans (cuerpo), que globals.css arma
-// con --fuente-marca. Si un día vuelven a ser dos familias, se carga la
-// segunda aquí con otra variable y se apunta --font-sans a ella. Ninguna
-// medida del sitio depende de las métricas de una familia.
-const marca = Schibsted_Grotesk({ subsets: ["latin"], variable: "--fuente-marca", display: "swap" });
+// Cambiar de familia es cambiar estas líneas: todo el sitio lee --font-sans y
+// --font-display (las dos apuntan a --fuente-marca) y --font-mono
+// (--fuente-mono), que arman globals.css y limpia.css.
+const marca = Geist({ subsets: ["latin"], variable: "--fuente-marca", display: "swap" });
+const mono = Geist_Mono({ subsets: ["latin"], variable: "--fuente-mono", display: "swap" });
 
 // Valores por defecto. Cada página define su título, descripción, URL
 // canónica y tarjeta para redes (metadatosPagina en src/lib/sitio.ts).
@@ -42,7 +39,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0d0e14",
+  themeColor: "#000000",
   colorScheme: "dark",
 };
 
@@ -139,7 +136,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     // data-scroll-behavior: el CSS pone scroll suave en <html>; con este
     // atributo Next lo apaga mientras cambia de página. Sin él, la página
     // nueva se deslizaba hacia abajo en vez de abrir arriba.
-    <html lang="es-CO" data-scroll-behavior="smooth" className={marca.variable}>
+    <html lang="es-CO" data-scroll-behavior="smooth" className={`${marca.variable} ${mono.variable}`}>
       <head>
         {/* Corre antes de pintar: marca que hay JavaScript (el CSS de las
             apariciones solo oculta contenido bajo .js). Y red de seguridad: lo
@@ -154,7 +151,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <a
           href="#contenido"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-xl focus:bg-white focus:px-4 focus:py-3 focus:text-ink"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:text-black"
         >
           Saltar al contenido
         </a>

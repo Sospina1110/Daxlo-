@@ -1,6 +1,9 @@
 @import "tailwindcss";
 /* Las piezas del inicio «Encendido», el cierre y el pie. */
 @import "./encendido.css";
+/* El sistema «Limpia»: tokens, estilos de texto con nombre, la barra, el pie
+   y el inicio (2026-11-11). */
+@import "./limpia.css";
 
 /* ------------------------------------------------------------------
    Sistema de diseño: «Encendido» (DESIGN.md)
@@ -12,9 +15,9 @@
    ------------------------------------------------------------------ */
 
 @theme {
-  --color-ink: #0d0e14;
-  --color-ink-2: #12141c;
-  --color-ink-3: #1a1d28;
+  --color-ink: #000000;
+  --color-ink-2: #181818;
+  --color-ink-3: #1f1f1f;
   --color-blue: #1b35d0;
   --color-blue-bright: #3d5aff;
   /* Azul claro de marca (primary-soft): texto e iconos de acento de la línea
@@ -287,11 +290,11 @@
     text-wrap: pretty;
   }
   ::selection {
-    background: rgb(41 196 245 / 0.35);
+    background: rgb(61 90 255 / 0.45);
     color: #fff;
   }
   :focus-visible {
-    outline: 2px solid var(--color-cyan);
+    outline: 2px solid #ffffff;
     outline-offset: 3px;
     border-radius: 6px;
   }

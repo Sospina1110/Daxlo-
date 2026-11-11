@@ -1,9 +1,6 @@
-import { Hero } from "@/components/sections/hero";
-import { Manifiesto } from "@/components/sections/manifiesto";
-import { Ecosistema } from "@/components/sections/ecosistema";
-import { DosPuertas } from "@/components/sections/intro";
-import { CtaFinal } from "@/components/sections/entre-paginas";
-import { FondoHilo } from "@/components/fondos/fondo-hilo";
+import { Hero } from "@/components/inicio/hero";
+import { Frase, Pasos } from "@/components/inicio/avance";
+import { Beneficios, Cierre, Empiezas, Preguntas, Problema } from "@/components/inicio/secciones";
 import { JsonLd } from "@/components/ui/json-ld";
 import { ldSitioWeb, metadatosPagina } from "@/lib/sitio";
 
@@ -14,20 +11,24 @@ export const metadata = metadatosPagina("inicio");
 // varios elementos sueltos (el primero, un script sin caja) la página nueva
 // abría a mitad de camino.
 //
-// El inicio cuenta, en este orden: qué hacemos (hero), qué es Daxlo (la frase
-// que se enciende), cómo queda una empresa (el ecosistema, con los tres
-// pilares adentro), por dónde se entra (las dos puertas) y qué hacer ahora (el
-// cierre). El hilo de luz une las cinco secciones: va al final de la raíz, que
-// es `relative`, para pintarse sobre el campo azul del cierre.
+// El inicio «Limpia» (2026-11-11) sigue la estructura de la skill
+// landing-page-design (Parte A, tipo A: hero clásico más secciones): qué
+// hacemos (hero), qué es Daxlo (la frase que se enciende), el problema y lo
+// que cambia, los tres beneficios, cómo funciona en tres pasos, por dónde se
+// empieza (las dos líneas), las preguntas y el cierre con el mismo botón del
+// hero. Todo sobre negro plano. Ya no monta la cinta, el hilo de luz, el
+// ecosistema fijado ni el cierre que amanece.
 export default function Inicio() {
   return (
-    <div className="relative">
+    <div className="limpia bg-fondo">
       <Hero />
-      <Manifiesto />
-      <Ecosistema />
-      <DosPuertas />
-      <CtaFinal whatsapp />
-      <FondoHilo />
+      <Frase />
+      <Problema />
+      <Beneficios />
+      <Pasos />
+      <Empiezas />
+      <Preguntas />
+      <Cierre />
       <JsonLd datos={ldSitioWeb} />
     </div>
   );

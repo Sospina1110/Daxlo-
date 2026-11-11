@@ -20,7 +20,8 @@ import { PUBLIC } from "../apoyo/proyecto";
 // El layout importa las fuentes de Google, que solo existen dentro del build
 // de Next. Aquí basta con que devuelvan algo con la misma forma.
 vi.mock("next/font/google", () => ({
-  Schibsted_Grotesk: () => ({ variable: "fuente-marca", className: "" }),
+  Geist: () => ({ variable: "fuente-marca", className: "" }),
+  Geist_Mono: () => ({ variable: "fuente-mono", className: "" }),
 }));
 
 const { metadata: metadatosLayout } = await import("@/app/layout");

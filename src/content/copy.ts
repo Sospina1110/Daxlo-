@@ -1028,3 +1028,58 @@ export const privacidad = {
     },
   ],
 };
+
+// ------------------------------------------------------------- INICIO
+
+// Lo que el inicio «Limpia» (2026-11-11) dice además de lo que ya vivía
+// arriba. La página sigue la estructura de la skill landing-page-design:
+// hero, la frase que se enciende (manifiesto), problema y solución (el paso
+// "Hoy" del antiguo ecosistema y las filas hoy → después de la consultoría),
+// tres beneficios (los pasos 2 a 4 de `ecosistema.pasos`), cómo funciona en
+// tres pasos, las dos líneas (dosFormas), preguntas y cierre.
+// - `respaldo`: no hay clientes ni cifras publicables, así que la señal de
+//   respaldo del hero son las herramientas con las que se trabaja, en texto
+//   (los nombres salen de `herramientas.lista`; el aviso de marcas va en el
+//   pie).
+// - `pieza`: el ejemplo del hero. Las tareas son `hero.tareas` y el agente y
+//   la persona de cada una, `ecosistema.carriles`. Rotulada "Ejemplo".
+// - `pasos`: nada nuevo. El primero es la primera conversación (agendar.sub),
+//   el segundo el paso 03 de la consultoría y la respuesta de "¿Esto
+//   reemplaza a mis auxiliares?" (entiende porque ayudó a armarlo), y el
+//   tercero el paso "Nos quedamos". Sin frecuencia ("cada semana" sigue
+//   pendiente de Santiago) ni plazos.
+// - `preguntas.lista`: las preguntas de `faq` que se muestran en el inicio,
+//   por su texto exacto (lo vigila copy.test.ts). Las respuestas no se copian.
+export const inicio = {
+  respaldo: "Trabajamos con",
+  pieza: {
+    descripcion: "Ejemplo. Una tarea repetida pasa a un agente, que la deja lista, y una persona de tu equipo la aprueba.",
+    rotulos: ["Tarea repetida", "Agente", "Tu gente"],
+    trabajando: "Trabajando",
+    listo: "Listo para aprobar",
+    aprobado: "Aprobado",
+    pausar: "Pausar el ejemplo",
+    seguir: "Seguir el ejemplo",
+  },
+  beneficios: { rotulo: "Lo que queda en tu empresa" },
+  pasos: {
+    titulo: "Cómo funciona, en tres pasos.",
+    lista: [
+      { titulo: "Conversamos, sin costo.", texto: "Nos cuentas qué te está consumiendo horas. Te decimos si te sirve el coaching, la consultoría o ninguna de las dos." },
+      { titulo: "Lo montamos con tu equipo y se lo enseñamos.", texto: "Construimos con tu gente, sobre su trabajo real. Cada persona entiende cómo funciona porque ayudó a armarlo." },
+      { titulo: "Tu equipo lo opera y seguimos con el siguiente.", texto: "Lo que montamos funciona sin nosotros. Cuando quieras, vamos por el siguiente proceso." },
+    ],
+  },
+  preguntas: {
+    titulo: "Lo que nos preguntan antes de empezar.",
+    lista: [
+      "¿Te sirve el coaching o la consultoría de IA?",
+      "¿Necesito saber programar?",
+      "¿Por dónde empieza una empresa a implementar inteligencia artificial?",
+      "¿Cuánto cuesta una consultoría de IA?",
+      "¿Cuánto se demora un proyecto?",
+      "¿El sistema toma decisiones solo?",
+      "¿Qué pasa cuando ustedes se van?",
+    ],
+  },
+} as const;
