@@ -3,11 +3,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { inicio } from "@/content/copy";
+import { MiniArea } from "./dibujos";
 import { Foto } from "./foto";
 
 // El carrusel de tarjetas en perspectiva: dónde entra la IA en una empresa,
 // un ejemplo por área. Son ejemplos de lo que se monta, no casos: van bajo el
-// rótulo fijo «Ejemplos».
+// rótulo fijo «Ejemplos». Cada tarjeta lleva su rótulo (área y qué se monta),
+// su toma o su mini diagrama de línea, y una línea de texto.
 //
 // El riel es un contenedor con scroll nativo y scroll-snap: en pantallas
 // táctiles el arrastre y la inercia son los del sistema. Con mouse se
@@ -22,13 +24,14 @@ import { Foto } from "./foto";
 // solo se mide cuando el riel se mueve.
 
 // El fondo de cada tarjeta, en la paleta de la página.
+// Cada tarjeta lleva su toma o, si no tiene, su mini diagrama de línea.
 const TONOS = [
   { tono: "foto", foto: "t-sala" },
-  { tono: "hondo" },
-  { tono: "electrico" },
+  { tono: "hondo", dibujo: "comercial" },
+  { tono: "electrico", dibujo: "operacion" },
   { tono: "foto", foto: "t-manos" },
-  { tono: "papel" },
-  { tono: "noche" },
+  { tono: "papel", dibujo: "atencion" },
+  { tono: "noche", dibujo: "mercadeo" },
   { tono: "foto", foto: "t-mesa" },
 ] as const;
 
@@ -201,6 +204,7 @@ export function Areas() {
                       </span>
                       <span className="cm-tarjeta-monta">{t.monta}</span>
                     </p>
+                    {"dibujo" in fondo && <MiniArea area={fondo.dibujo} />}
                     <p className="cm-tarjeta-linea">{t.linea}</p>
                     <span aria-hidden="true" className="cm-esquinas" />
                   </div>

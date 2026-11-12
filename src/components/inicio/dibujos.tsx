@@ -61,6 +61,64 @@ export function IconoPrincipio({ n }: { n: number }) {
   );
 }
 
+// ---------------------------------------------------------------- Áreas
+
+// El mini diagrama de las tarjetas del carrusel que no llevan toma: qué
+// entra, qué hace el agente o la automatización y qué queda. Quieto: las
+// tarjetas ya se mueven con el riel.
+// comercial: un contacto, calificado, y el mensaje en borrador.
+// operacion: el correo que llega y la fila que queda registrada.
+// atencion: la respuesta lista, y la persona que la envía.
+// mercadeo: investigar, escribir el borrador y preparar la pieza.
+export function MiniArea({ area }: { area: "comercial" | "operacion" | "atencion" | "mercadeo" }) {
+  const flecha = (x: number) => <path d={`M${x} 28h16m-5-5 5 5-5 5`} opacity="0.7" />;
+  return (
+    <svg viewBox="0 0 160 56" aria-hidden="true" className="cm-tarjeta-dibujo" {...TRAZO}>
+      {area === "comercial" && (
+        <>
+          <circle cx="14" cy="19" r="7" />
+          <path d="M2 44a12 12 0 0 1 24 0" />
+          {flecha(36)}
+          <rect x="62" y="14" width="28" height="28" rx="3" />
+          <path d="M69 28l5 5 9-10" />
+          {flecha(100)}
+          <path d="M126 14h30v22h-20l-6 6v-6h-4z" strokeDasharray="3 3" strokeLinejoin="round" />
+        </>
+      )}
+      {area === "operacion" && (
+        <>
+          <path d="M2 14h36v28H2zM2 14l18 14 18-14" strokeLinejoin="round" />
+          {flecha(48)}
+          <path d="M76 10h82v36H76zM76 22h82M76 34h82M102 10v36" />
+          <rect x="76" y="22" width="82" height="12" fill="currentColor" stroke="none" opacity="0.28" />
+        </>
+      )}
+      {area === "atencion" && (
+        <>
+          <path d="M2 10h46v26H18l-8 8v-8H2z" strokeLinejoin="round" />
+          <path d="M10 19h30M10 27h18" opacity="0.7" />
+          {flecha(58)}
+          <circle cx="98" cy="19" r="7" />
+          <path d="M86 44a12 12 0 0 1 24 0" />
+          {flecha(120)}
+          <path d="M146 18l12 10-12 10 3-10z" strokeLinejoin="round" />
+        </>
+      )}
+      {area === "mercadeo" && (
+        <>
+          <circle cx="14" cy="24" r="9" />
+          <path d="M21 31l8 8" />
+          {flecha(38)}
+          <path d="M64 10h24v36H64zM69 20h14M69 28h14M69 36h8" />
+          {flecha(98)}
+          <path d="M124 12h34v32h-34z" />
+          <path d="M128 40l8-10 6 6 5-5 8 9" strokeLinejoin="round" opacity="0.8" />
+        </>
+      )}
+    </svg>
+  );
+}
+
 // ---------------------------------------------------------------- Capas
 
 // Los seis diagramas del panel. Cada uno dibuja lo que dice su tarjeta.

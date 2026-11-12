@@ -23,7 +23,8 @@ import { Foto } from "./foto";
 //   0,47 → 0,56  relevo
 //   0,56 → 0,74  tiempo 03
 //   0,74 → 0,94  paso a claro: la toma funde a papel y los puntos de la trama
-//                vuelan a formar la X de Daxlo, con la frase de cierre
+//                vuelan a formar la X de Daxlo; la frase de cierre va debajo
+//                de la X, sin cruzarse con sus diagonales
 //
 // Este componente mide el scroll, dibuja el lienzo (la trama y las
 // partículas) y prende y apaga los videos: solo corre el del tiempo que se
@@ -189,7 +190,9 @@ export function Tiempos({ videos = {} }: { videos?: VideosEscena }) {
 
       const ctx = trama.contexto();
       if (ctx && luz > 0.04) {
-        const anchoX = entorno.movil ? ancho * 0.82 : Math.min(ancho * 0.5, alto * 0.92);
+        // La X va en la mitad de arriba y deja libre la franja de abajo, donde
+        // va la frase (campo.css, .cm-tiempo-cierre).
+        const anchoX = entorno.movil ? ancho * 0.74 : Math.min(ancho * 0.36, alto * 0.56);
         pintarParticulas(ctx, particulas, {
           q: suave(0.06, 1, luz),
           t,
@@ -198,7 +201,7 @@ export function Tiempos({ videos = {} }: { videos?: VideosEscena }) {
           alto,
           esc: trama.escala(),
           cx: ancho / 2,
-          cy: alto * 0.47,
+          cy: alto * (entorno.movil ? 0.36 : 0.4),
           anchoX,
           color: COLOR_TINTA,
           colorAzul: COLOR_AZUL,

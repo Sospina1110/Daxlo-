@@ -682,6 +682,8 @@
   .cm-riel { gap: 28px; }
 }
 .cm-riel::-webkit-scrollbar { display: none; }
+/* El arco va apenas inclinado: sube hacia la derecha. */
+.cm-carrusel-sube { transform: rotate(-3deg); }
 .cm-riel:focus-visible {
   outline: 2px solid var(--color-electrico);
   outline-offset: -2px;
@@ -749,8 +751,8 @@
     animation-range: entry 10% cover 42%;
   }
   @keyframes cm-carrusel-sube {
-    from { transform: translate3d(0, 120px, -420px) rotateX(34deg); }
-    to { transform: none; }
+    from { transform: translate3d(0, 120px, -420px) rotateX(34deg) rotate(-3deg); }
+    to { transform: rotate(-3deg); }
   }
 }
 .cm-tarjeta-foto {
@@ -788,6 +790,14 @@
   gap: 12px;
 }
 .cm-tarjeta-monta { opacity: 0.72; }
+/* El mini diagrama de línea de las tarjetas sin toma: qué entra, qué hace
+   el agente o la automatización y qué queda. */
+.cm-tarjeta-dibujo {
+  width: min(72%, 220px);
+  height: auto;
+  overflow: visible;
+  opacity: 0.92;
+}
 .cm-tarjeta-linea {
   max-width: 19ch;
   font-family: var(--font-titular);
@@ -936,19 +946,16 @@
   background: var(--color-papel);
   color: var(--color-tinta);
 }
-/* Un halo de papel alrededor de la frase: las partículas de la X no le
-   pasan por encima. */
-.cm-tiempo-cierre .cm-titular { text-shadow: 0 0 5px var(--color-papel), 0 0 14px var(--color-papel), 0 0 28px var(--color-papel); }
+/* El cierre es la X de Daxlo con la frase debajo, como una firma: la frase
+   nunca cruza las diagonales de la X. */
+.cm-tiempo-cierre {
+  align-content: center;
+  gap: 40px;
+}
 .cm-x-quieta {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: min(78vw, 520px);
+  width: min(44vw, 200px);
   height: auto;
-  transform: translate(-50%, -50%);
-  z-index: -1;
   color: var(--color-tinta);
-  opacity: 0.09;
 }
 .cm-tiempos-velo,
 .cm-tiempos-papel,
@@ -1015,6 +1022,13 @@
     opacity: calc(0.3 * (1 - var(--papel, 0)));
   }
   .js:not(.forzar-visible) .cm-x-quieta { display: none; }
+  /* La X la forman las partículas, en la mitad de arriba de la pantalla
+     (tiempos.tsx); la frase va abajo, sobre las barras. */
+  .js:not(.forzar-visible) .cm-tiempo.cm-tiempo-cierre {
+    place-items: end center;
+    align-content: end;
+    padding-bottom: clamp(128px, 20vh, 196px);
+  }
   /* Las afirmaciones: solo se ve la del tiempo que toca. Entra con un
      barrido de izquierda a derecha y sale fundiendo. La que no toca queda
      con visibility: hidden, no solo transparente. */

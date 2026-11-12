@@ -168,7 +168,8 @@ export function Puertas() {
   const d = dosFormas;
   const puertas = [
     { ...d.coaching, href: rutas.coaching },
-    { ...d.equipo, href: rutas.coaching },
+    // El coaching para equipos tiene su franja en /coaching.
+    { ...d.equipo, href: `${rutas.coaching}#equipos` },
     { ...d.consultoria, href: rutas.consultoria },
   ];
   return (
