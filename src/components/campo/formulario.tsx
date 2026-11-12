@@ -2,12 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, ChevronDown } from "lucide-react";
+import { ArrowRight, CaretDown, CheckCircle } from "@phosphor-icons/react/dist/ssr";
 import { agendar, contacto, privacidad, rutas } from "@/content/copy";
-import { GlowButton } from "@/components/ui/primitives";
+import { Boton } from "@/components/ui/boton";
 import { enlaceDeAgenda, hayAgenda, irA } from "@/lib/agenda";
-import { cn } from "@/lib/utils";
 
+// El formulario de /agendar, en el sistema «Campo» (paginas.css, .cp-form).
+// Solo cambió cómo se ve: la lógica y el destino del envío son los de siempre.
+//
 // Mismo contrato que el formulario anterior: el Apps Script espera estos
 // nombres de campo exactos. Si se cambia uno, deja de guardarse en la hoja.
 // autorizacion y politica_version son la prueba de la autorización
@@ -29,9 +31,6 @@ export function FormularioContacto() {
   // El HTML exportado promete lo que pasa sin JavaScript (el envío va directo
   // al Apps Script, sin agenda); la frase de la agenda sale ya montado.
   const [montado, setMontado] = useState(false);
-  // Desde el primer envío, el cambio "Enviar" ↔ "Enviando" se funde con un
-  // desenfoque corto (.cambio-etiqueta, globals.css). Al cargar no se anima.
-  const [envioIntentado, setEnvioIntentado] = useState(false);
   const exitoRef = useRef<HTMLDivElement>(null);
 
   // El panel de éxito reemplaza al formulario, que es más alto: quien tocó
@@ -99,7 +98,6 @@ export function FormularioContacto() {
     datos.append("politica_version", privacidad.version);
     datos.append("marketing", marcado("marketing") ? "si" : "no");
 
-    setEnvioIntentado(true);
     setEstado("enviando");
     try {
       const res = await fetch(ENDPOINT, { method: "POST", body: datos });
@@ -136,32 +134,29 @@ export function FormularioContacto() {
     }
   }
 
-  // El panel de éxito llega (.exito-panel) y el chulo entra un poco después
-  // (.exito-icono), solo con CSS (@starting-style, globals.css). Los errores
-  // no se animan: aparecen junto con el foco en el campo.
+  // El panel de éxito llega subiendo un poco, solo con CSS (@starting-style,
+  // paginas.css). Los errores no se animan: aparecen junto con el foco en el
+  // campo.
   if (estado === "exito" && agenda) {
     return (
-      <div ref={exitoRef} tabIndex={-1} role="status" className="exito-panel glass rounded-[26px] p-10 text-center outline-none">
-        <CheckCircle2 size={56} className="exito-icono mx-auto text-mint" />
-        <h3 className="mt-5 text-[30px] text-white">{a.exito.agenda.titulo}</h3>
-        <p className="mx-auto mt-3 max-w-[460px] text-[18px] text-muted">{a.exito.agenda.texto}</p>
-        <GlowButton href={agenda} className="mt-7">
+      <div ref={exitoRef} tabIndex={-1} role="status" className="cp-exito">
+        <CheckCircle aria-hidden size={52} weight="light" />
+        <h3 className="cm-titular cm-titular-m">{a.exito.agenda.titulo}</h3>
+        <p className="cm-texto-l">{a.exito.agenda.texto}</p>
+        <Boton href={agenda} flecha>
           {a.exito.agenda.boton}
-          <ArrowRight size={18} />
-        </GlowButton>
+        </Boton>
       </div>
     );
   }
 
   if (estado === "exito") {
     return (
-      <div ref={exitoRef} tabIndex={-1} role="status" className="exito-panel glass rounded-[26px] p-10 text-center outline-none">
-        <CheckCircle2 size={56} className="exito-icono mx-auto text-mint" />
-        <h3 className="mt-5 text-[30px] text-white">{a.exito.titulo}</h3>
-        <p className="mx-auto mt-3 max-w-[460px] text-[18px] text-muted">{duplicado ? a.exito.duplicado : a.exito.texto}</p>
-        <GlowButton href={contacto.whatsapp} className="mt-7">
-          {a.exito.whatsapp}
-        </GlowButton>
+      <div ref={exitoRef} tabIndex={-1} role="status" className="cp-exito">
+        <CheckCircle aria-hidden size={52} weight="light" />
+        <h3 className="cm-titular cm-titular-m">{a.exito.titulo}</h3>
+        <p className="cm-texto-l">{duplicado ? a.exito.duplicado : a.exito.texto}</p>
+        <Boton href={contacto.whatsapp}>{a.exito.whatsapp}</Boton>
       </div>
     );
   }
@@ -173,14 +168,13 @@ export function FormularioContacto() {
     // directo al Apps Script por POST. Sin esto se enviaba por GET a la misma
     // página, con el nombre, el WhatsApp y el correo en la URL, y el contacto
     // se perdía. Con JavaScript, enviar() lo intercepta y nada cambia.
-    <form ref={formRef} onSubmit={enviar} method="post" action={ENDPOINT} className="glass relative overflow-hidden rounded-[26px] p-5 sm:p-6 md:p-10">
-      <span aria-hidden className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-cyan/70 to-transparent" />
-      <div className="grid gap-5">
+    <form ref={formRef} onSubmit={enviar} method="post" action={ENDPOINT} className="cp-form">
+      <div className="cp-form-campos">
         <Campo id="linea" etiqueta={c.linea} error={errores.linea} obligatorio>
           {/* Apariencia propia: el select nativo de Safari salía gris y
               distinto al resto de los campos. */}
-          <div className="relative">
-            <select id="linea" name="linea" required defaultValue="" className={cn(claseCampo(errores.linea), "appearance-none pr-11")} aria-invalid={!!errores.linea || undefined} aria-describedby={errores.linea ? "error-linea" : undefined}>
+          <div className="cp-select">
+            <select id="linea" name="linea" required defaultValue="" className="cp-campo" aria-invalid={!!errores.linea || undefined} aria-describedby={errores.linea ? "error-linea" : undefined}>
               <option value="" disabled>
                 Selecciona una opción
               </option>
@@ -190,80 +184,67 @@ export function FormularioContacto() {
                 </option>
               ))}
             </select>
-            <ChevronDown size={18} aria-hidden className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/55" />
+            <CaretDown aria-hidden size={16} />
           </div>
         </Campo>
         <Campo id="nombre" etiqueta={c.nombre} error={errores.nombre} obligatorio>
-          <input id="nombre" name="nombre" required maxLength={100} autoComplete="name" placeholder="Tu nombre" className={claseCampo(errores.nombre)} aria-invalid={!!errores.nombre || undefined} aria-describedby={errores.nombre ? "error-nombre" : undefined} />
+          <input id="nombre" name="nombre" required maxLength={100} autoComplete="name" placeholder="Tu nombre" className="cp-campo" aria-invalid={!!errores.nombre || undefined} aria-describedby={errores.nombre ? "error-nombre" : undefined} />
         </Campo>
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="cp-form-dos">
           <Campo id="whatsapp" etiqueta={c.whatsapp} error={errores.whatsapp} obligatorio>
-            <input id="whatsapp" name="whatsapp" required maxLength={25} type="tel" autoComplete="tel" placeholder="+57 300 123 4567" className={claseCampo(errores.whatsapp)} aria-invalid={!!errores.whatsapp || undefined} aria-describedby={errores.whatsapp ? "error-whatsapp" : undefined} />
+            <input id="whatsapp" name="whatsapp" required maxLength={25} type="tel" autoComplete="tel" placeholder="+57 300 123 4567" className="cp-campo" aria-invalid={!!errores.whatsapp || undefined} aria-describedby={errores.whatsapp ? "error-whatsapp" : undefined} />
           </Campo>
           <Campo id="email" etiqueta={c.correo} error={errores.email} obligatorio>
-            <input id="email" name="correo" required maxLength={254} type="email" autoComplete="email" placeholder="tu@correo.com" className={claseCampo(errores.email)} aria-invalid={!!errores.email || undefined} aria-describedby={errores.email ? "error-email" : undefined} />
+            <input id="email" name="correo" required maxLength={254} type="email" autoComplete="email" placeholder="tu@correo.com" className="cp-campo" aria-invalid={!!errores.email || undefined} aria-describedby={errores.email ? "error-email" : undefined} />
           </Campo>
         </div>
         <Campo id="empresa" etiqueta={c.empresa}>
-          <input id="empresa" name="empresa" maxLength={120} autoComplete="organization" placeholder="Nombre de tu empresa" className={claseCampo()} />
+          <input id="empresa" name="empresa" maxLength={120} autoComplete="organization" placeholder="Nombre de tu empresa" className="cp-campo" />
         </Campo>
         <Campo id="interes" etiqueta={c.interes}>
-          <textarea id="interes" name="interes" rows={5} maxLength={2000} placeholder={c.interesEjemplo} className={cn(claseCampo(), "resize-y")} />
+          <textarea id="interes" name="interes" rows={4} maxLength={2000} placeholder={c.interesEjemplo} className="cp-campo" />
         </Campo>
 
         {/* Autorización previa, expresa e informada (Ley 1581 de 2012): la
             casilla arranca sin marcar. La política abre en otra pestaña para no
             perder lo escrito. */}
         <div>
-          <label htmlFor="autoriza" className="flex min-h-[44px] cursor-pointer items-start gap-3 text-[16px] leading-snug text-white/80">
-            <input
-              id="autoriza"
-              name="autorizacion"
-              type="checkbox"
-              value="si"
-              required
-              className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-[#29c4f5]"
-              aria-invalid={!!errores.autoriza || undefined}
-              aria-describedby={errores.autoriza ? "error-autoriza" : undefined}
-            />
+          <label htmlFor="autoriza" className="cp-casilla">
+            <input id="autoriza" name="autorizacion" type="checkbox" value="si" required aria-invalid={!!errores.autoriza || undefined} aria-describedby={errores.autoriza ? "error-autoriza" : undefined} />
             <span>
               {c.autorizacion}{" "}
-              <Link href={rutas.privacidad} target="_blank" rel="noopener" className="text-cyan underline underline-offset-2">
+              <Link href={rutas.privacidad} target="_blank" rel="noopener">
                 {c.autorizacionEnlace}
               </Link>
               .
             </span>
           </label>
           {errores.autoriza && (
-            <p id="error-autoriza" className="mt-1.5 text-[14px] font-medium text-[#ff8a9b]">
+            <p id="error-autoriza" className="cp-error">
               {errores.autoriza}
             </p>
           )}
           <input type="hidden" name="politica_version" value={privacidad.version} />
         </div>
-        <label htmlFor="marketing" className="flex min-h-[44px] cursor-pointer items-start gap-3 text-[16px] leading-snug text-white/70">
-          <input id="marketing" name="marketing" type="checkbox" value="si" className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-[#29c4f5]" />
+        <label htmlFor="marketing" className="cp-casilla">
+          <input id="marketing" name="marketing" type="checkbox" value="si" />
           <span>
-            {c.marketing} <span className="text-white/45">(opcional)</span>
+            {c.marketing} <small>(opcional)</small>
           </span>
         </label>
-        <p className="text-[14px] leading-snug text-dim">{c.aviso}</p>
+        <p className="cp-form-aviso">{c.aviso}</p>
 
         {/* Trampa para bots: una persona no ve este campo; si llega lleno, es spam. */}
-        <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
+        <div aria-hidden className="cp-trampa">
           <label htmlFor="website">No llenes este campo</label>
           <input id="website" name="website" tabIndex={-1} autoComplete="off" />
         </div>
 
-        {/* La etiqueta cambia de llave al pasar a "Enviando": el span nuevo
-            entra con su fundido, sin cruzarse con el viejo. */}
-        <GlowButton type="submit" tamano="lg" className="mt-2 w-full" disabled={estado === "enviando"}>
-          <span key={estado === "enviando" ? "enviando" : "enviar"} className={cn("inline-flex items-center gap-2", envioIntentado && "cambio-etiqueta")}>
-            {estado === "enviando" ? a.enviando : a.enviar}
-            {estado !== "enviando" && <ArrowRight size={18} />}
-          </span>
-        </GlowButton>
-        <p role="status" aria-live="polite" className={cn("text-center text-[15px]", estado === "error" ? "font-medium text-[#ffb4be]" : "text-dim")}>
+        <button type="submit" disabled={estado === "enviando"} className="boton">
+          {estado === "enviando" ? a.enviando : a.enviar}
+          {estado !== "enviando" && <ArrowRight aria-hidden size={16} className="boton-flecha" />}
+        </button>
+        <p role="status" aria-live="polite" data-error={estado === "error" ? "" : undefined} className="cp-form-estado">
           {estado === "error" ? a.errores.general : montado && hayAgenda() ? a.metaAgenda : a.meta}
         </p>
       </div>
@@ -271,23 +252,16 @@ export function FormularioContacto() {
   );
 }
 
-function claseCampo(error?: string) {
-  return cn(
-    "w-full rounded-xl border bg-ink/70 px-4 py-3.5 text-[17px] text-white placeholder:text-white/40 transition-colors focus:bg-ink focus:outline-none",
-    error ? "border-[#ff8a9b]/70 focus:border-[#ff8a9b]" : "border-line-2 focus:border-cyan/60",
-  );
-}
-
 function Campo({ id, etiqueta, error, obligatorio, children }: { id: string; etiqueta: string; error?: string; obligatorio?: boolean; children: React.ReactNode }) {
   return (
     <div>
-      <label htmlFor={id} className="mb-2 block text-[15px] font-medium text-white/85">
+      <label htmlFor={id} className="cp-etiqueta">
         {etiqueta}
-        {obligatorio ? <span className="text-cyan"> *</span> : <span className="font-normal text-white/45"> (opcional)</span>}
+        {obligatorio ? <span data-obligatorio=""> *</span> : <span> (opcional)</span>}
       </label>
       {children}
       {error && (
-        <p id={`error-${id}`} className="mt-1.5 text-[14px] font-medium text-[#ff8a9b]">
+        <p id={`error-${id}`} className="cp-error">
           {error}
         </p>
       )}
