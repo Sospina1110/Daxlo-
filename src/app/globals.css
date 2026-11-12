@@ -1,9 +1,9 @@
 @import "tailwindcss";
 /* Las piezas del inicio «Encendido», el cierre y el pie. */
 @import "./encendido.css";
-/* El sistema «Limpia»: tokens, estilos de texto con nombre, la barra, el pie
-   y el inicio (2026-11-11). */
-@import "./limpia.css";
+/* El sistema «Campo»: tokens, letra, botón, la barra, el pie y el inicio
+   (2026-11-12). */
+@import "./campo.css";
 
 /* ------------------------------------------------------------------
    Sistema de diseño: «Encendido» (DESIGN.md)
@@ -15,9 +15,10 @@
    ------------------------------------------------------------------ */
 
 @theme {
-  --color-ink: #000000;
-  --color-ink-2: #181818;
-  --color-ink-3: #1f1f1f;
+  /* Negro medianoche y sus dos pasos (sistema «Campo», 2026-11-12). */
+  --color-ink: #02070a;
+  --color-ink-2: #0b161d;
+  --color-ink-3: #111f27;
   --color-blue: #1b35d0;
   --color-blue-bright: #3d5aff;
   /* Azul claro de marca (primary-soft): texto e iconos de acento de la línea
@@ -1234,6 +1235,8 @@
   .animate-ping,
   .animate-caret,
   .animate-deriva,
+  .animate-pulso,
+  .animate-orbita,
   .entrada,
   .subir,
   .fundir,

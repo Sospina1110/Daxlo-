@@ -14,6 +14,8 @@
 #   Apps Script, que responde con una redirección a googleusercontent. Sin los
 #   dos, fallan el envío con JavaScript (connect-src) y el envío sin JavaScript
 #   (form-action).
+# - media-src 'self': los videos de fondo del inicio (public/video/), servidos
+#   desde el propio sitio.
 # - Si algún día se agrega Turnstile: sumar https://challenges.cloudflare.com a
 #   script-src y cambiar frame-src 'none' por frame-src
 #   https://challenges.cloudflare.com, o el formulario deja de enviar.
@@ -22,7 +24,7 @@
 
 /*
   Strict-Transport-Security: max-age=86400; includeSubDomains
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://cloudflareinsights.com; form-action https://script.google.com https://script.googleusercontent.com; frame-ancestors 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self'; media-src 'self'; font-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://cloudflareinsights.com; form-action https://script.google.com https://script.googleusercontent.com; frame-ancestors 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'
   X-Frame-Options: DENY
 
 # Las copias en *.pages.dev (la del proyecto y las vistas previas por rama)

@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { consultoria, dosFormas, ecosistema } from "@/content/copy";
+import { cierre, consultoria, inicio } from "@/content/copy";
 import { enLineas } from "@/components/ui/blocks";
 
 // Un h2 de dos frases se corta entre las frases (DESIGN.md, Typography). Los
@@ -20,15 +20,14 @@ describe("enLineas (titulares de dos frases)", () => {
     expect(h2.textContent).toBe(t);
   });
 
-  // El titular de dos frases que abría las puertas del inicio se mudó al paso
-  // "Hoy" del ecosistema (2026-11-11); el de las puertas es ahora una pregunta
-  // de una sola frase.
-  it("también con el titular del paso 'Hoy' del ecosistema; el de las puertas es una sola frase", () => {
-    const hoy = ecosistema.pasos[0].titulo;
-    const { h2, renglones } = montar(enLineas(hoy));
+  // Otra de dos frases (la del segundo tiempo de la escena del inicio) y una
+  // de una sola, que queda como estaba.
+  it("también con otra afirmación de dos frases; la de una sola frase no se toca", () => {
+    const dos = inicio.escena.tiempos[1];
+    const { h2, renglones } = montar(enLineas(dos));
     expect(renglones).toHaveLength(2);
-    expect(h2.textContent).toBe(hoy);
-    expect(enLineas(dosFormas.titulo)).toBe(dosFormas.titulo);
+    expect(h2.textContent).toBe(dos);
+    expect(enLineas(cierre.titulo)).toBe(cierre.titulo);
   });
 
   // Hoy ningún titular del sitio usa `corte` (el de qué cambia en /consultoria

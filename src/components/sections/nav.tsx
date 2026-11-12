@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, m, useReducedMotion, type Variants } from "motion/react";
@@ -8,13 +8,18 @@ import { nav } from "@/content/copy";
 import { Boton } from "@/components/ui/boton";
 import { EASE } from "@/lib/utils";
 
-// La barra del sistema «Limpia» (skill landing-page-design, B7): compacta,
-// flotante, centrada y del ancho de su contenido, sobre una superficie
-// translúcida con desenfoque (limpia.css, .barra). No cambia de forma al
-// bajar: es la misma píldora en todas las páginas.
+// La barra del sistema «Campo» (campo.css, .barra): mínima, centrada y
+// enmarcada entre dos corchetes finos. Es la misma en todas las páginas.
+//
+// Cambia de tema según lo que tiene detrás: cada sección dice el suyo con
+// data-tema ("claro" u "oscuro") y la barra toma el de la que pasa por su
+// línea media. Se mide al hacer scroll (un cuadro como mucho, oyente pasivo)
+// y no con un observador, porque hay secciones que cambian de tema sin
+// moverse (la escena fijada del inicio). Sin JavaScript queda en oscuro, que
+// se lee sobre cualquier fondo gracias a su velo.
 //
 // En celular quedan el logo y el botón del menú. El menú abre como un panel
-// de alto completo (negro casi opaco sobre un desenfoque fuerte) y sus
+// de alto completo (medianoche casi opaca sobre un desenfoque fuerte) y sus
 // enlaces llegan uno tras otro, en orden de lectura: cada uno sube 24 px y
 // funde, 60 ms después del anterior, y la secuencia nunca pasa de 400 ms. El
 // botón del menú son dos líneas que se cruzan en una equis con la curva base.
@@ -27,6 +32,8 @@ import { EASE } from "@/lib/utils";
 
 const PASO = 0.06;
 const TOPE = 0.4;
+// La línea media de la barra, en px desde arriba de la pantalla.
+const LINEA = 48;
 
 const panel: Variants = {
   oculto: { opacity: 0 },
@@ -57,10 +64,41 @@ export function Nav() {
   const [teclado, setTeclado] = useState(false);
   const reducir = useReducedMotion();
   const ruta = usePathname();
+  const marco = useRef<HTMLElement>(null);
 
   // El menú se cierra al cambiar de página, también con atrás y adelante.
   useEffect(() => {
     setAbierta(false);
+  }, [ruta]);
+
+  // El tema de la barra: el de la sección que cruza su línea media. Si hay
+  // varias (un panel oscuro dentro de una sección clara), gana la de más
+  // adentro, que va después en el documento.
+  useEffect(() => {
+    const el = marco.current;
+    if (!el) return;
+    let cuadro = 0;
+    const medir = () => {
+      cuadro = 0;
+      let tema = "oscuro";
+      for (const zona of document.querySelectorAll<HTMLElement>("[data-tema]")) {
+        if (zona === el) continue;
+        const caja = zona.getBoundingClientRect();
+        if (caja.top <= LINEA && caja.bottom > LINEA) tema = zona.dataset.tema || tema;
+      }
+      if (el.dataset.tema !== tema) el.dataset.tema = tema;
+    };
+    const pedir = () => {
+      if (!cuadro) cuadro = requestAnimationFrame(medir);
+    };
+    medir();
+    window.addEventListener("scroll", pedir, { passive: true });
+    window.addEventListener("resize", pedir);
+    return () => {
+      window.removeEventListener("scroll", pedir);
+      window.removeEventListener("resize", pedir);
+      if (cuadro) cancelAnimationFrame(cuadro);
+    };
   }, [ruta]);
 
   const actual = (href: string) => ruta === href || ruta === `${href}/`;
@@ -93,27 +131,29 @@ export function Nav() {
   const variantesFila = reducir || teclado ? filaQuieta : fila;
 
   return (
-    // El <header> ocupa todo el ancho pero no recibe toques: solo la píldora
-    // y el menú. Así la franja a los lados de la barra sigue siendo página.
-    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 px-4 pt-4">
-      <nav aria-label="Principal" className="barra pointer-events-auto relative z-10 mx-auto w-full max-w-md justify-between lg:w-fit lg:max-w-none">
-        <Link href="/" aria-label="Daxlo, ir al inicio" className="barra-logo inline-flex min-h-[44px] shrink-0 items-center px-2 lg:mr-2 lg:min-h-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/img/daxlo-logo-claro.png" alt="Daxlo" width={94} height={24} className="h-6 w-auto" />
-        </Link>
+    // El <header> ocupa todo el ancho pero no recibe toques: solo la barra y
+    // el menú. Así la franja a los lados de la barra sigue siendo página.
+    <header ref={marco} data-tema="oscuro" data-abierta={abierta || undefined} className="barra-marco pointer-events-none fixed inset-x-0 top-0 z-50 px-4 pt-4 md:pt-6">
+      <nav aria-label="Principal" className="barra pointer-events-auto relative z-10 mx-auto w-full max-w-[1024px] justify-between">
+        <div className="flex items-center gap-4">
+          <Link href="/" aria-label="Daxlo, ir al inicio" className="barra-logo inline-flex h-11 shrink-0 items-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/img/daxlo-logo-claro.png" alt="Daxlo" width={79} height={20} className="h-5 w-auto" />
+          </Link>
 
-        <ul className="hidden items-center lg:flex">
-          {nav.links.map((l) => (
-            <li key={l.href}>
-              <Link href={l.href} aria-current={actual(l.href) ? "page" : undefined} className="barra-enlace title-4">
-                {l.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
+          <ul className="hidden items-center lg:flex">
+            {nav.links.map((l) => (
+              <li key={l.href}>
+                <Link href={l.href} aria-current={actual(l.href) ? "page" : undefined} className="barra-enlace">
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-        <div className="flex items-center gap-2 lg:ml-2">
-          <Boton href={nav.cta.href} variante="secundario" tamano="sm" className="hidden min-h-[40px] lg:inline-flex">
+        <div className="flex items-center">
+          <Boton href={nav.cta.href} className="hidden lg:inline-flex">
             {nav.cta.label}
           </Boton>
           <button
@@ -158,19 +198,14 @@ export function Nav() {
             initial={teclado ? false : "oculto"}
             animate="visible"
             exit="salida"
-            className="pointer-events-auto relative mx-auto mt-8 max-h-[calc(100dvh-96px)] w-full max-w-md overflow-y-auto overscroll-contain px-2 pb-8 lg:hidden"
+            className="pointer-events-auto relative mx-auto mt-8 max-h-[calc(100dvh-96px)] w-full max-w-[1024px] overflow-y-auto overscroll-contain px-1 pb-8 lg:hidden"
           >
             <ul className="flex flex-col">
               {nav.links.map((l, i) => (
                 <m.li key={l.href} custom={i} variants={variantesFila} initial={teclado ? false : "oculto"} animate="visible" exit="salida">
-                  <Link
-                    href={l.href}
-                    onClick={cerrar}
-                    aria-current={actual(l.href) ? "page" : undefined}
-                    className="heading-4 flex min-h-[56px] items-center justify-between py-2 text-texto active:text-texto-2"
-                  >
+                  <Link href={l.href} onClick={cerrar} aria-current={actual(l.href) ? "page" : undefined} className="menu-enlace cm-titular cm-titular-m">
                     {l.label}
-                    {actual(l.href) && <span aria-hidden className="h-2 w-2 rounded-full bg-acento" />}
+                    {actual(l.href) && <span aria-hidden className="h-2 w-2 bg-acento" />}
                   </Link>
                 </m.li>
               ))}
@@ -184,7 +219,7 @@ export function Nav() {
               className="mt-8"
               onClick={cerrar}
             >
-              <Boton href={nav.cta.href} flecha className="w-full">
+              <Boton href={nav.cta.href} flecha className="h-12 w-full">
                 Agendar una conversación
               </Boton>
             </m.div>

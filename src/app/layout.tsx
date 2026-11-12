@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Ysabeau_Office } from "next/font/google";
 import { MotionProvider } from "@/components/motion-provider";
 import { Nav } from "@/components/sections/nav";
 import { Footer } from "@/components/sections/footer";
@@ -16,9 +16,16 @@ import "./globals.css";
 //
 // Cambiar de familia es cambiar estas líneas: todo el sitio lee --font-sans y
 // --font-display (las dos apuntan a --fuente-marca) y --font-mono
-// (--fuente-mono), que arman globals.css y limpia.css.
+// (--fuente-mono), que arman globals.css y campo.css.
+//
+// Los titulares del inicio, la barra y el pie (sistema «Campo») van en
+// Ysabeau Office en peso fino: una sans humanista con un remate leve, la más
+// cercana al carácter de la referencia entre las de licencia abierta que se
+// compararon (Geist 300, Hanken Grotesk, Alegreya Sans, Newsreader, Fraunces).
+// La lee --font-titular (campo.css).
 const marca = Geist({ subsets: ["latin"], variable: "--fuente-marca", display: "swap" });
 const mono = Geist_Mono({ subsets: ["latin"], variable: "--fuente-mono", display: "swap" });
+const titular = Ysabeau_Office({ subsets: ["latin"], weight: ["300", "400"], style: "normal", variable: "--fuente-titular", display: "swap" });
 
 // Valores por defecto. Cada página define su título, descripción, URL
 // canónica y tarjeta para redes (metadatosPagina en src/lib/sitio.ts).
@@ -39,7 +46,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: "#02070a",
   colorScheme: "dark",
 };
 
@@ -111,7 +118,7 @@ var espera=0;
 addEventListener('scroll',function(){if(espera)return;espera=setTimeout(function(){espera=0;var limite=innerHeight*0.94;
 [].forEach.call(document.querySelectorAll('[data-revelar]:not([data-visible])'),function(el){
 if(el.getBoundingClientRect().top<limite){io.unobserve(el);revelar(el);}});},200);},{passive:true});
-var A='.animate-flow,.animate-deriva,.animate-float,.animate-marquee,.animate-marquee-reverse,.animate-ping,.animate-paseo,.animate-caret';
+var A='.animate-flow,.animate-deriva,.animate-float,.animate-marquee,.animate-marquee-reverse,.animate-ping,.animate-paseo,.animate-caret,.animate-pulso,.animate-orbita';
 var ia=new IntersectionObserver(function(es){es.forEach(function(e){
 if(e.isIntersecting)e.target.removeAttribute('data-pausa');else e.target.setAttribute('data-pausa','');
 });},{rootMargin:'100px'});
@@ -136,7 +143,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     // data-scroll-behavior: el CSS pone scroll suave en <html>; con este
     // atributo Next lo apaga mientras cambia de página. Sin él, la página
     // nueva se deslizaba hacia abajo en vez de abrir arriba.
-    <html lang="es-CO" data-scroll-behavior="smooth" className={`${marca.variable} ${mono.variable}`}>
+    <html lang="es-CO" data-scroll-behavior="smooth" className={`${marca.variable} ${mono.variable} ${titular.variable}`}>
       <head>
         {/* Corre antes de pintar: marca que hay JavaScript (el CSS de las
             apariciones solo oculta contenido bajo .js). Y red de seguridad: lo
@@ -151,7 +158,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <a
           href="#contenido"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:text-black"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-[3px] focus:bg-white focus:px-3 focus:py-2 focus:text-black"
         >
           Saltar al contenido
         </a>

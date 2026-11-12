@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import * as copy from "@/content/copy";
-import { agendar, agendarCon, cierre, consultoria, coaching, contacto, dosFormas, ecosistema, faq, footer, hero, herramientas, inicio, manifiesto, nav, nosotros, otraLinea, paginas, preguntasLinea, privacidad, rutas, servicios } from "@/content/copy";
+import { agendar, agendarCon, cierre, consultoria, coaching, contacto, dosFormas, faq, footer, hero, herramientas, inicio, nav, nosotros, otraLinea, paginas, preguntasLinea, privacidad, rutas, servicios } from "@/content/copy";
 import { toolLogos } from "@/lib/logos";
 
 // Reglas que el texto del sitio tiene que cumplir siempre. Todo el texto vive
@@ -63,9 +63,9 @@ describe("voz de marca", () => {
   const respuesta = (p: string) => faq.grupos.flatMap((g) => g.preguntas).find((q) => q.p === p)?.r ?? "";
 
   it("frases de referencia de la voz: el hero, la portada de coaching y los límites", () => {
-    // Desde el 2026-11-11 (dirección «Encendido») el hero dice un sistema
-    // completo con la gente al mando; antes, dos servicios para elegir.
-    expect(hero.sub).toContain("le enseñamos a tu gente a manejarlos");
+    // Desde el 2026-11-12 (inicio «Campo») el hero dice qué pasa y a quién:
+    // montar, y que la gente lo maneje.
+    expect(hero.sub).toContain("Le enseñamos a tu equipo a manejarlos");
     expect(coaching.portada.sub).toContain("Traes un trabajo tuyo que hoy te toma horas y lo dejas funcionando antes de colgar");
     // Coaching: el límite en el primer paso, y quien trabaja con otros va a
     // la consultoría desde "No es para ti si".
@@ -123,8 +123,8 @@ describe("voz de marca", () => {
     const marca = new RegExp(`\\b(${nombres.join("|")})\\b`, "i");
     const donde = [
       ...cadenas(dosFormas, "dosFormas"),
-      ...cadenas(manifiesto, "manifiesto"),
-      ...cadenas(ecosistema, "ecosistema"),
+      ...cadenas(hero, "hero"),
+      ...cadenas(inicio, "inicio"),
       ["coaching.portada.sub", coaching.portada.sub],
       ["coaching.sesion.titulo", coaching.sesion.titulo],
       ...cadenas(coaching.sesion.pasos, "coaching.sesion.pasos"),
@@ -276,11 +276,14 @@ describe("listas que el sitio pinta con key de React", () => {
       expect(new Set(lista).size, lista.join(" | ")).toBe(lista.length);
     });
 
-  unicas("hero.tareas (texto que se escribe)", hero.tareas);
-  unicas("hero.historial", hero.historial);
-  unicas("ecosistema.pasos (rótulo)", ecosistema.pasos.map((p) => p.rotulo));
-  unicas("ecosistema.carriles (agente)", ecosistema.carriles.map((c) => c.agente));
-  unicas("ecosistema.daxlo.acciones", ecosistema.daxlo.acciones);
+  unicas("hero.titulo", hero.titulo);
+  unicas("hero.rotulos.notas (clave)", hero.rotulos.notas.map((n) => n.clave));
+  unicas("inicio.areas.tarjetas (área)", inicio.areas.tarjetas.map((t) => t.area));
+  unicas("inicio.escena.tiempos", inicio.escena.tiempos);
+  unicas("inicio.principios.lista", inicio.principios.lista);
+  unicas("inicio.equipo.filas (título)", inicio.equipo.filas.map((f) => f.titulo));
+  unicas("inicio.sistema.capas (id)", inicio.sistema.capas.map((c) => c.id));
+  unicas("las tres puertas (etiqueta)", [dosFormas.coaching.etiqueta, dosFormas.equipo.etiqueta, dosFormas.consultoria.etiqueta]);
   unicas("nosotros.parrafos", nosotros.parrafos);
   unicas("coaching.portada.nota", coaching.portada.nota);
   unicas("coaching.problema.escenas", coaching.problema.escenas);
@@ -335,64 +338,89 @@ describe("coherencia entre bloques", () => {
     expect(nosotros.parrafos[2]).toMatch(/Colombia/);
   });
 
-  // La frase que se enciende y los cuatro pasos de `ecosistema`, que el inicio
-  // «Limpia» sigue leyendo: el primero es el problema y los otros tres, los
-  // beneficios.
-  it("el manifiesto y el ecosistema: cuatro pasos, tres carriles y el ejemplo rotulado", () => {
-    expect(manifiesto.fuerte).toMatch(/^Daxlo es el aliado de IA/);
-    expect(manifiesto.sigue.split(" ").length).toBeGreaterThan(15);
-    expect(ecosistema.pasos).toHaveLength(4);
-    expect(ecosistema.pasos.map((p) => p.rotulo)).toEqual(["Hoy", "Lo montamos", "Lo aprende tu gente", "Nos quedamos"]);
-    expect(ecosistema.carriles).toHaveLength(3);
-    expect(ecosistema.etiqueta).toBe("Ejemplo");
-    expect(ecosistema.descripcion).toMatch(/^Diagrama de ejemplo/);
-    // Un agente se explica una vez, donde aparece.
-    expect(ecosistema.pasos[1].texto).toMatch(/^Un agente es una IA que hace una tarea completa/);
-    // "Nos quedamos" dice las dos cosas juntas: funciona sin nosotros y
-    // seguimos porque quieres. Sin frecuencia ni precio.
-    expect(ecosistema.pasos[3].texto).toMatch(/funciona sin nosotros\. Seguimos porque quieres/);
-    // "Nativa" va una sola vez en todo el sitio; "ecosistema" y "sistemas
-    // agénticos" no se dicen.
+  // El inicio «Campo» (2026-11-12): poco texto, sobre el armazón que eligió
+  // Santiago. Lo que agrega `inicio`, pieza por pieza.
+  it("el inicio: siete áreas, tres tiempos, tres principios, tres filas y seis capas", () => {
+    // El carrusel: una tarjeta por área, bajo el rótulo fijo "Ejemplos".
+    expect(inicio.areas.tarjetas).toHaveLength(7);
+    expect(inicio.areas.etiqueta).toBe("Ejemplos");
+    for (const t of inicio.areas.tarjetas) expect(t.linea.split(" ").length, t.area).toBeLessThanOrEqual(14);
+    // La escena: el primer tiempo es el titular de /consultoria, literal, y
+    // un agente se explica una vez, en el segundo.
+    expect(inicio.escena.tiempos).toHaveLength(3);
+    expect(inicio.escena.tiempos[0]).toBe(consultoria.problema.titulo);
+    expect(inicio.escena.tiempos[1]).toMatch(/^Un agente hace la tarea completa/);
+    expect(inicio.escena.cierre).toMatch(/seguimos ahí/);
+    // La frase de la casa.
+    expect(inicio.frase).toBe("Si no puedes operarlo sin nosotros, no terminamos.");
+    expect(inicio.principios.lista).toHaveLength(3);
+    expect(inicio.equipo.filas).toHaveLength(3);
+    // Las seis capas, y las anclas del pie que llevan a ellas.
+    expect(inicio.sistema.capas).toHaveLength(6);
+    const anclas = footer.columnas[0].enlaces.map((e) => separar(e.h));
+    for (const a of anclas) {
+      expect(a.ruta).toBe(rutas.inicio);
+      expect(inicio.sistema.capas.map((c) => `capa-${c.id}`), a.ancla).toContain(a.ancla);
+    }
+    // "Nativa" y "ecosistema" van una sola vez en todo el sitio (el
+    // ecosistema, como nombre del panel); "sistemas agénticos" no se dice.
     const todo = TODAS.map(([, t]) => t).join(" ");
     expect(todo.match(/\bnativ[ao]s?\b/gi)).toHaveLength(1);
-    expect(todo).not.toMatch(/ecosistema|agéntic/i);
-    // El papel que sale del recuadro del hero es el del primer carril.
-    expect(hero.papel).toBe(ecosistema.carriles[0].papel);
+    expect(todo.match(/ecosistema/gi)).toHaveLength(1);
+    expect(inicio.sistema.nombre).toMatch(/ecosistema/i);
+    expect(todo).not.toMatch(/agéntic/i);
   });
 
-  // El inicio «Limpia» (2026-11-11): lo que agrega `inicio` y lo que la página
-  // toma de otros bloques.
-  it("el inicio: tres pasos, tres historias en la pieza y preguntas que existen en faq", () => {
-    expect(inicio.pasos.lista).toHaveLength(3);
-    expect(inicio.pasos.lista[0].titulo).toMatch(/sin costo/);
-    // La pieza del hero cuenta una historia por carril, con su tarea.
-    expect(inicio.pieza.rotulos).toHaveLength(3);
-    expect(hero.tareas.length).toBeGreaterThanOrEqual(ecosistema.carriles.length);
-    expect(inicio.pieza.descripcion).toMatch(/^Ejemplo\./);
-    // Entre 6 y 8 preguntas, sin repetir, con el texto exacto de faq.
-    const todas = faq.grupos.flatMap((g) => g.preguntas).map((q) => q.p);
-    expect(inicio.preguntas.lista.length).toBeGreaterThanOrEqual(6);
-    expect(inicio.preguntas.lista.length).toBeLessThanOrEqual(8);
-    expect(new Set(inicio.preguntas.lista).size).toBe(inicio.preguntas.lista.length);
-    for (const p of inicio.preguntas.lista) expect(todas, p).toContain(p);
+  // El eslogan salió del hero (2026-11-12): es la última línea del pie, y
+  // sigue en el título de la pestaña y en los datos para buscadores
+  // (src/lib/sitio.ts).
+  it("el hero dice qué pasa y a quién, y el eslogan cierra el pie", () => {
+    expect(hero.titulo).toEqual(["Montamos la IA dentro de tu empresa.", "Tu gente la maneja."]);
+    expect(hero.titulo.join(" ")).not.toMatch(/Implementamos|Transferimos/);
+    expect(footer.lema).toBe("Implementamos la IA. Transferimos la capacidad.");
+    // Los rótulos sobre la fotografía son ejemplos, sin cifras.
+    expect(hero.rotulos.etiqueta).toBe("Ejemplo");
+    expect(cadenas(hero.rotulos, "rotulos").filter(([, t]) => /\d/.test(t))).toEqual([]);
+  });
+
+  // Pedido de Santiago (2026-11-12): en el inicio, la barra y el pie nadie
+  // habla de cotizaciones, de facturas ni del informe del viernes. Tampoco
+  // hay cifras: no hay ninguna medida que se pueda publicar.
+  it("lo que pinta el inicio no habla de cotizaciones, facturas ni del informe del viernes, y no trae cifras", () => {
+    const pintado = [
+      ...cadenas(inicio, "inicio"),
+      ...cadenas(hero, "hero"),
+      ...cadenas(dosFormas, "dosFormas"),
+      ...cadenas(cierre, "cierre"),
+      ...cadenas(footer, "footer"),
+      ...cadenas(nav, "nav"),
+    ];
+    expect(pintado.filter(([, t]) => /cotiza|factura|viernes/i.test(t)).map(([d, t]) => `${d}: ${t}`)).toEqual([]);
+    const conCifra = pintado.filter(([d, t]) => /\d/.test(t) && !/\.(href|h)$/.test(d) && !/1 a 1|© 2026/.test(t));
+    expect(conCifra.map(([d, t]) => `${d}: ${t}`)).toEqual([]);
+  });
+
+  // Las tres puertas del inicio. «Seguimos contigo» no es puerta: la
+  // operación después de la entrega nunca es un llamado a la acción.
+  it("las puertas del inicio son tres: para ti, para tu gente y para tu empresa", () => {
+    expect(Object.keys(dosFormas).filter((k) => typeof (dosFormas as Record<string, unknown>)[k] === "object")).toEqual(["coaching", "equipo", "consultoria"]);
+    expect([dosFormas.coaching.etiqueta, dosFormas.equipo.etiqueta, dosFormas.consultoria.etiqueta]).toEqual(["Para ti", "Para tu gente", "Para tu empresa"]);
+    expect(dosFormas.coaching.titulo).toBe(servicios.coaching);
+    expect(dosFormas.consultoria.titulo).toBe(servicios.consultoria);
+    expect(cadenas(dosFormas, "dosFormas").filter(([, t]) => /seguimos contigo/i.test(t))).toEqual([]);
   });
 
   // La skill landing-page-design pide texto sin guiones (B1). Se revisa lo que
   // el inicio pinta: su copy propio y los bloques que toma prestados.
   it("lo que pinta el inicio no lleva guiones", () => {
-    const respuestas = faq.grupos.flatMap((g) => g.preguntas).filter((q) => (inicio.preguntas.lista as readonly string[]).includes(q.p));
     const pintado = [
       ...cadenas(inicio, "inicio"),
       ...cadenas(hero, "hero"),
-      ...cadenas(manifiesto, "manifiesto"),
-      ...cadenas(ecosistema, "ecosistema"),
       ...cadenas(dosFormas, "dosFormas"),
-      ...cadenas(consultoria.cambios, "consultoria.cambios"),
       ...cadenas(cierre, "cierre"),
-      ...cadenas(respuestas, "preguntas"),
       ...cadenas(footer.columnas, "footer.columnas"),
       ...cadenas(nav, "nav"),
-    ].filter(([d]) => !/\.(href|h)$/.test(d));
+    ].filter(([d]) => !/\.(href|h|id)$/.test(d));
     expect(pintado.filter(([, t]) => /-/.test(t)).map(([d, t]) => `${d}: ${t}`)).toEqual([]);
   });
 

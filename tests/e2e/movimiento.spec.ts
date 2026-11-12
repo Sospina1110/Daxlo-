@@ -1,6 +1,19 @@
 import { consultoria, dosFormas, faq, hero, nav, preguntasLinea, rutas } from "../../src/content/copy";
 import { caja, expect, irA, irAlFinal, quieto, RUTAS, test, textosInvisibles, type Locator, type Page } from "./apoyo";
 
+// PENDIENTE (inicio «Campo», 2026-11-12): las pruebas del recuadro del hero
+// que escribía tareas son de un inicio anterior; ese recuadro ya no existe.
+// Hay que reescribirlas para el inicio nuevo o retirarlas. Mientras tanto,
+// las frases que usaban viven aquí, para que el archivo siga compilando.
+const heroAnterior = {
+  busqueda: "¿Cómo se ordena una base de clientes?",
+  tareas: [
+    "Resume las reuniones de la semana y dime qué quedó pendiente",
+    "Revisa la base de clientes y marca los que están duplicados",
+    "Junta estas tres hojas de cálculo y arma el informe de la semana",
+  ],
+};
+
 // Movimiento y consumo: las animaciones infinitas se pausan fuera de pantalla,
 // en celular no corren las dos más caras, el texto que se escribe no mueve la
 // página, y con "reducir movimiento" todo se ve sin animaciones.
@@ -245,7 +258,7 @@ test.describe("texto que se escribe solo (hero)", () => {
     expect(new Set(muestras.map((m) => Math.round(m.abajo))).size).toBe(1);
     // El alto reservado alcanza para la frase más larga (la búsqueda también
     // tiene su fantasma).
-    for (const t of muestras.map((m) => m.texto)) expect([hero.busqueda, ...hero.tareas].some((f) => f.startsWith(t))).toBe(true);
+    for (const t of muestras.map((m) => m.texto)) expect([heroAnterior.busqueda, ...heroAnterior.tareas].some((f) => f.startsWith(t))).toBe(true);
   });
 
   // I4 (2026-11-06): lo primero que escribe es una búsqueda; no se selecciona,
@@ -258,7 +271,7 @@ test.describe("texto que se escribe solo (hero)", () => {
     const visible = caja(page).locator(":scope > span").last();
     const texto = visible.locator(":scope > span").first();
     // Escribe la búsqueda, entera.
-    await expect(visible).toHaveText(hero.busqueda);
+    await expect(visible).toHaveText(heroAnterior.busqueda);
     const raya = visible.locator(".raya-busqueda").first();
     await expect(raya).toBeAttached();
     // La raya: la del "Hoy", por renglón; arranca recogida desde la izquierda
@@ -325,10 +338,10 @@ test.describe("texto que se escribe solo (hero)", () => {
     // No se selecciona: el cian de ::selection es de las tareas.
     expect(await texto.evaluate((t) => t.className)).not.toContain("bg-cyan/35");
     // Sale en un solo bloque, todavía tachada, como las demás frases.
-    expect(await salida).toEqual({ texto: hero.busqueda, rayas: medidas.renglones, seleccionada: false });
+    expect(await salida).toEqual({ texto: heroAnterior.busqueda, rayas: medidas.renglones, seleccionada: false });
     // Y la primera tarea se escribe en el mismo recuadro.
-    await expect.poll(() => visible.textContent(), { timeout: 5_000 }).toMatch(new RegExp(`^${hero.tareas[0].slice(0, 6)}`));
-    expect(hero.tareas[0].startsWith((await visible.textContent()) ?? "")).toBe(true);
+    await expect.poll(() => visible.textContent(), { timeout: 5_000 }).toMatch(new RegExp(`^${heroAnterior.tareas[0].slice(0, 6)}`));
+    expect(heroAnterior.tareas[0].startsWith((await visible.textContent()) ?? "")).toBe(true);
     await expect(visible.locator(".raya-busqueda")).toHaveCount(0);
   });
 });
@@ -538,9 +551,9 @@ test.describe("con 'reducir movimiento'", () => {
     vigilancia.tolerar(ERROR_HIDRATACION);
     await irA(page, "/");
     const visible = page.locator("#top span.grid").first().locator(":scope > span").last();
-    await expect(visible).toHaveText(hero.tareas[0]);
+    await expect(visible).toHaveText(heroAnterior.tareas[0]);
     await page.waitForTimeout(1_000);
-    await expect(visible).toHaveText(hero.tareas[0]);
+    await expect(visible).toHaveText(heroAnterior.tareas[0]);
   });
 
   // I4: la búsqueda que se tacha es movimiento. Con "reducir movimiento" no se
@@ -553,14 +566,14 @@ test.describe("con 'reducir movimiento'", () => {
     const grilla = page.locator("#top span.grid").first();
     await grilla.evaluate((c) => c.scrollIntoView({ block: "center", behavior: "instant" }));
     const visible = grilla.locator(":scope > span").last();
-    await expect(visible).toHaveText(hero.tareas[0]);
+    await expect(visible).toHaveText(heroAnterior.tareas[0]);
     // Más de lo que tardaría en escribirse y tacharse la búsqueda.
     for (let i = 0; i < 8; i++) {
       await page.waitForTimeout(500);
-      await expect(visible).toHaveText(hero.tareas[0]);
+      await expect(visible).toHaveText(heroAnterior.tareas[0]);
       await expect(grilla.locator(".raya-busqueda, .raya-busqueda-quieta, .salida-escritura, .texto-tachado")).toHaveCount(0);
     }
-    const fantasma = grilla.locator(":scope > span", { hasText: hero.busqueda });
+    const fantasma = grilla.locator(":scope > span", { hasText: heroAnterior.busqueda });
     await expect(fantasma).toHaveCount(1);
     expect(await fantasma.evaluate((f) => getComputedStyle(f).visibility)).toBe("hidden");
   });

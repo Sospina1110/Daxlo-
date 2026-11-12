@@ -1,79 +1,79 @@
-import { herramientas, hero, inicio, rutas } from "@/content/copy";
+import { hero, rutas } from "@/content/copy";
 import { Boton } from "@/components/ui/boton";
-import { Pieza } from "./pieza";
+import type { VideoFondo as Video } from "@/lib/campo/video";
+import { FondoVideo } from "./fondo-video";
+import { Foto } from "./foto";
+import { TramaHero } from "./trama-hero";
 
-// El hero del inicio «Limpia». Negro plano, la letra grande y una sola línea
-// azul fina como gráfico (el primer ejemplo del video de color: negro carbón,
-// azul rey y una salpicadura de mandarina).
+// El hero del inicio «Campo»: a pantalla completa sobre el video de la sala
+// (su póster mientras carga), con la trama de puntos viva encima (un lienzo)
+// y tres rótulos en mono. El texto va abajo a la izquierda, sobre la mitad
+// oscura de la toma: un rótulo, el titular en peso fino (una frase por
+// renglón en escritorio), la bajada corta y un botón pequeño. En pantallas
+// más altas que anchas se usa la toma vertical y el texto va arriba.
 //
-// Arriba del pliegue, lo que pide la skill (A2): titular, subtítulo, un solo
-// botón, una señal de respaldo y la pieza visual. La señal de respaldo son
-// las herramientas con las que se trabaja, en texto: no hay clientes ni
-// cifras que se puedan publicar.
-//
-// El titular va en el degradado blanco → gris de la skill (el único del
-// sitio), con 680 px de ancho máximo y cortes donde corta la idea: en
-// escritorio, «Implementamos la IA. / Transferimos / la capacidad.»; en
-// celular cada frase se parte después del verbo.
-//
-// La entrada corre en CSS (.hero-entra): no espera a React y no mueve la
-// caja de nada. La línea se dibuja una vez (limpia.css, .hero-arco).
-export function Hero() {
-  const [uno, dos] = hero.titulo.map((frase) => {
-    const [verbo, ...resto] = frase.split(" ");
-    return { verbo, resto: resto.join(" ") };
-  });
-  const retraso = (n: number) => ({ "--retraso": `${n * 80}ms` }) as React.CSSProperties;
+// La entrada corre en CSS, sin esperar a React, y no mueve la caja de nada:
+// el póster funde, cada frase del titular sube desde abajo de su máscara y lo
+// demás llega 16 px después. El póster es la imagen más grande de la primera
+// pantalla: se pide de primera (fetchpriority) y llena su caja, así que no
+// hay salto al cargar. El video se pide después, con la página ya cargada.
+
+// Dónde apunta cada rótulo, en fracciones del ancho y del alto de la toma, y
+// hacia dónde sale su guía (en px; --dy positivo sube).
+const ANCLAS = [
+  { fx: 0.775, fy: 0.665, dx: 54, dy: -84, fin: false },
+  { fx: 0.685, fy: 0.44, dx: -64, dy: 62, fin: true },
+  { fx: 0.845, fy: 0.6, dx: 40, dy: 148, fin: true },
+];
+
+const retraso = (ms: number) => ({ "--retraso": `${ms}ms` }) as React.CSSProperties;
+
+export function Hero({ video, vertical }: { video: Video | null; vertical: Video | null }) {
   return (
-    <section id="top" aria-labelledby="titulo-hero" className="hero-limpio">
-      <div aria-hidden className="hero-arco max-lg:invisible">
-        <div className="hero-arco-ventana">
-          <div className="hero-arco-lienzo">
-            <svg viewBox="0 0 1440 800" width="1440" height="800" fill="none">
-              <path d="M-1200 772 L-20 772 C 560 772, 900 744, 1120 470 S 1370 70, 1460 -40" stroke="var(--color-trazo)" strokeWidth="1.5" />
-            </svg>
-          </div>
+    <section id="top" aria-labelledby="titulo-hero" data-tema="oscuro" className="cm-hero">
+      <div aria-hidden="true" className="cm-hero-fondo">
+        <div className="cm-hero-medios">
+          <Foto nombre="hero" ancho={1600} alto={893} vertical prioridad />
+          {video && <FondoVideo video={video} vertical={vertical} espera />}
+        </div>
+        <span className="cm-hero-velo" />
+        <TramaHero />
+        <span className="cm-grano" />
+        <div className="cm-notas">
+          {hero.rotulos.notas.map((n, i) => {
+            const a = ANCLAS[i];
+            return (
+              <p key={n.clave} data-fin={a.fin || undefined} className="cm-nota" style={{ "--fx": a.fx, "--fy": a.fy, "--dx": `${a.dx}px`, "--dy": `${a.dy}px` } as React.CSSProperties}>
+                <svg width="1" height="1" fill="none" stroke="currentColor">
+                  <circle r="3.5" />
+                  <line x1="0" y1="0" x2={a.dx} y2={-a.dy} strokeDasharray="2 4" opacity="0.8" />
+                </svg>
+                <span className="cm-mono cm-nota-texto">
+                  <b>{n.clave}</b>
+                  {n.valor}
+                </span>
+              </p>
+            );
+          })}
+          <p className="cm-mono cm-corchete cm-notas-etiqueta">{hero.rotulos.etiqueta}</p>
         </div>
       </div>
 
-      <div className="contenedor">
-        <div className="mt-6 grid items-center gap-y-16 lg:mt-16 lg:grid-cols-12 lg:gap-x-8">
-          <div className="lg:col-span-7">
-            <p className="hero-entra caption-4 rotulo-tecnico flex items-center gap-3 text-texto-2">
-              <span aria-hidden className="h-px w-8 bg-trazo" />
-              {hero.aliado}
-            </p>
-            <h1 id="titulo-hero" style={retraso(1)} className="hero-entra heading-1 titular-hero mt-6 max-w-[680px] pb-1">
-              <span className="block">
-                {uno.verbo} <br className="sm:hidden" />
-                {uno.resto}
-              </span>
-              <span className="block">
-                {dos.verbo} <br />
-                {dos.resto}
-              </span>
-            </h1>
-            <p style={retraso(2)} className="hero-entra body-7 mt-6 max-w-xl text-texto-2">
-              {hero.sub}
-            </p>
-            <div style={retraso(3)} className="hero-entra mt-8 flex flex-col gap-x-6 gap-y-3 sm:flex-row sm:items-center">
-              <Boton href={rutas.agendar} flecha>
-                {hero.cta}
-              </Boton>
-              <p className="caption-2 text-texto-2">{hero.meta}</p>
-            </div>
-            <div style={retraso(4)} className="hero-entra mt-12">
-              <p className="caption-4 rotulo-tecnico text-texto-2">{inicio.respaldo}</p>
-              <ul className="title-4 mt-3 flex flex-wrap gap-x-6 gap-y-2 text-texto">
-                {herramientas.lista.map((h) => (
-                  <li key={h.id}>{h.nombre}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <div style={retraso(4)} className="hero-entra lg:col-span-5">
-            <Pieza />
-          </div>
+      <div className="cm-hero-contenido">
+        <p className="cm-mono cm-corchete cm-hero-rotulo cm-hero-entra">{hero.aliado}</p>
+        <h1 id="titulo-hero" className="cm-titular cm-titular-xl">
+          {hero.titulo.map((frase, i) => (
+            <span key={frase} className="cm-linea">
+              <span style={{ "--i": i } as React.CSSProperties}>{frase} </span>
+            </span>
+          ))}
+        </h1>
+        <p style={retraso(650)} className="cm-texto-l cm-hero-sub cm-hero-entra">
+          {hero.sub}
+        </p>
+        <div style={retraso(780)} className="cm-hero-accion cm-hero-entra">
+          <Boton href={rutas.agendar}>{hero.cta}</Boton>
+          <p className="cm-mono cm-hero-meta">{hero.meta}</p>
         </div>
       </div>
     </section>

@@ -1,4 +1,11 @@
-import { manifiesto } from "../../src/content/copy";
+// PENDIENTE (inicio «Campo», 2026-11-12): estas pruebas son de un inicio
+// anterior. El hilo de luz y la frase del manifiesto ya no existen: hay que
+// reescribirlas para el inicio nuevo o retirarlas. Mientras tanto, el texto
+// que usaban vive aquí, para que el archivo siga compilando.
+const manifiesto = {
+  fuerte: "Daxlo es el aliado de IA de tu empresa.",
+  sigue: "Armamos el sistema completo, se lo enseñamos a tu gente y seguimos ahí cuando haya que revisarlo, mejorarlo o sumar el siguiente proceso.",
+};
 import { expect, irA, recorrer, test, type Page } from "./apoyo";
 
 // El hilo de luz (src/components/fondos/fondo-hilo.tsx) y lo que en el inicio

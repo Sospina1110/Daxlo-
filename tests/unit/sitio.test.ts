@@ -22,6 +22,7 @@ import { PUBLIC } from "../apoyo/proyecto";
 vi.mock("next/font/google", () => ({
   Geist: () => ({ variable: "fuente-marca", className: "" }),
   Geist_Mono: () => ({ variable: "fuente-mono", className: "" }),
+  Ysabeau_Office: () => ({ variable: "fuente-titular", className: "" }),
 }));
 
 const { metadata: metadatosLayout } = await import("@/app/layout");

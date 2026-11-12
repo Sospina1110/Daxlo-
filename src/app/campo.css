@@ -1,0 +1,1656 @@
+/* ------------------------------------------------------------------
+   Sistema «Campo» (2026-11-12): el inicio, la barra y el pie.
+   El armazón y el movimiento siguen el sitio de referencia que eligió
+   Santiago; los colores son los que eligió él.
+   - Negro medianoche y azul eléctrico. El eléctrico es luz, línea,
+     resplandor y acento; nunca un plano grande de color solo.
+   - Papel frío para las secciones claras, blanco y grises derivados.
+   - El panel profundo: un degradado de medianoche a un azul hondo derivado
+     del eléctrico.
+   - Nada de tonos cálidos, naranja ni morado.
+   La página alterna oscuro con fotografía, claro y azul profundo.
+   ------------------------------------------------------------------ */
+
+@theme {
+  --color-noche: #02070a;
+  --color-electrico: #0297de;
+  --color-papel: #f4f7f8;
+  /* Azul hondo: el eléctrico bajado de luz, para fondos. */
+  --color-hondo: #043a59;
+  /* Tinta sobre claro y su gris. */
+  --color-tinta: #02070a;
+  --color-tinta-2: #4f5e66;
+  /* Fondos oscuros, del más bajo al más alto. */
+  --color-fondo: #02070a;
+  --color-capa-1: #08131a;
+  --color-capa-2: #0d1b23;
+  --color-capa-3: #16262f;
+  --color-capa-4: #22353f;
+  /* Texto sobre oscuro. */
+  --color-texto: #ffffff;
+  --color-texto-2: #9aa9b1;
+  /* Línea y acento: el eléctrico. Cambiarlo es cambiar estas líneas. */
+  --color-trazo: #0297de;
+  --color-acento: #0297de;
+
+  --font-mono: var(--fuente-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
+  /* La letra de los titulares del inicio (la carga src/app/layout.tsx). */
+  --font-titular: var(--fuente-titular), var(--fuente-marca), ui-sans-serif, system-ui, sans-serif;
+
+  /* Curva base del movimiento y la de las entradas largas. */
+  --ease-base: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-larga: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer components {
+  /* ---------------------------------------------------------------- Letra
+     Titulares en peso fino, grandes y serenos. Cuerpo en Geist. Rótulos en
+     Geist Mono, en mayúsculas pequeñas y entre corchetes. */
+  .cm-titular {
+    font-family: var(--font-titular);
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .cm-titular-xl { font-size: 2.5rem; line-height: 1.04; }
+  .cm-titular-l { font-size: 2.125rem; line-height: 1.08; }
+  .cm-titular-m { font-size: 1.875rem; line-height: 1.12; }
+  .cm-titular-s { font-size: 1.375rem; line-height: 1.22; letter-spacing: -0.012em; }
+  @media (min-width: 768px) {
+    .cm-titular-xl { font-size: 3.75rem; line-height: 1; }
+    .cm-titular-l { font-size: 3.25rem; line-height: 1.04; }
+    .cm-titular-m { font-size: 2.75rem; line-height: 1.08; }
+    .cm-titular-s { font-size: 1.5rem; }
+  }
+
+  .cm-texto-l { font-size: 1.125rem; line-height: 1.5; font-weight: 400; text-wrap: pretty; }
+  .cm-texto-m { font-size: 1rem; line-height: 1.5; font-weight: 400; text-wrap: pretty; }
+  .cm-texto-s { font-size: 0.875rem; line-height: 1.45; font-weight: 400; text-wrap: pretty; }
+
+  .cm-mono {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-feature-settings: "tnum";
+  }
+  /* El rótulo entre corchetes. Los corchetes los pone el CSS: el texto del
+     HTML queda limpio para lectores de pantalla y buscadores. */
+  .cm-corchete::before { content: "["; margin-right: 0.15em; }
+  .cm-corchete::after { content: "]"; margin-left: 0.15em; }
+
+  /* ---------------------------------------------------------------- Botón
+     Pequeño, de esquinas casi rectas. Claro sobre oscuro y oscuro sobre
+     claro; al pasar el puntero se enciende en eléctrico. La caja visible
+     mide 40 px y el área que recibe el toque, 44. */
+  .boton {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 3px;
+    font-size: 0.9375rem;
+    line-height: 1;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+    background: var(--boton-fondo, #ffffff);
+    color: var(--boton-texto, var(--color-noche));
+    transition:
+      background-color 300ms var(--ease-base),
+      color 300ms var(--ease-base),
+      transform 300ms var(--ease-base);
+  }
+  .boton::after {
+    content: "";
+    position: absolute;
+    inset: -2px 0;
+  }
+  .boton-oscuro {
+    --boton-fondo: var(--color-noche);
+    --boton-texto: #ffffff;
+  }
+  .boton:active:not(:focus-visible) { transform: scale(0.98); }
+  .boton:focus-visible {
+    outline: 2px solid var(--color-electrico);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+  .boton-flecha { transition: transform 500ms var(--ease-base); }
+  @media (hover: hover) and (pointer: fine) {
+    .boton:hover {
+      background: var(--color-electrico);
+      color: var(--color-noche);
+    }
+    .boton:hover .boton-flecha { transform: translateX(3px); }
+  }
+
+  /* Enlace de texto con una línea eléctrica debajo. */
+  .cm-enlace {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    text-decoration: underline;
+    text-decoration-color: var(--color-electrico);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 6px;
+    transition: text-decoration-color 300ms var(--ease-base);
+  }
+  .cm-enlace:focus-visible {
+    outline: 2px solid var(--color-electrico);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .cm-enlace:hover { text-decoration-color: currentColor; }
+  }
+
+  /* ---------------------------------------------------------------- Barra
+     Mínima, centrada y enmarcada entre dos corchetes finos. Cambia de tema
+     según la sección que tiene detrás (header[data-tema], lo pone nav.tsx):
+     - oscuro: letra blanca sobre un velo apenas visible.
+     - claro: papel translúcido, letra y botón en tinta.
+     Solo cambian color de fondo, color y sombra. */
+  .barra-marco {
+    --barra-texto: #ffffff;
+    --barra-texto-2: rgb(255 255 255 / 0.78);
+    --barra-fondo: rgb(2 7 10 / 0.16);
+    --barra-sombra: 0 0 0 0 rgb(2 7 10 / 0);
+    --boton-fondo: #ffffff;
+    --boton-texto: var(--color-noche);
+    color: var(--barra-texto);
+  }
+  .barra-marco[data-tema="claro"] {
+    --barra-texto: var(--color-tinta);
+    --barra-texto-2: rgb(2 7 10 / 0.74);
+    --barra-fondo: rgb(244 247 248 / 0.88);
+    --barra-sombra: 0 14px 32px -20px rgb(2 7 10 / 0.45);
+    --boton-fondo: var(--color-noche);
+    --boton-texto: #ffffff;
+  }
+  /* Con el menú abierto, siempre el tema oscuro. */
+  .barra-marco[data-abierta] {
+    --barra-texto: #ffffff;
+    --barra-fondo: rgb(2 7 10 / 0);
+    --barra-sombra: 0 0 0 0 rgb(2 7 10 / 0);
+    --boton-fondo: #ffffff;
+    --boton-texto: var(--color-noche);
+  }
+  .barra {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 48px;
+    padding: 0 6px 0 20px;
+    background: var(--barra-fondo);
+    box-shadow: var(--barra-sombra);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    transition:
+      background-color 500ms var(--ease-base),
+      box-shadow 500ms var(--ease-base),
+      color 500ms var(--ease-base);
+  }
+  /* Los corchetes: una línea vertical con dos remates hacia adentro. */
+  .barra::before,
+  .barra::after {
+    content: "";
+    position: absolute;
+    top: -1px;
+    bottom: -1px;
+    width: 9px;
+    border: 1px solid currentColor;
+    opacity: 0.8;
+    pointer-events: none;
+    transition: border-color 500ms var(--ease-base);
+  }
+  .barra::before { left: -1px; border-right: 0; }
+  .barra::after { right: -1px; border-left: 0; }
+  .barra-logo img {
+    transition: filter 500ms var(--ease-base);
+  }
+  /* El logo es blanco con la pieza azul: sobre claro se invierte (el blanco
+     pasa a tinta) y se gira el tono para que el azul siga siendo azul. */
+  .barra-marco[data-tema="claro"]:not([data-abierta]) .barra-logo img { filter: invert(1) hue-rotate(180deg) saturate(1.4); }
+  .barra-enlace {
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+    padding: 0 14px;
+    font-size: 0.9375rem;
+    line-height: 1;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    color: var(--barra-texto-2);
+    transition: color 300ms var(--ease-base);
+  }
+  .barra-enlace[aria-current="page"] {
+    color: var(--barra-texto);
+    text-decoration: underline;
+    text-decoration-color: var(--color-electrico);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 8px;
+  }
+  .barra-enlace:focus-visible,
+  .barra-logo:focus-visible,
+  .barra-menu:focus-visible {
+    outline: 2px solid var(--color-electrico);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .barra-enlace:hover { color: var(--barra-texto); }
+  }
+  /* El botón del menú: dos líneas que se cruzan en una equis. */
+  .barra-menu {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    color: currentColor;
+    transition: transform 300ms var(--ease-base);
+  }
+  .barra-menu:active:not(:focus-visible) { transform: scale(0.96); }
+  .barra-menu span {
+    position: absolute;
+    width: 18px;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform 500ms var(--ease-base);
+  }
+  .barra-menu span:first-child { transform: translateY(-3.5px); }
+  .barra-menu span:last-child { transform: translateY(3.5px); }
+  .barra-menu[aria-expanded="true"] span:first-child { transform: rotate(45deg); }
+  .barra-menu[aria-expanded="true"] span:last-child { transform: rotate(-45deg); }
+  .barra-menu[data-teclado] span { transition: none; }
+
+  /* El panel del menú en celular: alto completo, medianoche casi opaca sobre
+     un desenfoque fuerte. */
+  .menu-panel {
+    background: rgb(2 7 10 / 0.94);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+  }
+  .menu-enlace {
+    display: flex;
+    min-height: 60px;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 8px;
+    color: #ffffff;
+    border-bottom: 1px dotted rgb(255 255 255 / 0.22);
+  }
+  .menu-enlace:active { color: var(--color-texto-2); }
+
+  /* ---------------------------------------------------------------- Pie
+     Medianoche. Columnas de enlaces con el título en mono, una franja
+     enmarcada con los derechos y el contacto, y el eslogan gigante como
+     última línea del sitio. */
+  .cm-pie {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    background: var(--color-noche);
+    color: #ffffff;
+    padding: 72px var(--margen) 40px;
+  }
+  @media (min-width: 768px) {
+    .cm-pie { padding-top: 112px; }
+  }
+  .cm-pie-columnas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 48px 24px;
+    max-width: 1344px;
+    margin-inline: auto;
+  }
+  @media (min-width: 900px) {
+    .cm-pie-columnas {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      padding-inline: 32px;
+    }
+  }
+  .cm-pie-titulo { color: var(--color-texto-2); }
+  .cm-pie-enlace {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    font-size: 0.9375rem;
+    line-height: 1.3;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    color: #ffffff;
+    transition: color 300ms var(--ease-base);
+  }
+  .cm-pie-enlace:focus-visible {
+    outline: 2px solid var(--color-electrico);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .cm-pie-enlace:hover { color: var(--color-electrico); }
+  }
+  /* La franja de abajo, entre corchetes punteados. */
+  .cm-pie-franja {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 32px;
+    max-width: 1344px;
+    margin: 72px auto 0;
+    padding: 12px 20px;
+    border-block: 1px dotted rgb(255 255 255 / 0.28);
+    color: var(--color-texto-2);
+  }
+  @media (min-width: 900px) {
+    .cm-pie-franja { padding-inline: 32px; margin-top: 112px; }
+  }
+  .cm-pie-franja::before,
+  .cm-pie-franja::after {
+    content: "";
+    position: absolute;
+    top: -1px;
+    bottom: -1px;
+    width: 7px;
+    border: 1px solid rgb(255 255 255 / 0.5);
+  }
+  .cm-pie-franja::before { left: 0; border-right: 0; }
+  .cm-pie-franja::after { right: 0; border-left: 0; }
+  .cm-pie-lema {
+    max-width: 1344px;
+    margin: 56px auto 0;
+    font-size: clamp(1.5rem, 7.7vw, 8.25rem);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    color: #ffffff;
+  }
+  @media (min-width: 768px) {
+    .cm-pie-lema { margin-top: 88px; }
+  }
+  .cm-pie-lema span { display: block; }
+  .cm-pie-lema span + span { color: var(--color-electrico); }
+  .cm-pie-aviso {
+    max-width: 1344px;
+    margin: 40px auto 0;
+    color: rgb(255 255 255 / 0.6);
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+  .cm-pie-politica {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: rgb(255 255 255 / 0.78);
+    text-decoration: underline;
+    text-decoration-color: rgb(255 255 255 / 0.4);
+    text-underline-offset: 4px;
+  }
+}
+
+/* ------------------------------------------------------------------
+   El inicio. Todo va bajo .campo (la raíz de la página).
+   ------------------------------------------------------------------ */
+
+.campo {
+  background: var(--color-noche);
+  color: #ffffff;
+}
+
+/* Apariciones de sección: suben 24 px y funden, una sola vez. El script del
+   layout marca [data-visible] con IntersectionObserver; sin JavaScript no se
+   oculta nada. */
+.campo [data-revelar] {
+  --y: 24px;
+  transition:
+    opacity 900ms var(--ease-base) var(--retraso, 0s),
+    transform 1100ms var(--ease-larga) var(--retraso, 0s);
+}
+/* Un bloque que solo avisa a lo que lleva adentro (los trazos que se
+   dibujan): él mismo no se oculta. */
+.js .campo [data-revelar="marca"]:not([data-visible]) {
+  opacity: 1;
+  transform: none;
+}
+
+/* Una toma a sangre (el póster y, encima, su video): llena su caja. El
+   encuadre lo dan tres variables de la caja: --px y --py, el punto de la toma
+   que se conserva al recortar (object-position), y --zoom, cuánto se acerca
+   alrededor de ese punto. La trama lee las mismas (leerEncuadre). */
+.cm-foto {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--px, 50%) var(--py, 50%);
+  transform: scale(var(--zoom, 1));
+  transform-origin: var(--px, 50%) var(--py, 50%);
+}
+/* El video aparece fundiendo cuando ya tiene cuadros (fondo-video.tsx). */
+.cm-video {
+  opacity: 0;
+  transition: opacity 900ms var(--ease-base);
+}
+.cm-video[data-listo] { opacity: 1; }
+/* El lienzo de la trama de puntos, encima de la foto. La familia es la de
+   los signos que dibuja. */
+.cm-trama {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  font-family: var(--font-mono);
+}
+/* Grano fino sobre fotos y resplandores: una baldosa de ruido. */
+.cm-grano {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: url("/img/campo/grano.webp") 0 0 / 200px 200px;
+  mix-blend-mode: overlay;
+  opacity: 0.3;
+}
+
+/* Trazos que se dibujan (iconos y diagramas): el dibujo va de 1 a 0 en
+   stroke-dashoffset, con pathLength="1" en cada trazo. Sin JavaScript están
+   dibujados. --i escalona; --largo deja un trazo abierto. */
+.cm-traza {
+  stroke-dasharray: var(--largo, 1) 1;
+  stroke-dashoffset: 0;
+}
+.js [data-revelar]:not([data-visible]) .cm-traza { stroke-dashoffset: var(--largo, 1); }
+[data-revelar] .cm-traza { transition: stroke-dashoffset 1600ms var(--ease-larga) calc(var(--i, 0) * 140ms + 250ms); }
+/* Lo punteado no se puede dibujar así: funde. */
+.js [data-revelar]:not([data-visible]) .cm-funde { opacity: 0; }
+[data-revelar] .cm-funde { transition: opacity 900ms var(--ease-base) calc(var(--i, 0) * 140ms + 250ms); }
+
+/* ---------------------------------------------------------------- Hero
+   A pantalla completa sobre la fotografía, con la trama viva encima. El
+   texto va abajo a la izquierda: un rótulo, el titular en dos frases, la
+   bajada y un botón pequeño. */
+.cm-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  display: flex;
+  align-items: flex-end;
+  min-height: 100vh;
+  min-height: 100svh;
+  background: var(--color-noche);
+  color: #ffffff;
+}
+@media (min-width: 768px) {
+  .cm-hero { min-height: max(100svh, 640px); }
+}
+.cm-hero-fondo {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+/* La toma apaisada deja la mitad izquierda en negro, para el texto: al
+   recortar se conserva el lado derecho. */
+.cm-hero-fondo { --px: 100%; }
+.cm-hero-medios {
+  position: absolute;
+  inset: 0;
+  animation: cm-foto-entra 2400ms var(--ease-larga) both;
+}
+@keyframes cm-foto-entra {
+  from { opacity: 0; transform: scale(1.06); }
+  to { opacity: 1; transform: none; }
+}
+/* Dos velos: uno desde abajo y desde la izquierda, para el texto, y uno
+   corto arriba, para la barra. */
+.cm-hero-velo {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgb(2 7 10 / 0.6) 0%, rgb(2 7 10 / 0) 20%, rgb(2 7 10 / 0) 62%, rgb(2 7 10 / 0.72) 100%),
+    linear-gradient(90deg, rgb(2 7 10 / 0.86) 0%, rgb(2 7 10 / 0.62) 34%, rgb(2 7 10 / 0) 60%);
+}
+.cm-hero-contenido {
+  width: 100%;
+  padding: 120px var(--margen) 48px;
+}
+@media (min-width: 1024px) {
+  .cm-hero-contenido { padding: 160px clamp(48px, 7vw, 100px) 96px; }
+}
+.cm-hero-rotulo { color: rgb(255 255 255 / 0.78); }
+.cm-hero h1 {
+  margin-top: 20px;
+  max-width: 11.6em;
+}
+/* Cada frase del titular sube desde abajo de su propia máscara. */
+.cm-linea {
+  display: block;
+  overflow: clip;
+  /* Aire para los trazos que bajan de la línea ("g", "j", "p"). */
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+.cm-linea > span {
+  display: block;
+  animation: cm-linea-sube 1200ms var(--ease-larga) calc(var(--i, 0) * 110ms + 250ms) both;
+}
+@keyframes cm-linea-sube {
+  from { transform: translate3d(0, 108%, 0); }
+  to { transform: none; }
+}
+.cm-hero-sub {
+  margin-top: 24px;
+  max-width: 34rem;
+  color: rgb(255 255 255 / 0.9);
+}
+/* En pantallas más altas que anchas va la toma vertical: arriba es negra y
+   la sala queda en la mitad de abajo. El texto va arriba. */
+@media (max-aspect-ratio: 1/1) {
+  .cm-hero { align-items: flex-start; }
+  .cm-hero-fondo { --px: 50%; --py: 100%; }
+  .cm-hero-contenido { padding-top: 104px; }
+  .cm-hero-velo { background: linear-gradient(180deg, rgb(2 7 10 / 0.7) 0%, rgb(2 7 10 / 0.3) 44%, rgb(2 7 10 / 0) 60%, rgb(2 7 10 / 0) 82%, rgb(2 7 10 / 0.7) 100%); }
+  .cm-hero h1 { margin-top: 16px; }
+  .cm-hero-sub { margin-top: 16px; font-size: 1rem; }
+  .cm-hero-accion { margin-top: 20px; }
+}
+.cm-hero-accion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin-top: 28px;
+}
+.cm-hero-meta { color: rgb(255 255 255 / 0.72); }
+.cm-hero-entra { animation: cm-entra 1100ms var(--ease-larga) var(--retraso, 0s) both; }
+@keyframes cm-entra {
+  from { opacity: 0; transform: translate3d(0, 16px, 0); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes cm-funde {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Los rótulos en mono sobre la toma: una marca, una guía punteada y el
+   texto. Van anclados a la toma: --fx y --fy son el punto, en fracciones de
+   su ancho y de su alto (la toma mide 16:9 y se recorta conservando el lado
+   derecho), y --dx y --dy, hacia dónde sale la guía. Solo en escritorio. */
+.cm-notas { display: none; }
+@media (min-width: 1280px) and (min-aspect-ratio: 3/2) {
+  .cm-notas {
+    display: block;
+    position: absolute;
+    inset: 0;
+    color: rgb(214 238 252 / 0.92);
+    animation: cm-funde 1600ms var(--ease-base) 1700ms both;
+  }
+}
+.cm-nota {
+  position: absolute;
+  left: calc(100vw - (1 - var(--fx)) * max(100vw, 177.78svh));
+  top: calc(50svh + (var(--fy) - 0.5) * max(100svh, 56.25vw));
+  width: 0;
+  height: 0;
+  white-space: nowrap;
+}
+.cm-nota svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+}
+.cm-nota-texto {
+  position: absolute;
+  left: var(--dx);
+  top: calc(var(--dy) * -1);
+  font-size: 0.6875rem;
+  transform: translate(8px, -50%);
+}
+.cm-nota[data-fin] .cm-nota-texto { transform: translate(calc(-100% - 8px), -50%); }
+.cm-nota-texto b { font-weight: 500; opacity: 0.62; margin-right: 0.7em; }
+.cm-notas-etiqueta {
+  position: absolute;
+  right: var(--margen);
+  bottom: 28px;
+  font-size: 0.6875rem;
+  opacity: 0.6;
+}
+
+/* ---------------------------------------------------------------- Áreas
+   El carrusel de tarjetas en perspectiva: un riel con scroll nativo y
+   scroll-snap (arrastre e inercia en pantallas táctiles), y cada tarjeta
+   gira y se aleja según dónde va en el riel. Donde hay animation-timeline el
+   giro lo hace el navegador, atado al scroll del riel; donde no, areas.tsx
+   escribe --d (la distancia al centro, en tarjetas). */
+.cm-areas {
+  position: relative;
+  overflow: clip;
+  padding-block: 96px 88px;
+  background: var(--color-noche);
+}
+@media (min-width: 768px) {
+  .cm-areas { padding-block: 152px 136px; }
+}
+.cm-areas-cabeza {
+  padding-inline: var(--margen);
+  text-align: center;
+}
+.cm-areas-etiqueta {
+  margin-top: 16px;
+  color: var(--color-texto-2);
+}
+.cm-carrusel {
+  --ancho-tarjeta: min(76vw, 300px);
+  --alto-tarjeta: 228px;
+  margin-top: 40px;
+  perspective: 1600px;
+}
+@media (min-width: 768px) {
+  .cm-carrusel {
+    --ancho-tarjeta: 400px;
+    --alto-tarjeta: 270px;
+    margin-top: 56px;
+  }
+}
+.cm-riel {
+  position: relative;
+  display: flex;
+  gap: 20px;
+  margin: 0;
+  padding: 36px calc(50% - var(--ancho-tarjeta) / 2);
+  list-style: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  perspective: 1300px;
+  cursor: grab;
+  -webkit-user-select: none;
+  user-select: none;
+}
+@media (min-width: 768px) {
+  .cm-riel { gap: 28px; }
+}
+.cm-riel::-webkit-scrollbar { display: none; }
+.cm-riel:focus-visible {
+  outline: 2px solid var(--color-electrico);
+  outline-offset: -2px;
+  border-radius: 6px;
+}
+/* Mientras se arrastra con el mouse el riel sigue al puntero sin imán. */
+.cm-riel[data-arrastra] {
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+  cursor: grabbing;
+}
+/* El sitio de cada tarjeta en el riel: es lo que el scroll-snap centra. No
+   se transforma (el imán del scroll cuenta las transformaciones); la que gira
+   es la tarjeta de adentro, en el mismo espacio 3D del riel. */
+.cm-tarjeta-sitio {
+  position: relative;
+  flex: none;
+  width: var(--ancho-tarjeta);
+  height: var(--alto-tarjeta);
+  scroll-snap-align: center;
+  transform-style: preserve-3d;
+}
+.cm-tarjeta {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 20px;
+  overflow: hidden;
+  border-radius: 6px;
+  color: #ffffff;
+  background: var(--color-capa-1);
+  transform: translate3d(calc(var(--d, 0) * -16%), calc(var(--a, 0) * 10px), calc(var(--a, 0) * -150px)) rotateY(calc(var(--d, 0) * 31deg)) rotateZ(calc(var(--d, 0) * 1.6deg));
+  opacity: calc(1 - var(--a, 0) * 0.28);
+}
+@media (min-width: 768px) {
+  .cm-tarjeta { padding: 24px; }
+}
+@supports (animation-timeline: view()) {
+  .cm-tarjeta {
+    transform: none;
+    opacity: 1;
+    animation: cm-tarjeta-gira linear both;
+    animation-timeline: view(inline);
+    animation-range: cover 0% cover 100%;
+  }
+  /* A la derecha (entra): el borde de afuera se aleja. A la izquierda, igual
+     del otro lado. En el centro, de frente. */
+  @keyframes cm-tarjeta-gira {
+    0% { transform: translate3d(-56%, 30px, -460px) rotateY(72deg) rotateZ(4.4deg); opacity: 0.4; }
+    8% { transform: translate3d(-40%, 22px, -380px) rotateY(64deg) rotateZ(3.6deg); opacity: 0.6; }
+    28% { transform: translate3d(-15%, 9px, -130px) rotateY(31deg) rotateZ(1.6deg); opacity: 0.96; }
+    50% { transform: none; opacity: 1; }
+    72% { transform: translate3d(15%, 9px, -130px) rotateY(-31deg) rotateZ(-1.6deg); opacity: 0.96; }
+    92% { transform: translate3d(40%, 22px, -380px) rotateY(-64deg) rotateZ(-3.6deg); opacity: 0.6; }
+    100% { transform: translate3d(56%, 30px, -460px) rotateY(-72deg) rotateZ(-4.4deg); opacity: 0.4; }
+  }
+  /* El carrusel sube en perspectiva mientras la sección entra. */
+  .cm-carrusel-sube {
+    transform-origin: 50% 100%;
+    animation: cm-carrusel-sube linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 42%;
+  }
+  @keyframes cm-carrusel-sube {
+    from { transform: translate3d(0, 120px, -420px) rotateX(34deg); }
+    to { transform: none; }
+  }
+}
+.cm-tarjeta-foto {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+.cm-tarjeta-foto::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(2 7 10 / 0.5) 0%, rgb(2 7 10 / 0.1) 40%, rgb(2 7 10 / 0.82) 100%);
+}
+.cm-tarjeta[data-tono="hondo"] { background: linear-gradient(150deg, #032233 0%, #06547f 100%); }
+.cm-tarjeta[data-tono="electrico"] {
+  background: linear-gradient(150deg, #0297de 0%, #3fb6ee 58%, #a9e0fa 100%);
+  color: var(--color-noche);
+}
+.cm-tarjeta[data-tono="papel"] {
+  background:
+    radial-gradient(circle at 1px 1px, rgb(2 7 10 / 0.16) 1px, transparent 1.5px) 0 0 / 12px 12px,
+    var(--color-papel);
+  color: var(--color-noche);
+}
+.cm-tarjeta[data-tono="noche"] {
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgb(2 151 222 / 0.42), transparent 60%),
+    var(--color-capa-1);
+  box-shadow: inset 0 0 0 1px rgb(2 151 222 / 0.4);
+}
+.cm-tarjeta-cabeza {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.cm-tarjeta-monta { opacity: 0.72; }
+.cm-tarjeta-linea {
+  max-width: 19ch;
+  font-family: var(--font-titular);
+  font-weight: 400;
+  font-size: 1.25rem;
+  line-height: 1.16;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+@media (min-width: 768px) {
+  .cm-tarjeta-linea { font-size: 1.5rem; max-width: 20ch; }
+}
+/* Las esquinas que enmarcan la tarjeta del centro. */
+.cm-esquinas {
+  position: absolute;
+  inset: 8px;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    linear-gradient(currentColor, currentColor) 0 0 / 10px 1px,
+    linear-gradient(currentColor, currentColor) 0 0 / 1px 10px,
+    linear-gradient(currentColor, currentColor) 100% 0 / 10px 1px,
+    linear-gradient(currentColor, currentColor) 100% 0 / 1px 10px,
+    linear-gradient(currentColor, currentColor) 0 100% / 10px 1px,
+    linear-gradient(currentColor, currentColor) 0 100% / 1px 10px,
+    linear-gradient(currentColor, currentColor) 100% 100% / 10px 1px,
+    linear-gradient(currentColor, currentColor) 100% 100% / 1px 10px;
+  background-repeat: no-repeat;
+  transition: opacity 500ms var(--ease-base), inset 700ms var(--ease-larga);
+}
+.cm-tarjeta[data-activa] .cm-esquinas {
+  opacity: 0.85;
+  inset: 5px;
+}
+.cm-carrusel-controles {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding-inline: var(--margen);
+}
+.cm-carrusel-flecha {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  color: #ffffff;
+  transition: color 300ms var(--ease-base), transform 300ms var(--ease-base), opacity 300ms var(--ease-base);
+}
+.cm-carrusel-flecha:disabled { opacity: 0.32; }
+.cm-carrusel-flecha:active:not(:focus-visible, :disabled) { transform: scale(0.94); }
+.cm-carrusel-flecha:focus-visible,
+.cm-carrusel-punto:focus-visible {
+  outline: 2px solid var(--color-electrico);
+  outline-offset: -4px;
+  border-radius: 6px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .cm-carrusel-flecha:hover:not(:disabled) { color: var(--color-electrico); }
+}
+.cm-carrusel-puntos {
+  display: flex;
+  align-items: center;
+}
+.cm-carrusel-punto {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 44px;
+}
+.cm-carrusel-punto::before {
+  content: "";
+  width: 6px;
+  height: 3px;
+  background: rgb(255 255 255 / 0.36);
+  transition: width 500ms var(--ease-larga), background-color 300ms var(--ease-base);
+}
+.cm-carrusel-punto[aria-current="true"]::before {
+  width: 20px;
+  background: #ffffff;
+}
+
+/* ---------------------------------------------------------------- Tiempos
+   La escena en tres tiempos.
+   Sin JavaScript o con «reducir movimiento» son cuatro bloques, uno debajo
+   del otro: cada foto con su afirmación y, al final, el cierre sobre papel
+   con la X quieta. Con JavaScript la escena se fija (position: sticky): las
+   tres fotos y el cierre se relevan en el mismo lugar mientras se baja, y
+   tiempos.tsx escribe en la sección el tiempo que toca (data-tiempo) y los
+   avances (--f2, --f3, --velo, --papel, --b1…). */
+.cm-tiempos {
+  position: relative;
+  background: var(--color-noche);
+  color: #ffffff;
+}
+.cm-tiempos-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cm-tiempo {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  display: grid;
+  place-items: center;
+  min-height: 84vh;
+  min-height: 84svh;
+  padding: 96px var(--margen);
+}
+.cm-tiempo-foto {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+/* El encuadre de cada toma: el sujeto queda cerca del centro, detrás de la
+   afirmación. En pantallas altas se ve una franja de la toma: la del sujeto. */
+.cm-tiempo-foto[data-escena="problema"] { --px: 78%; --py: 42%; --zoom: 1.3; }
+.cm-tiempo-foto[data-escena="giro"] { --px: 100%; --zoom: 1.14; }
+.cm-tiempo-foto[data-escena="operacion"] { --px: 30%; --zoom: 1.12; }
+@media (max-aspect-ratio: 1/1) {
+  .cm-tiempo-foto[data-escena="problema"] { --px: 61%; --py: 50%; --zoom: 1; }
+  .cm-tiempo-foto[data-escena="giro"] { --px: 85%; --zoom: 1; }
+  .cm-tiempo-foto[data-escena="operacion"] { --px: 20%; --zoom: 1; }
+}
+.cm-tiempo-foto::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(90% 70% at 50% 50%, rgb(2 7 10 / 0.5), rgb(2 7 10 / 0.2) 60%, rgb(2 7 10 / 0.55));
+}
+.cm-tiempo-texto {
+  position: relative;
+  max-width: 62rem;
+  text-align: center;
+}
+.cm-tiempo-texto .cm-corchete {
+  display: block;
+  margin-bottom: 24px;
+  font-family: var(--font-mono);
+  color: rgb(255 255 255 / 0.74);
+}
+.cm-frase-linea { display: block; }
+.cm-tiempo-cierre {
+  background: var(--color-papel);
+  color: var(--color-tinta);
+}
+/* Un halo de papel alrededor de la frase: las partículas de la X no le
+   pasan por encima. */
+.cm-tiempo-cierre .cm-titular { text-shadow: 0 0 5px var(--color-papel), 0 0 14px var(--color-papel), 0 0 28px var(--color-papel); }
+.cm-x-quieta {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(78vw, 520px);
+  height: auto;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  color: var(--color-tinta);
+  opacity: 0.09;
+}
+.cm-tiempos-velo,
+.cm-tiempos-papel,
+.cm-tiempos-lienzo,
+.cm-tiempos-grano,
+.cm-tiempos-barras { display: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .js:not(.forzar-visible) .cm-tiempos {
+    height: 540vh;
+    height: 540svh;
+    transition: background-color 600ms var(--ease-base);
+  }
+  .js:not(.forzar-visible) .cm-tiempos[data-tiempo="4"] { background: var(--color-papel); }
+  .js:not(.forzar-visible) .cm-tiempos-pegada {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    overflow: clip;
+  }
+  .js:not(.forzar-visible) .cm-tiempo {
+    position: absolute;
+    inset: 0;
+    isolation: auto;
+    overflow: visible;
+    min-height: 0;
+    padding-block: 0;
+    background: none;
+  }
+  /* Las fotos, apiladas: la 2 funde sobre la 1 y la 3 sobre la 2. Cada una se
+     acerca despacio mientras dura su tiempo. */
+  .js:not(.forzar-visible) .cm-tiempo-foto {
+    z-index: 0;
+    transform: scale(calc(1.09 - var(--z, 0) * 0.09));
+    will-change: opacity, transform;
+  }
+  .js:not(.forzar-visible) .cm-tiempo[data-n="1"] .cm-tiempo-foto { --z: var(--z1, 0); }
+  .js:not(.forzar-visible) .cm-tiempo[data-n="2"] .cm-tiempo-foto { --z: var(--z2, 0); opacity: var(--f2, 0); }
+  .js:not(.forzar-visible) .cm-tiempo[data-n="3"] .cm-tiempo-foto { --z: var(--z3, 0); opacity: var(--f3, 0); }
+  .js:not(.forzar-visible) .cm-tiempos-velo {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: var(--color-noche);
+    opacity: var(--velo, 0);
+  }
+  .js:not(.forzar-visible) .cm-tiempos-papel {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: var(--color-papel);
+    opacity: var(--papel, 0);
+  }
+  .js:not(.forzar-visible) .cm-tiempos-lienzo {
+    display: block;
+    z-index: 1;
+  }
+  .js:not(.forzar-visible) .cm-tiempos-grano {
+    display: block;
+    z-index: 1;
+    opacity: calc(0.3 * (1 - var(--papel, 0)));
+  }
+  .js:not(.forzar-visible) .cm-x-quieta { display: none; }
+  /* Las afirmaciones: solo se ve la del tiempo que toca. Entra con un
+     barrido de izquierda a derecha y sale fundiendo. La que no toca queda
+     con visibility: hidden, no solo transparente. */
+  .js:not(.forzar-visible) .cm-tiempo-texto {
+    z-index: 2;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 350ms var(--ease-base), visibility 0s linear 350ms;
+  }
+  .js:not(.forzar-visible) .cm-tiempo-texto .cm-barrido {
+    display: block;
+    clip-path: inset(-10% 100% -10% 0);
+  }
+  .js:not(.forzar-visible) .cm-tiempos[data-tiempo="1"] .cm-tiempo[data-n="1"] .cm-tiempo-texto,
+  .js:not(.forzar-visible) .cm-tiempos[data-tiempo="2"] .cm-tiempo[data-n="2"] .cm-tiempo-texto,
+  .js:not(.forzar-visible) .cm-tiempos[data-tiempo="3"] .cm-tiempo[data-n="3"] .cm-tiempo-texto,
+  .js:not(.forzar-visible) .cm-tiempos[data-tiempo="4"] .cm-tiempo[data-n="4"] .cm-tiempo-texto {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 700ms var(--ease-base) 200ms, visibility 0s;
+  }
+  .js:not(.forzar-visible) .cm-tiempos[data-tiempo="1"] .cm-tiempo[data-n="1"] .cm-barrido,
+  .js:not(.forzar-visible) .cm-tiempos[data-tiempo="2"] .cm-tiempo[data-n="2"] .cm-barrido,
+  .js:not(.forzar-visible) .cm-tiempos[data-tiempo="3"] .cm-tiempo[data-n="3"] .cm-barrido,
+  .js:not(.forzar-visible) .cm-tiempos[data-tiempo="4"] .cm-tiempo[data-n="4"] .cm-barrido {
+    clip-path: inset(-10% -2% -10% 0);
+    transition: clip-path 1300ms var(--ease-larga) 200ms;
+  }
+  /* Las barras de avance: [01] [02] [03]. */
+  .js:not(.forzar-visible) .cm-tiempos-barras {
+    position: absolute;
+    left: 50%;
+    bottom: 32px;
+    z-index: 3;
+    display: flex;
+    gap: 8px;
+    width: min(480px, calc(100% - 2 * var(--margen)));
+    transform: translateX(-50%);
+    color: #ffffff;
+    transition: color 600ms var(--ease-base);
+  }
+  .js:not(.forzar-visible) .cm-tiempos[data-tiempo="4"] .cm-tiempos-barras { color: var(--color-tinta); }
+}
+.cm-barra-tiempo {
+  flex: 1;
+  display: block;
+}
+.cm-barra-tiempo .cm-mono {
+  display: block;
+  opacity: 0.5;
+  transition: opacity 400ms var(--ease-base);
+}
+.cm-barra-via {
+  position: relative;
+  display: block;
+  height: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+  background: color-mix(in srgb, currentColor 26%, transparent);
+}
+.cm-barra-llena {
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  transform-origin: left;
+  transform: scaleX(var(--b, 0));
+}
+.cm-barra-tiempo[data-n="1"] .cm-barra-llena { --b: var(--b1, 0); }
+.cm-barra-tiempo[data-n="2"] .cm-barra-llena { --b: var(--b2, 0); }
+.cm-barra-tiempo[data-n="3"] .cm-barra-llena { --b: var(--b3, 0); }
+.cm-tiempos[data-tiempo="1"] .cm-barra-tiempo[data-n="1"] .cm-mono,
+.cm-tiempos[data-tiempo="2"] .cm-barra-tiempo[data-n="2"] .cm-mono,
+.cm-tiempos[data-tiempo="3"] .cm-barra-tiempo[data-n="3"] .cm-mono,
+.cm-tiempos[data-tiempo="4"] .cm-barra-tiempo .cm-mono { opacity: 1; }
+
+/* ---------------------------------------------------------------- Frase
+   Una sola frase sobre una toma a sangre. La toma es más alta que la sección
+   y se corre despacio mientras pasa (paralaje). */
+.cm-frase {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  display: grid;
+  place-items: center;
+  min-height: 92vh;
+  min-height: 92svh;
+  padding: 120px var(--margen);
+  background: var(--color-noche);
+  color: #ffffff;
+  text-align: center;
+}
+.cm-frase-fondo {
+  position: absolute;
+  inset: -9% 0;
+  z-index: -1;
+  --px: 100%;
+  --zoom: 1.18;
+}
+@media (max-aspect-ratio: 1/1) {
+  .cm-frase-fondo { --px: 97%; --zoom: 1; }
+}
+.cm-frase-velo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(2 7 10 / 0.5), rgb(2 7 10 / 0.12) 45%, rgb(2 7 10 / 0.55));
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .cm-frase-fondo {
+      animation: cm-paralaje linear both;
+      animation-timeline: view();
+    }
+    @keyframes cm-paralaje {
+      from { transform: translate3d(0, -8%, 0); }
+      to { transform: translate3d(0, 8%, 0); }
+    }
+  }
+}
+.cm-frase h2 { max-width: 15em; }
+
+/* ---------------------------------------------------------------- Principios
+   Bloque oscuro con un resplandor eléctrico en diagonal, un hilo fino que
+   baja y tres principios con su icono de línea. */
+.cm-principios {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding: 0 var(--margen) 120px;
+  background: var(--color-noche);
+  color: #ffffff;
+  text-align: center;
+}
+@media (min-width: 768px) {
+  .cm-principios { padding-bottom: 200px; }
+}
+.cm-resplandor {
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 50%;
+  width: max(120vw, 900px);
+  height: max(120vw, 900px);
+  background:
+    radial-gradient(44% 50% at 56% 52%, rgb(2 151 222 / 0.82) 0%, rgb(2 151 222 / 0.42) 36%, rgb(2 151 222 / 0) 74%),
+    radial-gradient(26% 30% at 60% 62%, rgb(130 212 250 / 0.55) 0%, rgb(130 212 250 / 0) 72%);
+  transform: translate(-46%, -46%) rotate(-24deg) scaleX(0.78);
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+    .cm-resplandor {
+      animation: cm-resplandor linear both;
+      animation-timeline: view();
+    }
+    @keyframes cm-resplandor {
+      from { transform: translate(-56%, -60%) rotate(-30deg) scaleX(0.62); opacity: 0.45; }
+      50% { opacity: 1; }
+      to { transform: translate(-40%, -38%) rotate(-18deg) scaleX(0.86); opacity: 0.8; }
+    }
+  }
+}
+.cm-hilo {
+  display: block;
+  width: 1px;
+  height: 180px;
+  margin-inline: auto;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0), rgb(255 255 255 / 0.8));
+  transform-origin: top;
+}
+@media (min-width: 768px) {
+  .cm-hilo { height: 300px; }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .cm-hilo {
+      animation: cm-hilo linear both;
+      animation-timeline: view();
+      animation-range: entry 20% cover 50%;
+    }
+    @keyframes cm-hilo {
+      from { transform: scaleY(0); }
+      to { transform: none; }
+    }
+  }
+}
+.cm-principios h2 {
+  max-width: 13em;
+  margin: 56px auto 0;
+}
+.cm-principios-lista {
+  display: grid;
+  gap: 72px;
+  max-width: 1344px;
+  margin: 72px auto 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 900px) {
+  .cm-principios-lista {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+    margin-top: 112px;
+  }
+}
+.cm-principio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.cm-principio .cm-mono {
+  align-self: center;
+  width: 172px;
+  text-align: left;
+  color: rgb(255 255 255 / 0.74);
+}
+.cm-principio svg {
+  width: 172px;
+  height: 172px;
+  margin-top: 4px;
+  overflow: visible;
+}
+.cm-principio-texto {
+  max-width: 10.5em;
+  margin-top: 40px;
+}
+
+/* ---------------------------------------------------------------- Equipo
+   Toma y lista de tres, sobre claro. */
+.cm-claro {
+  background: var(--color-papel);
+  color: var(--color-tinta);
+}
+.cm-equipo {
+  display: grid;
+  gap: 40px;
+  padding: 24px var(--margen) 96px;
+}
+@media (min-width: 900px) {
+  .cm-equipo {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 72px;
+    align-items: start;
+    padding-block: 80px 200px;
+  }
+}
+.cm-equipo-foto {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 5 / 4;
+  border-radius: 8px;
+  background: var(--color-noche);
+}
+.cm-equipo-medios {
+  position: absolute;
+  inset: 0;
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .cm-equipo-medios {
+      animation: cm-foto-acerca linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 60%;
+    }
+    @keyframes cm-foto-acerca {
+      from { transform: scale(1.14); }
+      to { transform: none; }
+    }
+  }
+}
+.cm-equipo-lista {
+  margin: 32px 0 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 900px) {
+  .cm-equipo-contenido { padding-top: 12px; max-width: 564px; }
+}
+/* Cada fila va entre líneas punteadas con un remate corto en cada punta. */
+.cm-fila {
+  position: relative;
+  padding: 28px 24px 26px;
+}
+.cm-fila::before,
+.cm-fila:last-child::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 7px;
+  border: 1px dotted rgb(2 7 10 / 0.34);
+}
+.cm-fila::before { top: 0; border-bottom: 0; }
+.cm-fila:last-child::after { bottom: 0; border-top: 0; }
+.cm-fila h3 {
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+.cm-fila p {
+  margin-top: 6px;
+  color: var(--color-tinta-2);
+}
+.cm-equipo .boton { margin-top: 32px; }
+
+/* ---------------------------------------------------------------- Enciende
+   La afirmación que se enciende palabra por palabra mientras cruza la
+   pantalla. Con JavaScript arranca apagada (gris claro) y cada palabra pasa
+   a tinta cuando le toca. Sin JavaScript o con «reducir movimiento» está
+   entera en tinta. */
+.cm-afirmacion {
+  padding: 96px var(--margen) 120px;
+}
+@media (min-width: 768px) {
+  .cm-afirmacion { padding-block: 140px 220px; }
+}
+.cm-afirmacion .cm-corchete,
+.cm-afirmacion-rotulo {
+  display: block;
+  color: var(--color-tinta-2);
+}
+.cm-enciende {
+  max-width: 17em;
+  margin-top: 24px;
+  text-wrap: pretty;
+}
+.cm-palabra { transition: color 600ms var(--ease-base); }
+.js .cm-enciende[data-lista] .cm-palabra:not([data-on]) { color: rgb(2 7 10 / 0.2); }
+.js.forzar-visible .cm-enciende .cm-palabra { color: inherit; }
+
+/* ---------------------------------------------------------------- Sistema
+   El panel azul profundo, de esquinas redondeadas: seis tarjetas numeradas,
+   cada una con su diagrama de línea. */
+.cm-sistema {
+  padding: 0 12px 96px;
+}
+@media (min-width: 768px) {
+  .cm-sistema { padding: 0 var(--margen) 160px; }
+}
+.cm-panel {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding: 72px 16px 56px;
+  border-radius: 10px;
+  color: #ffffff;
+  background:
+    radial-gradient(34% 22% at 12% 6%, rgb(190 232 252 / 0.34), rgb(190 232 252 / 0) 100%),
+    radial-gradient(90% 34% at 50% 60%, #0a6ea6 0%, rgb(6 78 120 / 0.85) 34%, rgb(4 58 89 / 0) 100%),
+    linear-gradient(180deg, #02070a 0%, #03202f 30%, #043a59 52%, #031826 74%, #02070a 100%);
+}
+@media (min-width: 768px) {
+  .cm-panel { padding: 120px 40px 120px; }
+}
+.cm-panel-cabeza {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.cm-panel-cabeza svg {
+  width: 34px;
+  height: auto;
+}
+.cm-panel-nombre {
+  margin-top: 20px;
+  color: rgb(255 255 255 / 0.74);
+}
+.cm-panel-cabeza h2 {
+  max-width: 13em;
+  margin-top: 16px;
+}
+.cm-capas {
+  display: grid;
+  gap: 12px;
+  max-width: 1024px;
+  margin: 56px auto 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 768px) {
+  .cm-capas {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    margin-top: 120px;
+  }
+  .cm-capa { grid-column: span 2; }
+  .cm-capa:nth-child(4) { grid-column: span 3; }
+  .cm-capa:nth-child(5),
+  .cm-capa:nth-child(6) { grid-column: span 3; }
+}
+@media (min-width: 1024px) {
+  .cm-capa:nth-child(4) { grid-column: span 2; }
+  .cm-capa:nth-child(5),
+  .cm-capa:nth-child(6) { grid-column: span 2; }
+}
+.cm-capa {
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  padding: 22px 24px 24px;
+  border: 1px dashed rgb(255 255 255 / 0.3);
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.05);
+  scroll-margin-top: 120px;
+  transition: background-color 500ms var(--ease-base), border-color 500ms var(--ease-base);
+}
+@media (min-width: 768px) {
+  .cm-capa { min-height: 336px; }
+}
+@media (hover: hover) and (pointer: fine) {
+  .cm-capa:hover {
+    background: rgb(255 255 255 / 0.09);
+    border-color: rgb(255 255 255 / 0.55);
+  }
+}
+.cm-capa-rotulo {
+  color: rgb(255 255 255 / 0.74);
+}
+.cm-capa-rotulo span { margin-inline: 0.7em; opacity: 0.6; }
+.cm-capa svg {
+  flex: 1;
+  width: 100%;
+  max-width: 250px;
+  min-height: 120px;
+  margin: 12px auto;
+  overflow: visible;
+  color: rgb(255 255 255 / 0.82);
+}
+.cm-capa h3 {
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.3;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+}
+.cm-capa p {
+  margin-top: 6px;
+  color: rgb(255 255 255 / 0.74);
+}
+/* Dos piezas de los diagramas siguen vivas mientras están en pantalla: el
+   pulso que recorre la conexión y la hoja que da la vuelta. El script del
+   layout las pausa fuera de pantalla ([data-pausa]). */
+.animate-pulso {
+  stroke-dasharray: 0.09 1;
+  animation: cm-pulso 3.2s linear infinite;
+}
+@keyframes cm-pulso {
+  from { stroke-dashoffset: 1.09; }
+  to { stroke-dashoffset: 0; }
+}
+.animate-orbita {
+  offset-path: path("M42 70a78 34 0 1 0 156 0a78 34 0 1 0 -156 0");
+  offset-rotate: 0deg;
+  animation: cm-orbita 9s linear infinite;
+}
+@keyframes cm-orbita {
+  from { offset-distance: 0%; }
+  to { offset-distance: 100%; }
+}
+/* En celular el pulso no corre: anima stroke-dashoffset, que se repinta en
+   el hilo principal en cada cuadro. */
+@media (max-width: 767px) {
+  .animate-pulso {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------------- Puertas
+   La segunda afirmación que se enciende y las tres puertas: tarjetas altas
+   con fotografía, cada una un enlace entero a su página. */
+.cm-puertas-lista {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0 var(--margen) 96px;
+  list-style: none;
+}
+@media (min-width: 768px) {
+  .cm-puertas-lista {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    padding-bottom: 144px;
+  }
+}
+.cm-puerta {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 300px;
+  padding: 24px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: var(--color-noche);
+}
+@media (min-width: 768px) {
+  .cm-puerta {
+    aspect-ratio: 4 / 5;
+    min-height: 0;
+    padding: 32px;
+  }
+}
+.cm-puerta-foto {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  transition: transform 1400ms var(--ease-larga);
+}
+.cm-puerta-foto::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(2 7 10 / 0.15) 0%, rgb(2 7 10 / 0.2) 40%, rgb(2 7 10 / 0.9) 100%);
+}
+.cm-puerta-regla { color: rgb(255 255 255 / 0.78); }
+.cm-puerta-titulo {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-top: 10px;
+}
+.cm-puerta-titulo svg {
+  flex: none;
+  transition: transform 700ms var(--ease-larga);
+}
+.cm-puerta-linea {
+  max-width: 34ch;
+  margin-top: 12px;
+  color: rgb(255 255 255 / 0.86);
+}
+.cm-puerta-servicio {
+  margin-top: 16px;
+  color: rgb(255 255 255 / 0.62);
+}
+.cm-puerta:focus-visible {
+  outline: 2px solid var(--color-electrico);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+.cm-puerta:active .cm-puerta-foto { transform: scale(1.03); }
+@media (hover: hover) and (pointer: fine) {
+  .cm-puerta:hover .cm-puerta-foto { transform: scale(1.05); }
+  .cm-puerta:hover .cm-puerta-titulo svg { transform: translateX(6px); }
+}
+
+/* ---------------------------------------------------------------- Cierre
+   Un panel con resplandor eléctrico y una red de puntos de luz, el llamado y
+   el botón. */
+.cm-cierre {
+  padding: 48px 12px 0;
+  background: var(--color-noche);
+}
+@media (min-width: 768px) {
+  .cm-cierre { padding: 48px var(--margen) 0; }
+}
+.cm-cierre-panel {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 420px;
+  padding: 40px 24px;
+  border-radius: 10px;
+  color: #ffffff;
+  background:
+    radial-gradient(70% 120% at 68% 100%, rgb(2 151 222 / 0.78) 0%, rgb(2 151 222 / 0.34) 42%, rgb(2 151 222 / 0) 76%),
+    radial-gradient(30% 50% at 74% 96%, rgb(170 226 252 / 0.5), rgb(170 226 252 / 0) 100%),
+    var(--color-capa-1);
+}
+@media (min-width: 768px) {
+  .cm-cierre-panel {
+    min-height: 520px;
+    padding: 56px 48px;
+  }
+}
+/* La red de puntos de luz: una toma sobre negro, sumada al resplandor (el
+   negro no pinta). */
+.cm-cierre-fondo {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  mix-blend-mode: screen;
+  --px: 30%;
+}
+.cm-cierre-panel h2 { max-width: 9em; }
+.cm-cierre-accion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  margin-top: 28px;
+}
+.cm-cierre-nota {
+  margin-top: 20px;
+  max-width: 34rem;
+  color: rgb(255 255 255 / 0.86);
+}
+
+/* ---------------------------------------------------------------- Reducir
+   Con «reducir movimiento», todo quieto y completo. */
+@media (prefers-reduced-motion: reduce) {
+  .campo [data-revelar] { transition: opacity 300ms var(--ease-base); }
+  .cm-hero-medios,
+  .cm-linea > span,
+  .cm-hero-entra,
+  .cm-notas { animation: none; }
+  .cm-tarjeta {
+    animation: none;
+    transform: none;
+    opacity: 1;
+  }
+  .cm-carrusel-sube { animation: none; }
+  .cm-video,
+  .cm-traza,
+  .cm-funde,
+  .cm-palabra,
+  .cm-esquinas,
+  .cm-puerta-foto,
+  .cm-puerta-titulo svg,
+  .boton-flecha,
+  .barra-menu span { transition: none; }
+  .js [data-revelar]:not([data-visible]) .cm-traza { stroke-dashoffset: 0; }
+  .js [data-revelar]:not([data-visible]) .cm-funde { opacity: 1; }
+  .js .cm-enciende[data-lista] .cm-palabra:not([data-on]) { color: inherit; }
+  /* El pulso y la hoja que da la vuelta quedan quietos (los apaga
+     globals.css, con las demás animaciones sin fin); el pulso, además, no se
+     ve. */
+  .animate-pulso { opacity: 0; }
+  .cm-puerta:hover .cm-puerta-foto,
+  .cm-puerta:active .cm-puerta-foto { transform: none; }
+  .boton:active:not(:focus-visible),
+  .barra-menu:active:not(:focus-visible),
+  .cm-carrusel-flecha:active:not(:focus-visible, :disabled) { transform: none; opacity: 0.85; }
+}

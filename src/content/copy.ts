@@ -29,13 +29,15 @@ export const rutas = {
 // Enlace a agendar con la línea ya elegida en el formulario.
 export const agendarCon = (linea: "coaching" | "consultoria") => `${rutas.agendar}?linea=${linea}`;
 
+// Consultoría va adelante de Coaching desde el 2026-11-12: el sitio le habla
+// primero a la empresa.
 export const nav = {
   links: [
-    { label: "Coaching", href: rutas.coaching },
     { label: "Consultoría", href: rutas.consultoria },
-    { label: "Herramientas", href: rutas.herramientas },
+    { label: "Coaching", href: rutas.coaching },
     // La ruta sigue siendo /nosotros; la página es "Cómo trabajamos" (2026-11-11).
     { label: "Cómo trabajamos", href: rutas.nosotros },
+    { label: "Herramientas", href: rutas.herramientas },
     { label: "Preguntas", href: rutas.preguntas },
   ],
   cta: { label: "Agendar", href: rutas.agendar },
@@ -116,143 +118,70 @@ export const paginas = {
 // empresa, no un proveedor más. La IA queda dentro de cómo trabaja la empresa
 // y no hay que contratar a alguien nuevo cada vez que la tecnología cambia.
 // "Ir al ritmo" sí; "quedarse atrás" no (lista de miedo de voz-daxlo.md).
-// Desde el 2026-11-11 (dirección «Encendido», aprobada por Santiago) el sub
-// dice un sistema completo con tu gente al mando, y las dos líneas son las dos
-// entradas a eso: antes decía dos servicios para elegir ("te enseñamos o
-// construimos"). La frase de referencia que vigila copy.test.ts pasa a ser
-// "le enseñamos a tu gente a manejarlos". La segunda frase deja entrar a quien
-// trabaja solo.
+// Desde el 2026-11-12 (inicio «Campo», sobre el armazón que eligió Santiago):
+// el hero tiene una sola frase y una bajada corta, y esa frase dice qué pasa
+// y a quién: montar y que la gente lo maneje. El eslogan («Implementamos la
+// IA. Transferimos la capacidad.») sale del hero y queda como última línea
+// del pie (footer.lema), en el título de la pestaña y en la imagen para
+// compartir. La frase de referencia que vigila copy.test.ts pasa a ser "Le
+// enseñamos a tu equipo a manejarlos".
+// Ningún ejemplo del inicio, de la barra ni del pie habla de cotizaciones, de
+// facturas ni del informe del viernes (pedido de Santiago, 2026-11-12).
 export const hero = {
   aliado: "Tu aliado de IA",
-  titulo: ["Implementamos la IA.", "Transferimos la capacidad."],
-  sub: "Montamos en tu empresa los agentes y las automatizaciones que hacen el trabajo repetido, y le enseñamos a tu gente a manejarlos. Si trabajas solo, te enseñamos a ti.",
+  titulo: ["Montamos la IA dentro de tu empresa.", "Tu gente la maneja."],
+  sub: "Agentes y automatizaciones sobre las herramientas que ya usas. Le enseñamos a tu equipo a manejarlos y seguimos contigo cuando haya que revisar o mejorar.",
   cta: "Agendar una conversación",
   meta: "Primera conversación sin costo",
-  // Lo primero que escribe el recuadro del hero es una búsqueda: se tacha con
-  // la raya del "Hoy" de /consultoria y da paso a las tareas (2026-11-06, I4
-  // de landing-hilo-conductor). Así el paso "Hoy" del ecosistema ("Usas la IA
-  // como un buscador. El trabajo sigue a mano.") nombra lo que se acaba de
-  // ver. Con "reducir movimiento" no aparece: queda la primera tarea, quieta.
-  busqueda: "¿Cómo se registra una factura electrónica?",
-  // Después de la búsqueda, el recuadro escribe estas tareas solo, una tras
-  // otra (y vuelve a la búsqueda).
-  tareas: [
-    "Lee las facturas que llegaron hoy y pásalas a la hoja de costos",
-    "Arma el borrador de la cotización con los datos de este correo",
-    "Resume las reuniones de la semana y dime qué quedó pendiente",
-    "Revisa la base de clientes y marca los que están duplicados",
-  ],
-  historial: [
-    "Informe del viernes",
-    "Cotización pendiente",
-    "Facturas de proveedores",
-    "Notas de la reunión",
-    "Base de clientes",
-  ],
-  // El papel que sale del recuadro cuando termina de escribirse la primera
-  // tarea (la de las facturas): de ahí nace el hilo de luz que baja por la
-  // página. Es el mismo papel del primer carril del ecosistema.
-  papel: "Factura",
+  // Rótulos en mono sobre la fotografía. Son anotaciones de ejemplo de quién
+  // hace qué, no datos medidos: sin cifras, y con su etiqueta "Ejemplo".
+  rotulos: {
+    etiqueta: "Ejemplo",
+    notas: [
+      { clave: "Agente", valor: "Arma el borrador" },
+      { clave: "Aprueba", valor: "Una persona" },
+      { clave: "Lo maneja", valor: "Tu equipo" },
+    ],
+  },
 };
 
-// Qué es Daxlo, en una afirmación de dos tonos (2026-11-11): `fuerte` es el
-// h2 y va en blanco; `sigue` continúa en el mismo párrafo, apagado, y se
-// enciende palabra por palabra al bajar. Es la única sección del inicio sin
-// pieza ni botón: la pantalla casi vacía entre el hero y el ecosistema.
-export const manifiesto = {
-  fuerte: "Daxlo es el aliado de IA de tu empresa.",
-  sigue: "Armamos el sistema completo, se lo enseñamos a tu gente y seguimos ahí cuando haya que revisarlo, mejorarlo o sumar el siguiente proceso.",
-};
-
-// La pieza del inicio (2026-11-11): un diagrama de ejemplo que pasa de "a
-// mano" a "encendido" en cuatro pasos mientras se baja. Los tres pilares
-// (montamos el sistema, tu gente lo aprende, nos quedamos) viven aquí y no en
-// tres columnas de icono y texto.
-// - "Sistemas agénticos" no se dice: se dice "agentes" y se explica una vez,
-//   en el paso 2. "Ecosistema" no va en titulares: lo muestra el dibujo.
-//   "Nativa" va una sola vez en todo el sitio, en el paso 3.
-// - El titular del paso "Hoy" era el de las dos puertas: nombra lo que el
-//   recuadro del hero acaba de mostrar (la búsqueda tachada).
-// - "Nos quedamos" no promete frecuencia ni precio: cada cuánto es la
-//   revisión y si se cobra está pendiente de Santiago. Lleva la idea que
-//   antes iba en quiénes somos: lo que montamos funciona sin nosotros.
-// - Los carriles salen de hero.tareas, ya aprobadas, y sus rótulos son
-//   genéricos a propósito: ninguna marca y ningún cliente. El escenario va
-//   rotulado "Ejemplo".
-export const ecosistema = {
-  titulo: "Lo que hoy se hace a mano, funcionando solo. Con tu gente al mando.",
-  etiqueta: "Ejemplo",
-  // Texto alterno del escenario (role="img").
-  descripcion: "Diagrama de ejemplo. Tres trabajos de una empresa pasan de hacerse a mano a hacerse con agentes y automatizaciones que su equipo maneja, con Daxlo al lado.",
-  pasos: [
-    {
-      rotulo: "Hoy",
-      titulo: "Usas la IA como un buscador. El trabajo sigue a mano.",
-      texto: "Las facturas llegan al correo y alguien las pasa a la hoja de cálculo. Otro arma cada cotización desde cero. El informe de la semana se junta el viernes.",
-    },
-    {
-      rotulo: "Lo montamos",
-      titulo: "Montamos el sistema completo.",
-      texto: "Un agente es una IA que hace una tarea completa y te la deja lista para aprobar. Montamos los agentes, las automatizaciones que mueven los datos entre lo que tu empresa ya usa y las conexiones. No coordinas a un proveedor por cada pieza.",
-    },
-    {
-      rotulo: "Lo aprende tu gente",
-      titulo: "Tu gente se vuelve nativa en IA.",
-      texto: "A cada persona le explicamos cómo funciona y practicamos sobre su propio trabajo. Cada una aprueba, corrige y ajusta. La IA deja de ser de unos pocos.",
-    },
-    {
-      rotulo: "Nos quedamos",
-      titulo: "Y seguimos contigo.",
-      texto: "Lo que montamos funciona sin nosotros. Seguimos porque quieres: una revisión, una mejora, el siguiente proceso o un cambio en la forma de trabajar del equipo.",
-    },
-  ],
-  // El marco que rodea los carriles: lo de adentro es de la empresa; Daxlo va
-  // afuera, al lado.
-  marco: "Tu empresa",
-  carriles: [
-    { herramienta: "Correo", papel: "Factura", agente: "Lee las facturas", persona: "Contabilidad" },
-    { herramienta: "Hojas de cálculo", papel: "Cotización", agente: "Arma la cotización", persona: "Ventas" },
-    { herramienta: "Sistema contable", papel: "Informe", agente: "Resume la semana", persona: "Gerencia" },
-  ],
-  estados: { aMano: "A mano", aprueba: "Aprueba", ajusta: "Ajusta", siguiente: "Siguiente proceso" },
-  daxlo: { nombre: "Daxlo", acciones: ["Lo monta", "Lo revisa", "Lo mejora"] },
-  leyenda: ["Tu gente", "El trabajo", "Agentes", "Automatizaciones"],
-} as const;
-
-// Las dos puertas del inicio: por dónde se entra, según quién hace el trabajo.
-// Lo que cuenta cada línea vive en su página; aquí no se repite.
+// Las tres puertas del inicio: por dónde se entra, según quién hace el
+// trabajo. Lo que cuenta cada línea vive en su página; aquí no se repite.
 // La regla de cada puerta ("Lo haces tú solo" / "Lo hacen varias personas de
 // tu equipo") es la misma con la que se decide en /preguntas#elegir y en el
 // "No es para… si" de cada línea: si se cambia una, se cambian todas, para que
 // nadie entre por la puerta equivocada (lo vigila copy.test.ts).
-// Las cabeceras de sección no llevan etiqueta encima (DESIGN.md): la búsqueda
-// la llevan dosFormas.sub ("coaching o consultoría de inteligencia
-// artificial") y los títulos de las puertas.
-// Desde el 2026-11-03 (Santiago): ni el titular ni las puertas nombran
-// herramientas. Cada puerta cuenta cómo trabajamos, en el mismo orden que su
-// página: coaching, resuelves tú y sales sabiendo repetirlo; consultoría, ver
-// dónde se traba el trabajo y qué te cuesta, montar con el equipo cada semana
-// y, cuando el equipo ya lo opera, seguir con el siguiente.
-// Desde el 2026-11-11 (dirección «Encendido»): el titular viejo ("Usas la IA
-// como un buscador…") se mudó al paso "Hoy" del ecosistema y aquí queda la
-// pregunta; la puerta de la consultoría dice qué se monta (agentes y
-// automatizaciones), y la de coaching suma que también es para la gente de
-// una empresa (`equipos`; la oferta la confirmó Santiago, sin precio ni forma
-// de pago). Frecuencia ("cada semana") pendiente de Santiago.
+// Desde el 2026-11-03 (Santiago): ni la frase ni las puertas nombran
+// herramientas.
+// Desde el 2026-11-12 (inicio «Campo»): la frase de arriba se enciende
+// palabra por palabra y las puertas son tres tarjetas con fotografía. La
+// búsqueda ("coaching o consultoría de inteligencia artificial") va en el
+// rótulo (`sub`). «Para tu gente» es el coaching para las personas de una
+// empresa (la oferta la confirmó Santiago, sin precio ni forma de pago).
+// «Seguimos contigo» no es puerta: la operación después de la entrega nunca
+// es un llamado a la acción.
 export const dosFormas = {
-  titulo: "¿Por dónde empiezas?",
-  sub: "Coaching o consultoría de inteligencia artificial: depende de quién hace el trabajo.",
+  sub: "Coaching o consultoría de inteligencia artificial",
+  texto: "Entras por donde está el trabajo: si lo haces tú solo, te enseñamos; si lo hacen varios, lo montamos con ellos.",
   coaching: {
+    etiqueta: "Para ti",
     regla: "Lo haces tú solo",
     titulo: servicios.coaching,
-    linea: "Resuelves en la sesión el trabajo que hoy te quita horas. Escribes tú, te corregimos en el momento y sales sabiendo repetirlo.",
-    equipos: "También para la gente de tu empresa: cada persona, sobre su propio trabajo.",
+    linea: "Resuelves en la sesión el trabajo que hoy te quita horas. Escribes tú.",
     enlace: "Ver el coaching",
   },
+  equipo: {
+    etiqueta: "Para tu gente",
+    regla: "Cada persona hace el suyo",
+    titulo: "Coaching para tu equipo",
+    linea: "Cada persona de tu empresa aprende sobre su propio trabajo.",
+    enlace: "Ver el coaching para equipos",
+  },
   consultoria: {
+    etiqueta: "Para tu empresa",
     regla: "Lo hacen varias personas de tu equipo",
     titulo: servicios.consultoria,
-    linea: "Vemos dónde se traba el trabajo y qué te está costando. Montamos con tu equipo los agentes y las automatizaciones de ese proceso, cada semana, hasta que lo opera. Después seguimos con el siguiente.",
+    linea: "Montamos con ellas los agentes y las automatizaciones de ese proceso.",
     enlace: "Ver la consultoría",
   },
 };
@@ -803,15 +732,20 @@ export const agendar = {
   },
 };
 
+// El pie (2026-11-12): cuatro columnas y, como última línea del sitio, el
+// eslogan en letra gigante. La primera columna lleva a las capas del panel
+// del inicio (los id `capa-…` de inicio.sistema.capas).
 export const footer = {
   lema: "Implementamos la IA. Transferimos la capacidad.",
   columnas: [
     {
-      titulo: "Coaching",
+      titulo: "El sistema",
       enlaces: [
-        { t: "Coaching 1 a 1", h: rutas.coaching },
-        { t: "Cómo funciona", h: `${rutas.coaching}#como-funciona` },
-        { t: "Herramientas", h: rutas.herramientas },
+        { t: "Tus herramientas", h: `${rutas.inicio}#capa-herramientas` },
+        { t: "Conexiones", h: `${rutas.inicio}#capa-conexiones` },
+        { t: "Conocimiento", h: `${rutas.inicio}#capa-conocimiento` },
+        { t: "Agentes", h: `${rutas.inicio}#capa-agentes` },
+        { t: "Control y permisos", h: `${rutas.inicio}#capa-control` },
       ],
     },
     {
@@ -827,6 +761,14 @@ export const footer = {
       ],
     },
     {
+      titulo: "Coaching",
+      enlaces: [
+        { t: "Coaching 1 a 1", h: rutas.coaching },
+        { t: "Cómo es una sesión", h: `${rutas.coaching}#como-funciona` },
+        { t: "Herramientas", h: rutas.herramientas },
+      ],
+    },
+    {
       titulo: "Daxlo",
       enlaces: [
         { t: "Cómo trabajamos", h: rutas.nosotros },
@@ -835,6 +777,7 @@ export const footer = {
       ],
     },
   ],
+  contacto: "Contacto",
   derechos: "© 2026 Daxlo. Todos los derechos reservados.",
   privacidad: "Política de tratamiento de datos",
 };
@@ -1031,55 +974,86 @@ export const privacidad = {
 
 // ------------------------------------------------------------- INICIO
 
-// Lo que el inicio «Limpia» (2026-11-11) dice además de lo que ya vivía
-// arriba. La página sigue la estructura de la skill landing-page-design:
-// hero, la frase que se enciende (manifiesto), problema y solución (el paso
-// "Hoy" del antiguo ecosistema y las filas hoy → después de la consultoría),
-// tres beneficios (los pasos 2 a 4 de `ecosistema.pasos`), cómo funciona en
-// tres pasos, las dos líneas (dosFormas), preguntas y cierre.
-// - `respaldo`: no hay clientes ni cifras publicables, así que la señal de
-//   respaldo del hero son las herramientas con las que se trabaja, en texto
-//   (los nombres salen de `herramientas.lista`; el aviso de marcas va en el
-//   pie).
-// - `pieza`: el ejemplo del hero. Las tareas son `hero.tareas` y el agente y
-//   la persona de cada una, `ecosistema.carriles`. Rotulada "Ejemplo".
-// - `pasos`: nada nuevo. El primero es la primera conversación (agendar.sub),
-//   el segundo el paso 03 de la consultoría y la respuesta de "¿Esto
-//   reemplaza a mis auxiliares?" (entiende porque ayudó a armarlo), y el
-//   tercero el paso "Nos quedamos". Sin frecuencia ("cada semana" sigue
-//   pendiente de Santiago) ni plazos.
-// - `preguntas.lista`: las preguntas de `faq` que se muestran en el inicio,
-//   por su texto exacto (lo vigila copy.test.ts). Las respuestas no se copian.
+// El inicio «Campo» (2026-11-12): poco texto y se ve lo que se hace. Sigue,
+// sección por sección, el armazón que eligió Santiago: hero sobre fotografía,
+// carrusel de áreas, una escena fijada en tres tiempos, una frase sobre foto,
+// tres principios, foto con lista, una afirmación que se enciende, el panel
+// del sistema, las puertas (dosFormas) y el cierre. El contenido y sus
+// fuentes están en data/landing-contenido-armazon-2026-11-12.md del repo de
+// marketing.
+// - `areas`: una tarjeta por área de la empresa. Son ejemplos de lo que se
+//   monta, no casos: van bajo el rótulo fijo "Ejemplos" y ninguna señala a un
+//   cliente.
+// - `escena`: el primer tiempo es el titular de /consultoria, literal. El
+//   segundo explica "agente" una sola vez en el inicio.
+// - `frase`: frase de la casa.
+// - `principios`: "nativa" va una sola vez en todo el sitio, aquí.
+// - `equipo`: las tres formas de estar adentro. "Cada semana" es la
+//   frecuencia que falta que confirme Santiago.
+// - `sistema`: las seis capas. "Ecosistema" va una sola vez en todo el
+//   sitio, como nombre del panel. El panel no nombra marcas: los nombres de
+//   herramientas viven en /herramientas. Los `id` son las anclas del pie.
 export const inicio = {
-  respaldo: "Trabajamos con",
-  pieza: {
-    descripcion: "Ejemplo. Una tarea repetida pasa a un agente, que la deja lista, y una persona de tu equipo la aprueba.",
-    rotulos: ["Tarea repetida", "Agente", "Tu gente"],
-    trabajando: "Trabajando",
-    listo: "Listo para aprobar",
-    aprobado: "Aprobado",
-    pausar: "Pausar el ejemplo",
-    seguir: "Seguir el ejemplo",
+  areas: {
+    titulo: "Dónde entra la IA en tu empresa.",
+    etiqueta: "Ejemplos",
+    tarjetas: [
+      { area: "Dirección", monta: "Tablero", linea: "El proceso al día y lo que espera tu decisión, en una pantalla." },
+      { area: "Comercial", monta: "Agente", linea: "Califica cada contacto nuevo y deja el mensaje en borrador." },
+      { area: "Operación", monta: "Automatización", linea: "El pedido que llega por correo queda registrado sin que nadie lo copie." },
+      { area: "Administración", monta: "Agente", linea: "Ordena los documentos que llegan y deja listo lo que hay que revisar." },
+      { area: "Atención", monta: "Agente", linea: "Deja la respuesta lista. La envía una persona de tu equipo." },
+      { area: "Mercadeo", monta: "Agente", linea: "Investiga, escribe el borrador y prepara la pieza. Publica una persona." },
+      { area: "Tu gente", monta: "Coaching", linea: "Cada persona aprende sobre su propio trabajo, no con ejemplos de tutorial." },
+    ],
+    controles: {
+      region: "Ejemplos por área de la empresa",
+      anterior: "Ejemplo anterior",
+      siguiente: "Ejemplo siguiente",
+      ir: "Ir al ejemplo",
+    },
   },
-  beneficios: { rotulo: "Lo que queda en tu empresa" },
-  pasos: {
-    titulo: "Cómo funciona, en tres pasos.",
+  escena: {
+    rotulo: "Lo que pasa hoy",
+    tiempos: [
+      "Tu gente ya usa IA. Tu empresa trabaja igual.",
+      "Un agente hace la tarea completa. Una persona la aprueba.",
+      "Queda un sistema que tu equipo entiende y maneja.",
+    ],
+    cierre: "Lo montamos contigo. Y seguimos ahí.",
+  },
+  frase: "Si no puedes operarlo sin nosotros, no terminamos.",
+  principios: {
+    titulo: "Tres reglas que no negociamos en ningún proyecto.",
     lista: [
-      { titulo: "Conversamos, sin costo.", texto: "Nos cuentas qué te está consumiendo horas. Te decimos si te sirve el coaching, la consultoría o ninguna de las dos." },
-      { titulo: "Lo montamos con tu equipo y se lo enseñamos.", texto: "Construimos con tu gente, sobre su trabajo real. Cada persona entiende cómo funciona porque ayudó a armarlo." },
-      { titulo: "Tu equipo lo opera y seguimos con el siguiente.", texto: "Lo que montamos funciona sin nosotros. Cuando quieras, vamos por el siguiente proceso." },
+      "Tu gente, nativa en IA y al mando.",
+      "Los agentes hacen la tarea. Tú decides qué sale.",
+      "Lo revisamos y lo mejoramos contigo, cuando lo pidas.",
     ],
   },
-  preguntas: {
-    titulo: "Lo que nos preguntan antes de empezar.",
-    lista: [
-      "¿Te sirve el coaching o la consultoría de IA?",
-      "¿Necesito saber programar?",
-      "¿Por dónde empieza una empresa a implementar inteligencia artificial?",
-      "¿Cuánto cuesta una consultoría de IA?",
-      "¿Cuánto se demora un proyecto?",
-      "¿El sistema toma decisiones solo?",
-      "¿Qué pasa cuando ustedes se van?",
+  equipo: {
+    titulo: "En tu empresa, con tu equipo.",
+    filas: [
+      { titulo: "El diagnóstico", linea: "Hablamos con quien dirige y con quien hace el trabajo, y lo cruzamos con los documentos." },
+      { titulo: "Construimos contigo", linea: "Cada semana con tu gente, sobre sus archivos reales. Entiende cada regla porque ayudó a escribirla." },
+      { titulo: "Coaching por persona", linea: "Quien lo va a operar practica sobre su propio trabajo hasta manejarlo sin nosotros." },
+    ],
+    boton: "Cómo trabajamos",
+  },
+  montado: {
+    rotulo: "Lo que queda montado",
+    texto: "Dejamos montado un sistema: tus herramientas conectadas, las reglas escritas, agentes que hacen el trabajo repetido y un equipo que sabe manejarlo.",
+  },
+  sistema: {
+    nombre: "Tu ecosistema de IA",
+    titulo: "Lo que queda funcionando en tu empresa, capa por capa.",
+    capas: [
+      { id: "herramientas", rotulo: "Tus herramientas", titulo: "Lo que ya usas, se queda", linea: "Correo, hojas de cálculo, sistema contable. Partimos de ahí, tal como están." },
+      { id: "conexiones", rotulo: "Conexiones", titulo: "Los datos se mueven solos", linea: "Automatizaciones que llevan cada dato de una herramienta a otra, sin copiar y pegar." },
+      { id: "conocimiento", rotulo: "Conocimiento", titulo: "Las reglas, por fin escritas", linea: "Lo que alguien sabe de memoria queda en un lugar que la IA lee." },
+      { id: "agentes", rotulo: "Agentes", titulo: "Hacen la tarea completa", linea: "Leen, arman el borrador y marcan lo que hay que revisar." },
+      { id: "modelos", rotulo: "Modelos", titulo: "El modelo que cada tarea pide", linea: "El que mejor resuelva cada tarea. Donde basta una regla fija, no va IA." },
+      { id: "control", rotulo: "Control y permisos", titulo: "Tú decides qué sale", linea: "Cada agente con su permiso: leer, dejar borrador o actuar. Aprueba una persona." },
     ],
   },
 } as const;

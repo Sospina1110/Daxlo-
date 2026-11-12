@@ -1,10 +1,16 @@
 import { act, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { hero } from "@/content/copy";
 import { pausaAntesDe, TextoQueSeEscribe } from "@/components/ui/escritura";
 import { entorno, simularMovimientoReducido } from "../apoyo/entorno";
 
-const FRASES = hero.tareas;
+// Frases de prueba. El componente ya no se usa en el inicio (desde el inicio
+// «Campo», 2026-11-12, copy.ts no trae las tareas del recuadro): se prueba
+// con las suyas.
+const FRASES = [
+  "Resume las reuniones de la semana y dime qué quedó pendiente",
+  "Revisa la base de clientes y marca los que están duplicados",
+  "Junta estas tres hojas de cálculo y arma el informe de la semana",
+];
 
 // El ritmo esperado, escrito aquí aparte (no se importa la tabla del
 // componente): letra i = 26 ms + JITTER[i % 8]; 120 ms más después de una coma
@@ -212,7 +218,7 @@ describe("TextoQueSeEscribe", () => {
   // selecciona: se tacha (las rayas las pinta el CSS; jsdom no mide renglones)
   // durante 400 + 600 + 1000 ms, sale tachada y da paso a la primera tarea.
   describe("con una búsqueda que se tacha (hero)", () => {
-    const BUSQUEDA = hero.busqueda;
+    const BUSQUEDA = "¿Cómo se ordena una base de clientes?";
 
     it("la búsqueda también reserva su alto: va primera entre los fantasmas", () => {
       const { container } = render(<TextoQueSeEscribe frases={FRASES} busqueda={BUSQUEDA} />);
