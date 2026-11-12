@@ -7,7 +7,9 @@ import { contacto, faq, nosotros, paginas, privacidad, rutas, servicios } from "
 
 export const URL_SITIO = "https://daxlo.co";
 
-const IMAGEN_OG = { url: "/og.png", width: 1200, height: 630, alt: "Daxlo. Implementamos la IA. Transferimos la capacidad." };
+// La tarjeta lleva nombre nuevo (og-2.png) para que las redes no sirvan la
+// que tenían guardada. public/og.png es una copia, por los enlaces viejos.
+const IMAGEN_OG = { url: "/og-2.png", width: 1200, height: 630, alt: "Daxlo. Montamos la IA dentro de tu empresa. Tu gente la maneja." };
 
 type ClavePagina = keyof typeof paginas;
 
@@ -61,7 +63,7 @@ export const ldOrganizacion = {
   name: "Daxlo",
   url: URL_SITIO,
   logo: `${URL_SITIO}/apple-touch-icon.png`,
-  image: `${URL_SITIO}/og.png`,
+  image: `${URL_SITIO}/og-2.png`,
   description: paginas.inicio.descripcion,
   slogan: "Implementamos la IA. Transferimos la capacidad.",
   areaServed: { "@type": "Country", name: "Colombia" },

@@ -94,7 +94,7 @@ describe.skipIf(!HAY_BUILD)(HAY_BUILD ? "salida del build (out/)" : "salida del 
       expect(normal(meta(doc, 'meta[property="og:url"]') ?? "")).toBe(normal(canonica));
       expect(meta(doc, 'meta[property="og:title"]')).toBe(doc.title);
       expect(meta(doc, 'meta[property="og:description"]')).toBe(paginas[clave].descripcion);
-      expect(meta(doc, 'meta[property="og:image"]')).toBe(`${SITIO}/og.png`);
+      expect(meta(doc, 'meta[property="og:image"]')).toBe(`${SITIO}/og-2.png`);
       expect(meta(doc, 'meta[property="og:locale"]')).toBe("es_CO");
       expect(meta(doc, 'meta[name="twitter:card"]')).toBe("summary_large_image");
       expect(meta(doc, 'meta[name="twitter:title"]')).toBe(doc.title);

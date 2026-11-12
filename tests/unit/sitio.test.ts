@@ -94,15 +94,15 @@ describe("metadatosPagina", () => {
     expect(og).toMatchObject({ type: "website", locale: "es_CO", siteName: "Daxlo" });
     const imagenes = og.images as { url: string; width: number; height: number; alt: string }[];
     expect(imagenes).toHaveLength(1);
-    expect(imagenes[0]).toMatchObject({ url: "/og.png", width: 1200, height: 630 });
+    expect(imagenes[0]).toMatchObject({ url: "/og-2.png", width: 1200, height: 630 });
     expect(imagenes[0].alt.length).toBeGreaterThan(10);
-    expect(absoluta(imagenes[0].url)).toBe("https://daxlo.co/og.png");
+    expect(absoluta(imagenes[0].url)).toBe("https://daxlo.co/og-2.png");
   });
 
   it.each(CLAVES)("%s: tarjeta grande para X con la misma imagen", (clave) => {
     const tw = metadatosPagina(clave).twitter as Record<string, unknown>;
     expect(tw.card).toBe("summary_large_image");
-    expect(tw.images).toEqual(["/og.png"]);
+    expect(tw.images).toEqual(["/og-2.png"]);
   });
 
   it("cada página tiene título, descripción y canónica propios", () => {
@@ -115,7 +115,7 @@ describe("metadatosPagina", () => {
   });
 
   it("la imagen para redes existe y mide lo que dicen los metadatos", () => {
-    const archivo = path.join(PUBLIC, "og.png");
+    const archivo = path.join(PUBLIC, "og-2.png");
     expect(fs.existsSync(archivo)).toBe(true);
     expect(medidasPng(archivo)).toEqual({ ancho: 1200, alto: 630 });
   });

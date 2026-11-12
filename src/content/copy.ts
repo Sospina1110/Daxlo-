@@ -58,9 +58,9 @@ export const servicios = {
 // que Google no los corte (lo vigila tests/unit/copy.test.ts).
 export const paginas = {
   inicio: {
-    titulo: "Consultoría y coaching de IA en Colombia · Daxlo",
+    titulo: "Montamos la IA dentro de tu empresa · Daxlo",
     descripcion:
-      "Consultoría de inteligencia artificial y coaching de IA 1 a 1 en Colombia. Cambiamos con tu equipo cómo se trabaja, o te enseñamos a usar IA en lo tuyo.",
+      "Consultoría de inteligencia artificial en Colombia. Montamos los agentes y las automatizaciones de tu empresa y le enseñamos a tu equipo a manejarlos.",
   },
   coaching: {
     titulo: "Coaching de IA 1 a 1: clases de ChatGPT y Claude",
