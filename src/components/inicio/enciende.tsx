@@ -1,18 +1,29 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { limitar } from "@/lib/campo/entorno";
 import { cn } from "@/lib/utils";
 
-// Una afirmación que se enciende palabra por palabra mientras cruza la
-// pantalla. Cada palabra va en su <span>: arranca apagada (gris claro) y pasa
-// a tinta cuando la línea de lectura, al 78 % del alto de la pantalla, ya
-// recorrió la parte del bloque que le toca. Lo encendido queda encendido.
+// Una afirmación que se enciende palabra por palabra siguiendo el scroll.
 //
-// Se mide en un cuadro por evento de scroll como mucho, y solo mientras el
-// bloque está en pantalla (un IntersectionObserver pone y quita el oyente).
-// Sin JavaScript, o con «reducir movimiento», está entera desde el principio
-// (campo.css): el apagado solo existe cuando este componente ya marcó el
-// bloque con data-lista.
+// Cada palabra va en su <span> y arranca apagada. Un frente de luz recorre la
+// frase mientras el bloque cruza la pantalla: empieza cuando asoma al 86 %
+// del alto y termina cuando su centro llega al 42 %. Cada palabra pasa de
+// apagada a encendida mientras el frente la cruza (dura tres palabras), así
+// que nunca se enciende un bloque de golpe; y como sigue al scroll, al subir
+// se vuelve a apagar.
+//
+// El scroll llega a saltos (una vuelta de rueda son 100 px): el frente
+// persigue su destino con un suavizado, un cuadro a la vez, y el bucle se
+// detiene apenas llega. Solo se escucha el scroll mientras el bloque está en
+// pantalla. Cada palabra recibe su avance en --v (0 a 1) y el CSS lo pasa a
+// opacidad (campo.css, .cm-palabra).
+//
+// Sin JavaScript, o con «reducir movimiento», la frase está entera desde el
+// principio: el apagado solo existe cuando este componente ya marcó el bloque
+// con data-lista.
+const ANCHO = 3;
+
 export function Enciende({ texto, id, className }: { texto: string; id?: string; className?: string }) {
   const ref = useRef<HTMLParagraphElement>(null);
   const palabras = texto.split(" ");
@@ -21,35 +32,49 @@ export function Enciende({ texto, id, className }: { texto: string; id?: string;
     const el = ref.current;
     if (!el || !("IntersectionObserver" in window)) return;
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const spans = el.querySelectorAll(".cm-palabra");
+    const spans = [...el.querySelectorAll<HTMLElement>(".cm-palabra")];
+    const n = spans.length;
+    const puesto = new Float32Array(n).fill(-1);
     el.setAttribute("data-lista", "");
-    let encendidas = 0;
+    let meta = 0;
+    let actual = 0;
     let cuadro = 0;
     let activo = false;
-    const medir = () => {
+
+    const pintar = () => {
+      const frente = actual * (n + ANCHO);
+      for (let i = 0; i < n; i++) {
+        const v = Math.round(limitar((frente - i) / ANCHO) * 50) / 50;
+        if (v === puesto[i]) continue;
+        puesto[i] = v;
+        spans[i].style.setProperty("--v", String(v));
+      }
+    };
+    const paso = () => {
       cuadro = 0;
+      actual += (meta - actual) * 0.16;
+      if (Math.abs(meta - actual) < 0.002) actual = meta;
+      pintar();
+      if (actual !== meta) cuadro = requestAnimationFrame(paso);
+    };
+    const medir = () => {
       const caja = el.getBoundingClientRect();
       const alto = window.innerHeight;
-      // Empieza cuando el bloque asoma al 78 % de la pantalla y termina cuando
-      // su borde de abajo llega al 46 %.
-      const p = (alto * 0.78 - caja.top) / Math.max(1, caja.height + alto * 0.32);
-      const hasta = Math.round(Math.min(1, Math.max(0, p)) * spans.length);
-      for (let i = encendidas; i < hasta; i++) spans[i].setAttribute("data-on", "");
-      encendidas = Math.max(encendidas, hasta);
-    };
-    const pedir = () => {
-      if (!cuadro) cuadro = requestAnimationFrame(medir);
+      const desde = alto * 0.86;
+      const hasta = alto * 0.42 - caja.height / 2;
+      meta = limitar((desde - caja.top) / Math.max(1, desde - hasta));
+      if (!cuadro) cuadro = requestAnimationFrame(paso);
     };
     const io = new IntersectionObserver((es) => {
       const dentro = es[es.length - 1].isIntersecting;
       if (dentro && !activo) {
         activo = true;
-        window.addEventListener("scroll", pedir, { passive: true });
-        window.addEventListener("resize", pedir);
+        window.addEventListener("scroll", medir, { passive: true });
+        window.addEventListener("resize", medir);
       } else if (!dentro && activo) {
         activo = false;
-        window.removeEventListener("scroll", pedir);
-        window.removeEventListener("resize", pedir);
+        window.removeEventListener("scroll", medir);
+        window.removeEventListener("resize", medir);
       }
       // Al entrar y al salir se mide una vez: un salto largo de scroll puede
       // pasar el bloque de largo entre dos cuadros.
@@ -58,8 +83,8 @@ export function Enciende({ texto, id, className }: { texto: string; id?: string;
     io.observe(el);
     return () => {
       io.disconnect();
-      window.removeEventListener("scroll", pedir);
-      window.removeEventListener("resize", pedir);
+      window.removeEventListener("scroll", medir);
+      window.removeEventListener("resize", medir);
       if (cuadro) cancelAnimationFrame(cuadro);
     };
   }, []);

@@ -149,7 +149,7 @@ export const ldSobreNosotros = {
   "@context": "https://schema.org",
   "@type": "AboutPage",
   name: paginas.nosotros.titulo,
-  description: nosotros.parrafos[0],
+  description: nosotros.sub,
   url: `${URL_SITIO}${rutas.nosotros}`,
   about: { "@id": ID_ORGANIZACION },
   mainEntity: { "@id": ID_ORGANIZACION },

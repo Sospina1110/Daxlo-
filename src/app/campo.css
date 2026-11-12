@@ -1110,11 +1110,15 @@
   position: absolute;
   inset: -9% 0;
   z-index: -1;
-  --px: 0%;
-  --zoom: 1.22;
 }
+/* El encuadre de cada toma: el sujeto queda detrás de la frase. */
+.cm-frase-fondo[data-escena="bodega"] { --px: 0%; --zoom: 1.22; }
+.cm-frase-fondo[data-escena="problema"] { --px: 78%; --py: 40%; --zoom: 1.3; }
+.cm-frase-fondo[data-escena="operacion"] { --px: 30%; --zoom: 1.12; }
 @media (max-aspect-ratio: 1/1) {
-  .cm-frase-fondo { --px: 64%; --zoom: 1; }
+  .cm-frase-fondo[data-escena="bodega"] { --px: 64%; --zoom: 1; }
+  .cm-frase-fondo[data-escena="problema"] { --px: 80%; --py: 50%; --zoom: 1; }
+  .cm-frase-fondo[data-escena="operacion"] { --px: 20%; --zoom: 1; }
 }
 .cm-frase-velo {
   position: absolute;
@@ -1321,10 +1325,11 @@
 .cm-equipo .boton { margin-top: 32px; }
 
 /* ---------------------------------------------------------------- Enciende
-   La afirmación que se enciende palabra por palabra mientras cruza la
-   pantalla. Con JavaScript arranca apagada (gris claro) y cada palabra pasa
-   a tinta cuando le toca. Sin JavaScript o con «reducir movimiento» está
-   entera en tinta. */
+   La afirmación que se enciende palabra por palabra siguiendo el scroll.
+   Con JavaScript arranca apagada y enciende.tsx escribe en cada palabra su
+   avance (--v, de 0 a 1), que aquí es opacidad: sigue al scroll cuadro a
+   cuadro, así que no lleva transición. Sin JavaScript o con «reducir
+   movimiento» está entera. */
 .cm-afirmacion {
   padding: 96px var(--margen) 120px;
 }
@@ -1334,16 +1339,15 @@
 .cm-afirmacion .cm-corchete,
 .cm-afirmacion-rotulo {
   display: block;
-  color: var(--color-tinta-2);
+  color: var(--tenue, var(--color-tinta-2));
 }
 .cm-enciende {
   max-width: 17em;
   margin-top: 24px;
   text-wrap: pretty;
 }
-.cm-palabra { transition: color 600ms var(--ease-base); }
-.js .cm-enciende[data-lista] .cm-palabra:not([data-on]) { color: rgb(2 7 10 / 0.2); }
-.js.forzar-visible .cm-enciende .cm-palabra { color: inherit; }
+.js .cm-enciende[data-lista] .cm-palabra { opacity: calc(0.2 + 0.8 * var(--v, 0)); }
+.js.forzar-visible .cm-enciende .cm-palabra { opacity: 1; }
 
 /* ---------------------------------------------------------------- Sistema
    El panel azul profundo, de esquinas redondeadas: seis tarjetas numeradas,
@@ -1635,7 +1639,6 @@
   .cm-video,
   .cm-traza,
   .cm-funde,
-  .cm-palabra,
   .cm-esquinas,
   .cm-puerta-foto,
   .cm-puerta-titulo svg,
@@ -1643,7 +1646,7 @@
   .barra-menu span { transition: none; }
   .js [data-revelar]:not([data-visible]) .cm-traza { stroke-dashoffset: 0; }
   .js [data-revelar]:not([data-visible]) .cm-funde { opacity: 1; }
-  .js .cm-enciende[data-lista] .cm-palabra:not([data-on]) { color: inherit; }
+  .js .cm-enciende[data-lista] .cm-palabra { opacity: 1; }
   /* El pulso y la hoja que da la vuelta quedan quietos (los apaga
      globals.css, con las demás animaciones sin fin); el pulso, además, no se
      ve. */

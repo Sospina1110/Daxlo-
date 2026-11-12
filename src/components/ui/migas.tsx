@@ -1,28 +1,24 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Migas de pan: dónde está el visitante y cómo volver al inicio. Los datos
+// Migas de pan: dónde está el visitante y cómo volver al inicio, en mono,
+// sobre el titular de la página (paginas.css, .cp-migas). Los datos
 // estructurados equivalentes van aparte (ldMigas en src/lib/sitio.ts).
-// Entran solo con un fundido de 0,4 s (--desde 0): son marco, no contenido, y
-// antes subían 16 px en cada carga.
-export function Migas({ actual, centro = false, className }: { actual: string; centro?: boolean; className?: string }) {
+// El separador es decorativo: lo pinta el CSS y no cuenta para lectores.
+//
+// `soloInicio`: la página actual queda solo para lectores de pantalla y
+// buscadores. Es para las páginas cuyo titular ya empieza con ese mismo
+// nombre como rótulo (las de cada línea): a la vista se lee «Inicio /
+// [nombre del servicio]» en un solo renglón, sin repetirlo.
+export function Migas({ actual, soloInicio = false, className }: { actual: string; soloInicio?: boolean; className?: string }) {
   return (
-    <nav aria-label="Migas de pan" className={cn("entrada text-[14px] text-white/60 [--desde:0px] [--duracion:0.4s]", className)}>
-      <ol className={cn("flex flex-wrap items-center gap-1.5", centro && "justify-center")}>
+    <nav aria-label="Migas de pan" className={cn("cm-mono cp-migas", soloInicio && "cp-migas-flota", className)}>
+      <ol>
         <li>
-          {/* 44 × 44 px para el pulgar, sin mover la línea: los márgenes
-              negativos, vertical y horizontal, devuelven lo que agrega el
-              área táctil. El lateral (6 px) es igual al espacio entre migas,
-              para no montarse sobre la flecha. */}
-          <Link href="/" className="-mx-1.5 -my-3 inline-flex min-h-[44px] min-w-[44px] items-center rounded px-1.5 transition-colors hover:text-white">
-            Inicio
-          </Link>
+          <Link href="/">Inicio</Link>
         </li>
-        <li aria-hidden className="text-white/30">
-          <ChevronRight size={14} />
-        </li>
-        <li aria-current="page" className="text-white/80">
+        <li aria-hidden="true" className="cp-migas-separador" />
+        <li aria-current="page" className={soloInicio ? "sr-only" : undefined}>
           {actual}
         </li>
       </ol>

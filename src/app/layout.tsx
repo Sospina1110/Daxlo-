@@ -118,7 +118,7 @@ var espera=0;
 addEventListener('scroll',function(){if(espera)return;espera=setTimeout(function(){espera=0;var limite=innerHeight*0.94;
 [].forEach.call(document.querySelectorAll('[data-revelar]:not([data-visible])'),function(el){
 if(el.getBoundingClientRect().top<limite){io.unobserve(el);revelar(el);}});},200);},{passive:true});
-var A='.animate-flow,.animate-deriva,.animate-float,.animate-marquee,.animate-marquee-reverse,.animate-ping,.animate-paseo,.animate-caret,.animate-pulso,.animate-orbita';
+var A='.animate-pulso,.animate-orbita';
 var ia=new IntersectionObserver(function(es){es.forEach(function(e){
 if(e.isIntersecting)e.target.removeAttribute('data-pausa');else e.target.setAttribute('data-pausa','');
 });},{rootMargin:'100px'});

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
-import { cierre, contacto, dosFormas, hero, inicio, rutas } from "@/content/copy";
+import { agendarCon, cierre, contacto, dosFormas, hero, inicio, rutas } from "@/content/copy";
 import { Boton } from "@/components/ui/boton";
 import type { VideoFondo as Video } from "@/lib/campo/video";
 import { sinCorte } from "@/lib/utils";
@@ -19,20 +19,22 @@ const numero = (n: number) => String(n).padStart(2, "0");
 
 // ------------------------------------------------ Frase sobre foto
 
-// Una sola frase sobre una toma a sangre: la bodega, con una persona que se
-// aleja por el pasillo. La frase se parte después de la coma.
-export function FraseFoto({ video }: { video: Video | null }) {
-  const [uno, dos] = inicio.frase.split(/(?<=,)\s+/);
+// Una sola frase sobre una toma a sangre. En el inicio es la bodega, con una
+// persona que se aleja por el pasillo; las páginas internas la usan con su
+// propia frase y su propia toma (el encuadre de cada una va en campo.css,
+// .cm-frase-fondo[data-escena]). La frase se parte después de la coma.
+export function FraseFoto({ texto = inicio.frase, foto = "bodega", video }: { texto?: string; foto?: string; video: Video | null }) {
+  const [uno, dos] = texto.split(/(?<=,)\s+/);
   return (
     <section aria-labelledby="titulo-frase" data-tema="oscuro" className="cm-frase">
-      <div aria-hidden="true" className="cm-frase-fondo">
-        <Foto nombre="bodega" ancho={1600} alto={893} />
+      <div aria-hidden="true" data-escena={foto} className="cm-frase-fondo">
+        <Foto nombre={foto} ancho={1600} alto={893} />
         {video && <FondoVideo video={video} />}
         <span className="cm-frase-velo" />
         <span className="cm-grano" />
       </div>
       <h2 id="titulo-frase" data-revelar="" className="cm-titular cm-titular-l">
-        {uno} <span className="sm:block">{dos}</span>
+        {uno} {dos && <span className="sm:block">{dos}</span>}
       </h2>
     </section>
   );
@@ -203,8 +205,9 @@ export function Puertas() {
 
 // El cierre: un panel con resplandor eléctrico y una red de puntos de luz
 // que se conectan (un video, sobre su póster), el llamado, el mismo botón del
-// hero y la reducción de riesgo.
-export function Cierre({ video }: { video: Video | null }) {
+// hero y la reducción de riesgo. Es el cierre de todas las páginas; en las de
+// cada línea el botón lleva al formulario con esa línea ya elegida.
+export function Cierre({ video, linea }: { video: Video | null; linea?: "coaching" | "consultoria" }) {
   return (
     <section aria-labelledby="titulo-cierre" data-tema="oscuro" className="cm-cierre">
       <div data-revelar="" className="cm-cierre-panel">
@@ -217,7 +220,7 @@ export function Cierre({ video }: { video: Video | null }) {
           {cierre.titulo}
         </h2>
         <div className="cm-cierre-accion">
-          <Boton href={rutas.agendar}>{hero.cta}</Boton>
+          <Boton href={linea ? agendarCon(linea) : rutas.agendar}>{hero.cta}</Boton>
           <a href={contacto.whatsapp} target="_blank" rel="noopener noreferrer" className="cm-enlace cm-texto-s">
             {cierre.whatsapp}
           </a>

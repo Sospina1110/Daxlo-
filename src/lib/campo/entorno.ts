@@ -5,8 +5,7 @@
 // memoria o render por software. Esto último es el Chromium sin tarjeta
 // gráfica (Lighthouse y PageSpeed, máquinas virtuales): ahí cada cuadro de un
 // lienzo se dibuja en el procesador y bloquea el hilo principal. Se detecta
-// igual que en la cinta de las páginas internas (src/lib/cinta/motor.ts): se
-// pide un contexto WebGL de prueba que el navegador niega si iría por
+// así: se pide un contexto WebGL de prueba que el navegador niega si iría por
 // software y, si aun así llega, se lee el nombre del renderizador.
 
 export type Entorno = {
