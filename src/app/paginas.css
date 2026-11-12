@@ -846,22 +846,26 @@
 .cp-pregunta-mas::after { transform: rotate(90deg); }
 .cp-pregunta-boton[aria-expanded="true"] .cp-pregunta-mas { color: var(--color-electrico); }
 .cp-pregunta-boton[aria-expanded="true"] .cp-pregunta-mas::after { transform: none; }
-.cp-pregunta[data-teclado] .cp-pregunta-mas::after,
-.cp-pregunta[data-teclado] .cp-pregunta-panel { transition: none; }
 @media (hover: hover) and (pointer: fine) {
   .cp-pregunta-boton:hover .cp-pregunta-mas { color: var(--color-electrico); }
 }
-.cp-pregunta-panel {
-  display: grid;
+/* Sin JavaScript las respuestas están abiertas y se leen de corrido (el
+   signo de más no se pinta: no hay nada que abrir). Con JavaScript arrancan
+   cerradas. */
+.cp-pregunta-panel { display: grid; }
+html:not(.js) .cp-pregunta-mas { display: none; }
+.js .cp-pregunta-panel {
   grid-template-rows: 0fr;
   opacity: 0;
   transition: grid-template-rows 200ms var(--ease-base), opacity 120ms var(--ease-base);
 }
-.cp-pregunta-panel[data-abierta] {
+.js .cp-pregunta-panel[data-abierta] {
   grid-template-rows: 1fr;
   opacity: 1;
   transition: grid-template-rows 320ms var(--ease-base), opacity 260ms var(--ease-base) 60ms;
 }
+.js .cp-pregunta[data-teclado] .cp-pregunta-mas::after,
+.js .cp-pregunta[data-teclado] .cp-pregunta-panel { transition: none; }
 .cp-pregunta-panel > div { overflow: hidden; }
 .cp-pregunta-respuesta {
   max-width: 64ch;
@@ -1693,8 +1697,8 @@ textarea.cp-campo { resize: vertical; }
   .cp-indice li::before,
   .cp-pregunta-mas::before,
   .cp-pregunta-mas::after,
-  .cp-pregunta-panel,
-  .cp-pregunta-panel[data-abierta],
+  .js .cp-pregunta-panel,
+  .js .cp-pregunta-panel[data-abierta],
   .cp-cambio-flecha,
   .cp-cambio-hoy p:last-child::after,
   .cp-placa,
@@ -1814,3 +1818,7 @@ textarea.cp-campo { resize: vertical; }
 @media (prefers-reduced-motion: reduce) {
   .cp-toma-medios { animation: none; }
 }
+
+/* Sobre una toma, la nota del botón no se mete en la imagen: si no cabe al
+   lado del botón, baja. */
+.cp-cabecera[data-variante="foto"] .cp-cabecera-accion { max-width: 40rem; }
