@@ -129,7 +129,9 @@ export const paginas = {
 // facturas ni del informe del viernes (pedido de Santiago, 2026-11-12).
 export const hero = {
   aliado: "Tu aliado de IA",
-  titulo: ["Montamos la IA dentro de tu empresa.", "Tu gente la maneja."],
+  // Entre «la» e «IA» va un espacio de no separación (U+00A0), para que el
+  // titular no se corte ahí en celular.
+  titulo: ["Montamos la IA dentro de tu empresa.", "Tu gente la maneja."],
   sub: "Agentes y automatizaciones sobre las herramientas que ya usas. Le enseñamos a tu equipo a manejarlos y seguimos contigo cuando haya que revisar o mejorar.",
   cta: "Agendar una conversación",
   meta: "Primera conversación sin costo",

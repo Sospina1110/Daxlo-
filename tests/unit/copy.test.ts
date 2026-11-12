@@ -402,7 +402,7 @@ describe("coherencia entre bloques", () => {
   // sigue en el título de la pestaña y en los datos para buscadores
   // (src/lib/sitio.ts).
   it("el hero dice qué pasa y a quién, y el eslogan cierra el pie", () => {
-    expect(hero.titulo).toEqual(["Montamos la IA dentro de tu empresa.", "Tu gente la maneja."]);
+    expect(hero.titulo).toEqual(["Montamos la IA dentro de tu empresa.", "Tu gente la maneja."]);
     expect(hero.titulo.join(" ")).not.toMatch(/Implementamos|Transferimos/);
     expect(footer.lema).toBe("Implementamos la IA. Transferimos la capacidad.");
     // Los rótulos sobre la fotografía son ejemplos, sin cifras.

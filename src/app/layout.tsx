@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Ysabeau_Office } from "next/font/google";
+import { Geist_Mono, Schibsted_Grotesk } from "next/font/google";
 import { MotionProvider } from "@/components/motion-provider";
 import { Nav } from "@/components/sections/nav";
 import { Footer } from "@/components/sections/footer";
@@ -8,23 +8,17 @@ import { paginas } from "@/content/copy";
 import { ldOrganizacion, URL_SITIO } from "@/lib/sitio";
 import "./globals.css";
 
-// La letra del sitio: Geist para el cuerpo y Geist Mono para los rótulos y
-// los numerales. next/font las descarga al compilar y las sirve desde el
+// La letra del sitio: Schibsted Grotesk para los titulares y el cuerpo, y
+// Geist Mono para los rótulos y los numerales (elección de Santiago,
+// 2026-11-12). next/font las descarga al compilar y las sirve desde el
 // propio sitio: no hay petición a terceros en cada visita (la CSP no la
 // dejaría pasar).
 //
 // Cambiar de familia es cambiar estas líneas: todo el sitio lee --font-sans
-// (--fuente-marca) y --font-mono (--fuente-mono), que arman globals.css y
-// campo.css.
-//
-// Los titulares de todo el sitio (sistema «Campo») van en Ysabeau Office en
-// peso fino: una sans humanista con un remate leve, la más
-// cercana al carácter de la referencia entre las de licencia abierta que se
-// compararon (Geist 300, Hanken Grotesk, Alegreya Sans, Newsreader, Fraunces).
-// La lee --font-titular (campo.css).
-const marca = Geist({ subsets: ["latin"], variable: "--fuente-marca", display: "swap" });
+// y --font-titular (--fuente-marca) y --font-mono (--fuente-mono), que arman
+// globals.css y campo.css.
+const marca = Schibsted_Grotesk({ subsets: ["latin"], variable: "--fuente-marca", display: "swap" });
 const mono = Geist_Mono({ subsets: ["latin"], variable: "--fuente-mono", display: "swap" });
-const titular = Ysabeau_Office({ subsets: ["latin"], weight: ["300", "400"], style: "normal", variable: "--fuente-titular", display: "swap" });
 
 // Valores por defecto. Cada página define su título, descripción, URL
 // canónica y tarjeta para redes (metadatosPagina en src/lib/sitio.ts).
@@ -126,7 +120,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     // data-scroll-behavior: el CSS pone scroll suave en <html>; con este
     // atributo Next lo apaga mientras cambia de página. Sin él, la página
     // nueva se deslizaba hacia abajo en vez de abrir arriba.
-    <html lang="es-CO" data-scroll-behavior="smooth" className={`${marca.variable} ${mono.variable} ${titular.variable}`}>
+    <html lang="es-CO" data-scroll-behavior="smooth" className={`${marca.variable} ${mono.variable}`}>
       <head>
         {/* Corre antes de pintar: marca que hay JavaScript (el CSS de las
             apariciones solo oculta contenido bajo .js). Y red de seguridad: lo
