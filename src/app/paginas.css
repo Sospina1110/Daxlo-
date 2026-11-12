@@ -437,7 +437,7 @@
   display: grid;
   gap: 24px;
   padding: 20px 0 28px;
-  scroll-margin-top: 120px;
+  scroll-margin-top: 24px;
 }
 .cp-paso::before,
 .cp-paso::after {
@@ -962,7 +962,7 @@ html:not(.js) .cp-pregunta-mas { display: none; }
   display: block;
   margin-bottom: 4px;
   font-family: var(--font-mono);
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1042,7 +1042,7 @@ html:not(.js) .cp-pregunta-mas { display: none; }
   max-width: 1344px;
   margin-inline: auto;
   padding: 36px 0 36px;
-  scroll-margin-top: 120px;
+  scroll-margin-top: 24px;
 }
 @media (min-width: 900px) {
   .cp-franja {
@@ -1348,7 +1348,7 @@ html:not(.js) .cp-pregunta-mas { display: none; }
   }
 }
 .cp-grupos-lista { display: grid; gap: 72px; max-width: 880px; }
-.cp-grupo { scroll-margin-top: 120px; }
+.cp-grupo { scroll-margin-top: 24px; }
 .cp-grupo-cabeza {
   display: flex;
   flex-wrap: wrap;
@@ -1606,7 +1606,7 @@ textarea.cp-campo { resize: vertical; }
   position: relative;
   margin-top: 48px;
   padding-top: 32px;
-  scroll-margin-top: 112px;
+  scroll-margin-top: 16px;
 }
 .cp-politica-seccion::before {
   content: "";
@@ -1798,7 +1798,7 @@ textarea.cp-campo { resize: vertical; }
   top: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   white-space: nowrap;
   color: rgb(255 255 255 / 0.74);
 }

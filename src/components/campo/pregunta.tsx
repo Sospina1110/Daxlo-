@@ -62,6 +62,7 @@ export function Pregunta({ pregunta, respuesta, enlace }: { pregunta: string; re
           <p className="cm-texto-m cp-pregunta-respuesta">{respuesta}</p>
           {enlace && (
             <p>
+              {" "}
               <Link href={enlace.h} className="cm-enlace">
                 {enlace.t}
               </Link>
