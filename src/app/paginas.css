@@ -243,7 +243,9 @@
    pantallas angostas es una lista: cada fila con su número, su título y su
    línea. En escritorio la lista se fija (position: sticky) y, mientras se
    baja, la fila que toca sube al centro y se enciende; las otras quedan
-   apagadas arriba y abajo (lista.tsx escribe --activo y marca la fila). */
+   apagadas arriba y abajo. Que se fije lo decide este CSS solo (sin esperar a
+   React, para que la sección mida siempre lo mismo); lista.tsx solo escribe
+   --activo y marca la fila que toca. */
 .cp-lista {
   position: relative;
   padding: 96px var(--margen) 80px;
@@ -283,17 +285,17 @@
   }
 }
 @media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
-  .js:not(.forzar-visible) .cp-lista[data-fijada] {
+  .js:not(.forzar-visible) .cp-lista {
     --fila: 148px;
     padding-bottom: 0;
   }
-  .js:not(.forzar-visible) .cp-lista[data-fijada] .cp-lista-pista {
+  .js:not(.forzar-visible) .cp-lista .cp-lista-pista {
     height: calc(100vh + var(--n, 3) * 56vh);
     height: calc(100svh + var(--n, 3) * 56svh);
     margin-top: -18vh;
     margin-top: -18svh;
   }
-  .js:not(.forzar-visible) .cp-lista[data-fijada] .cp-lista-pegada {
+  .js:not(.forzar-visible) .cp-lista .cp-lista-pegada {
     position: sticky;
     top: 0;
     height: 100vh;
@@ -303,11 +305,11 @@
     margin-inline: auto;
   }
   /* Lo de arriba y lo de abajo se desvanece. */
-  .js:not(.forzar-visible) .cp-lista[data-fijada] .cp-lista-pegada {
+  .js:not(.forzar-visible) .cp-lista .cp-lista-pegada {
     -webkit-mask-image: linear-gradient(180deg, transparent 12%, #000 34%, #000 66%, transparent 88%);
     mask-image: linear-gradient(180deg, transparent 12%, #000 34%, #000 66%, transparent 88%);
   }
-  .js:not(.forzar-visible) .cp-lista[data-fijada] .cp-lista-items {
+  .js:not(.forzar-visible) .cp-lista .cp-lista-items {
     position: absolute;
     inset: calc(50% - var(--fila) / 2) 0 auto;
     margin: 0;
@@ -315,7 +317,7 @@
     transition: transform 1000ms var(--ease-larga);
     will-change: transform;
   }
-  .js:not(.forzar-visible) .cp-lista[data-fijada] .cp-lista-item {
+  .js:not(.forzar-visible) .cp-lista .cp-lista-item {
     grid-template-columns: 72px minmax(0, 1fr) 96px minmax(0, 1fr);
     align-items: center;
     height: var(--fila);
@@ -323,23 +325,23 @@
     opacity: 0.2;
     transition: opacity 700ms var(--ease-base);
   }
-  .js:not(.forzar-visible) .cp-lista[data-fijada] .cp-lista-item::before { content: none; }
-  .js:not(.forzar-visible) .cp-lista[data-fijada] .cp-lista-item[data-on] { opacity: 1; }
-  .js:not(.forzar-visible) .cp-lista[data-fijada] .cp-lista-item h3 { grid-column: 2; }
+  .js:not(.forzar-visible) .cp-lista .cp-lista-item::before { content: none; }
+  .js:not(.forzar-visible) .cp-lista .cp-lista-item[data-on] { opacity: 1; }
+  .js:not(.forzar-visible) .cp-lista .cp-lista-item h3 { grid-column: 2; }
   /* La línea de apoyo solo se ve en la fila que toca: entra con un barrido de
      izquierda a derecha. Las otras quedan recortadas, no transparentes: el
      texto sigue ahí para lectores de pantalla. */
-  .js:not(.forzar-visible) .cp-lista[data-fijada] .cp-lista-item p:last-child {
+  .js:not(.forzar-visible) .cp-lista .cp-lista-item p:last-child {
     grid-column: 4;
     clip-path: inset(-10% 100% -10% 0);
     transition: clip-path 300ms var(--ease-base);
   }
-  .js:not(.forzar-visible) .cp-lista[data-fijada] .cp-lista-item[data-on] p:last-child {
+  .js:not(.forzar-visible) .cp-lista .cp-lista-item[data-on] p:last-child {
     clip-path: inset(-10% -2% -10% 0);
     transition: clip-path 1100ms var(--ease-larga) 250ms;
   }
   /* La regla del centro: una fila de marcas, con la del medio encendida. */
-  .js:not(.forzar-visible) .cp-lista[data-fijada] .cp-lista-regla {
+  .js:not(.forzar-visible) .cp-lista .cp-lista-regla {
     display: block;
     position: absolute;
     top: 0;
@@ -348,7 +350,7 @@
     width: 12px;
     background: repeating-linear-gradient(180deg, var(--linea) 0 1px, transparent 1px 37px);
   }
-  .js:not(.forzar-visible) .cp-lista[data-fijada] .cp-lista-regla::after {
+  .js:not(.forzar-visible) .cp-lista .cp-lista-regla::after {
     content: "";
     position: absolute;
     top: 50%;
@@ -1822,3 +1824,10 @@ textarea.cp-campo { resize: vertical; }
 /* Sobre una toma, la nota del botón no se mete en la imagen: si no cabe al
    lado del botón, baja. */
 .cp-cabecera[data-variante="foto"] .cp-cabecera-accion { max-width: 40rem; }
+
+/* «Inicio /» flota junto al rótulo del titular: va por encima del titular
+   para que el enlace reciba el toque. */
+.cp-migas-flota {
+  position: relative;
+  z-index: 1;
+}

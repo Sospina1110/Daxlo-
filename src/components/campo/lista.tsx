@@ -11,10 +11,14 @@ import { enFrases } from "./frases";
 // lista se fija mientras se baja: la fila que toca sube al centro y se
 // enciende, y las otras quedan apagadas arriba y abajo.
 //
-// Este componente solo mide: con el avance del scroll dentro de la pista
-// decide qué fila toca, la marca (data-on) y escribe --activo en la sección;
-// el movimiento es una transición de CSS. Se mide en un cuadro por evento de
-// scroll como mucho, y solo mientras la sección está en pantalla.
+// Que se fije o no lo decide el CSS solo (el ancho, la preferencia de
+// movimiento y la clase .js que el layout pone antes de pintar): la sección
+// mide lo mismo antes y después de que cargue React, así que nada de lo que
+// sigue se corre de lugar. Este componente solo mide: con el avance del
+// scroll dentro de la pista decide qué fila toca, la marca (data-on) y
+// escribe --activo en la sección; el movimiento es una transición de CSS. Se
+// mide en un cuadro por evento de scroll como mucho, y solo mientras la
+// sección está en pantalla. Hasta que carga, la fila encendida es la primera.
 type Item = { titulo: string; texto?: string };
 
 const FIJABLE = "(min-width: 900px) and (prefers-reduced-motion: no-preference)";
@@ -29,7 +33,7 @@ export function Lista({ id, rotulo, titulo, items }: { id: string; rotulo: strin
     const mq = matchMedia(FIJABLE);
     const filas = [...sec.querySelectorAll<HTMLElement>(".cp-lista-item")];
     let cuadro = 0;
-    let activo = -1;
+    let activo = 0;
     let oyendo = false;
 
     const medir = () => {
@@ -47,13 +51,6 @@ export function Lista({ id, rotulo, titulo, items }: { id: string; rotulo: strin
     const pedir = () => {
       if (!cuadro) cuadro = requestAnimationFrame(medir);
     };
-    // Fijada o suelta, según el ancho y la preferencia de movimiento.
-    const poner = () => {
-      sec.toggleAttribute("data-fijada", mq.matches);
-      activo = -1;
-      if (!mq.matches) filas.forEach((f) => f.setAttribute("data-on", ""));
-      medir();
-    };
     const io = new IntersectionObserver((es) => {
       const dentro = es[es.length - 1].isIntersecting;
       if (dentro && !oyendo) {
@@ -67,12 +64,11 @@ export function Lista({ id, rotulo, titulo, items }: { id: string; rotulo: strin
       }
       medir();
     });
-    poner();
     io.observe(sec);
-    mq.addEventListener("change", poner);
+    mq.addEventListener("change", pedir);
     return () => {
       io.disconnect();
-      mq.removeEventListener("change", poner);
+      mq.removeEventListener("change", pedir);
       window.removeEventListener("scroll", pedir);
       window.removeEventListener("resize", pedir);
       if (cuadro) cancelAnimationFrame(cuadro);
@@ -91,7 +87,7 @@ export function Lista({ id, rotulo, titulo, items }: { id: string; rotulo: strin
         <div className="cp-lista-pegada">
           <ol className="cp-lista-items">
             {items.map((item, i) => (
-              <li key={item.titulo} data-on="" data-sola={item.texto ? undefined : ""} className="cp-lista-item">
+              <li key={item.titulo} data-on={i === 0 ? "" : undefined} data-sola={item.texto ? undefined : ""} className="cp-lista-item">
                 <p aria-hidden="true" className="cm-mono">
                   [0{i + 1}]
                 </p>
