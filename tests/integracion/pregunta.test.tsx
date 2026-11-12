@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { faq, preguntasLinea } from "@/content/copy";
-import { Pregunta } from "@/components/sections/pregunta";
+import { Pregunta } from "@/components/campo/pregunta";
 
 // Dos preguntas cualquiera de un mismo grupo (el del coaching tiene varias).
 const [q1, q2] = faq.grupos[preguntasLinea.coaching.grupo].preguntas;
@@ -65,11 +65,12 @@ describe("Pregunta (acordeón de preguntas frecuentes)", () => {
 
   it("abierta muestra el panel con altura y opacidad completas; cerrada lo colapsa", async () => {
     const { boton, panel, user } = montar();
-    expect(panel.className).toMatch(/grid-rows-\[0fr\]/);
-    expect(panel.className).toMatch(/opacity-0/);
+    // El alto y la opacidad los da el CSS con data-abierta (paginas.css).
+    expect(panel.hasAttribute("data-abierta")).toBe(false);
     await user.click(boton);
-    expect(panel.className).toMatch(/grid-rows-\[1fr\]/);
-    expect(panel.className).toMatch(/opacity-100/);
+    expect(panel.hasAttribute("data-abierta")).toBe(true);
+    await user.click(boton);
+    expect(panel.hasAttribute("data-abierta")).toBe(false);
   });
 
   it("dos preguntas en la misma página no comparten ids y abren por separado", async () => {

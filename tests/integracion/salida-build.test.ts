@@ -163,13 +163,13 @@ describe.skipIf(!HAY_BUILD)(HAY_BUILD ? "salida del build (out/)" : "salida del 
     }
   });
 
-  // El recorrido de /consultoria se ve como un video corto (un paso a la
-  // vez), pero el HTML del servidor trae los cuatro pasos completos en un
+  // Los cuatro pasos de /consultoria son paneles apilados, cada uno con su
+  // dibujo. El HTML del servidor los trae completos y en orden dentro de un
   // <ol>: es lo que leen los buscadores, los lectores de pantalla y quien
-  // entra sin JavaScript. El escenario es decorativo y los controles no
-  // apuntan a nada con aria-controls (esos son las preguntas, que se cuentan
-  // arriba).
-  it("/consultoria: el recorrido trae los cuatro pasos completos en el HTML, con el escenario decorativo", () => {
+  // entra sin JavaScript. El dibujo y el índice fijo son decorativos, y no
+  // hay nada que pulsar (los únicos botones con aria-controls de la página
+  // son las preguntas, que se cuentan arriba).
+  it("/consultoria: los cuatro pasos del método vienen completos en el HTML, con el dibujo decorativo", () => {
     const doc = pagina("consultoria");
     const seccion = doc.getElementById("como-trabajamos");
     expect(seccion).not.toBeNull();
@@ -178,15 +178,24 @@ describe.skipIf(!HAY_BUILD)(HAY_BUILD ? "salida del build (out/)" : "salida del 
     consultoria.recorrido.pasos.forEach((p, i) => {
       const texto = pasos[i].textContent ?? "";
       expect(pasos[i].querySelector("h3")?.textContent).toBe(p.titulo);
-      for (const parte of [p.numero, p.texto, p.rotulo, p.llevas]) expect(texto, p.numero).toContain(parte);
+      for (const parte of [p.numero, p.etapa, p.texto, p.rotulo, p.llevas]) expect(texto, p.numero).toContain(parte);
+      // El dibujo es decorativo y va rotulado como ejemplo.
+      const dibujo = pasos[i].querySelector(".cp-dibujo");
+      expect(dibujo?.getAttribute("aria-hidden"), p.numero).toBe("true");
+      expect(dibujo?.textContent, p.numero).toContain(consultoria.recorrido.dibujo.etiqueta);
     });
-    // El primero sale marcado como el que se ve: no hay salto al hidratar.
-    expect(pasos.map((li) => li.hasAttribute("data-activo"))).toEqual([true, false, false, false]);
-    expect(seccion?.querySelector(".recorrido-escenario")?.getAttribute("aria-hidden")).toBe("true");
-    const botones = [...(seccion?.querySelectorAll("button") ?? [])];
-    expect(botones).toHaveLength(consultoria.recorrido.pasos.length + 1);
-    expect(botones.filter((b) => b.hasAttribute("aria-controls"))).toEqual([]);
-    expect(botones.every((b) => b.getAttribute("type") === "button")).toBe(true);
+    expect(seccion?.querySelector(".cp-indice")?.getAttribute("aria-hidden")).toBe("true");
+    expect(seccion?.querySelectorAll("button")).toHaveLength(0);
+  });
+
+  // Pedido de Santiago (2026-11-12): ninguna página habla de cotizaciones,
+  // de facturas ni del informe del viernes. Se revisa lo que de verdad sale
+  // publicado: el texto visible, los metadatos y los datos estructurados.
+  it.each(TODOS_LOS_HTML.map((a) => [path.basename(a), a]))("%s: nada de cotizaciones, facturas ni informe del viernes", (_n, archivo) => {
+    const doc = documento(archivo);
+    const publicado = [textoVisible(doc), doc.title, meta(doc, 'meta[name="description"]') ?? "", ...datosEstructurados(doc).map((d) => JSON.stringify(d))].join("\n");
+    expect(publicado.match(/.{0,30}(cotiz|factur|viernes).{0,30}/gi) ?? []).toEqual([]);
+    expect(publicado).not.toMatch(/DATO FALTANTE/i);
   });
 
   it("Service de /coaching y /consultoria: el nombre del servicio es el de las migas, con su @id fijo", () => {
@@ -339,8 +348,10 @@ describe.skipIf(!HAY_BUILD)(HAY_BUILD ? "salida del build (out/)" : "salida del 
           for (const c of el.classList) if (c.startsWith("animate-")) usadas.add(c);
         }
       }
-      // (animate-float salió en noviembre de 2026 junto con el orbe.)
-      expect(usadas.size).toBeGreaterThan(2);
+      // Quedan dos: el pulso que recorre una conexión y la hoja que da la
+      // vuelta (los diagramas del panel del inicio y el paso 04 de
+      // /consultoria).
+      expect([...usadas].sort()).toEqual(["animate-orbita", "animate-pulso"]);
       expect([...usadas].filter((c) => !pausables.has(c))).toEqual([]);
     });
   });
@@ -358,66 +369,60 @@ describe.skipIf(!HAY_BUILD)(HAY_BUILD ? "salida del build (out/)" : "salida del 
       expect(css.replace(/\s/g, "")).toContain("[data-pausa]{animation-play-state:paused!important}");
     });
 
-    it("con 'reducir movimiento' apaga todas las animaciones infinitas y las entradas", () => {
-      const bloques = [...css.matchAll(/@media \(prefers-reduced-motion:\s*reduce\)\s*\{([\s\S]*?\})\s*\}/g)].map((m) => m[1]).join("\n");
-      const regla = bloques.match(/([^{}]*)\{animation:none!important\}/)?.[1] ?? "";
-      // (animate-halo salió en noviembre de 2026 junto con el halo que respiraba.)
-      for (const clase of ["animate-marquee", "animate-marquee-reverse", "animate-float", "animate-flow", "animate-deriva", "animate-paseo", "animate-ping", "animate-caret", "entrada", "subir", "fundir"]) {
-        expect(regla.split(",").map((s) => s.trim()), clase).toContain(`.${clase}`);
-      }
-    });
-
-    it("en celular (< 768 px) no corren las líneas punteadas ni la deriva de los resplandores", () => {
-      // Hay más de un bloque para celular (el del hilo de luz tiene el suyo).
-      const bloque = [...css.matchAll(/@media \(max-width:\s*767px\)\s*\{([^@]*?)\}\s*\}/g)].map((m) => m[1]).join("\n");
-      expect(bloque).toMatch(/\.animate-flow,\s*\.animate-deriva\s*\{animation:none/);
-    });
-
-    // El lienzo de la cinta y la banda de respaldo aparecen sin transición, y
-    // el relleno claro del botón principal tampoco funde. (El barrido de
-    // brillo salió en noviembre de 2026: ya no hay nada que apagar.)
-    it("con 'reducir movimiento' el fondo del hero y el botón principal no se animan", () => {
-      const bloques = [...css.matchAll(/@media \(prefers-reduced-motion:\s*reduce\)\s*\{([\s\S]*?\})\s*\}/g)].map((m) => m[1]).join("\n").replace(/\s/g, "");
-      expect(bloques).toMatch(/\.cinta-lienzo,\.cinta-respaldo,\.boton-principal:+before\{transition:none!important\}/);
-    });
-
     // ------------------------------------------------ Lenguaje de movimiento
-    // (DESIGN.md, Motion): dos curvas y un resorte, hover solo con puntero
-    // fino, presión en todo lo pulsable y nada de lo que salió.
+    // Hover solo con puntero fino, presión en lo pulsable, todo quieto con
+    // «reducir movimiento» y nada del sistema viejo.
     const plano = css.replace(/\s/g, "");
     const bloquesReducir = () =>
       [...css.matchAll(/@media \(prefers-reduced-motion:\s*reduce\)\s*\{([\s\S]*?\})\s*\}/g)].map((m) => m[1]).join("\n").replace(/\s/g, "");
 
-    it("el hover del botón principal y la pausa de la marquesina solo existen con puntero fino", () => {
+    it("con 'reducir movimiento' apaga las animaciones sin fin, las entradas de las cabeceras y la escena fijada", () => {
+      const reducir = bloquesReducir();
+      const regla = reducir.match(/([^{}]*)\{animation:none!important\}/)?.[1] ?? "";
+      for (const clase of ["animate-pulso", "animate-orbita"]) expect(regla.split(","), clase).toContain(`.${clase}`);
+      // Las entradas del hero y de las cabeceras, el carrusel y las tomas.
+      for (const sel of [".cm-hero-medios", ".cm-linea>span", ".cm-hero-entra", ".cp-cabecera-medios", ".cp-toma-medios"]) {
+        expect(reducir, sel).toMatch(new RegExp(`${sel.replace(/[.*+?^$()|[\]\\{}]/g, "\\$&")}[^{}]*\\{animation:none`));
+      }
+      // La escena fijada y la lista fijada solo se fijan sin esa preferencia.
+      expect(plano).toMatch(/@media\(prefers-reduced-motion:no-preference\)\{[^@]*\.cm-tiempos-pegada\{[^}]*position:sticky/);
+      expect(plano).toMatch(/@media\(min-width:900px\)and\(prefers-reduced-motion:no-preference\)\{[^@]*\.cp-lista-pegada\{[^}]*position:sticky/);
+      // Las afirmaciones que se encienden quedan enteras.
+      expect(reducir).toContain(".js.cm-enciende[data-lista].cm-palabra{opacity:1}");
+    });
+
+    it("en celular (< 768 px) no corre el pulso de los diagramas", () => {
+      const bloque = [...css.matchAll(/@media \(max-width:\s*767px\)\s*\{([^@]*?)\}\s*\}/g)].map((m) => m[1]).join("\n").replace(/\s/g, "");
+      expect(bloque).toMatch(/\.animate-pulso\{[^}]*animation:none/);
+    });
+
+    it("los hover solo existen con puntero fino", () => {
       // Todo lo que está dentro de @media (hover:hover) and (pointer:fine) se
-      // quita; afuera no puede quedar ninguno de estos hover.
+      // quita; afuera no puede quedar ningún :hover.
       const finos = [...plano.matchAll(/@media\(hover:hover\)and\(pointer:fine\)\{((?:[^{}]*\{[^{}]*\})*)\}/g)];
-      expect(finos.length).toBeGreaterThan(0);
+      expect(finos.length).toBeGreaterThan(5);
       const dentro = finos.map((m) => m[1]).join("");
-      for (const sel of [".boton-principal:hover:before", ".iman-movil:has(.boton-principal:hover):after", ".marquee-track:hover"]) {
+      for (const sel of [".boton:hover", ".barra-enlace:hover", ".cm-puerta:hover.cm-puerta-foto", ".cm-capa:hover", ".cp-opcion:hover", ".cp-pregunta-boton:hover.cp-pregunta-mas"]) {
         expect(dentro, sel).toContain(sel);
       }
       const afuera = finos.reduce((t, m) => t.replace(m[0], ""), plano);
-      expect(afuera).not.toMatch(/\.boton-principal:hover/);
-      expect(afuera).not.toMatch(/\.marquee-track:hover/);
+      // Queda uno a propósito: con «reducir movimiento», la foto de la puerta
+      // no se acerca ni al pasar el puntero.
+      expect((afuera.match(/[^{},]*:hover[^{},]*/g) ?? []).filter((s) => !s.includes(".cm-puerta:hover.cm-puerta-foto"))).toEqual([]);
     });
 
     it("sin el recuadro gris al tocar", () => {
       expect(plano).toMatch(/html\{[^}]*-webkit-tap-highlight-color:transparent/);
     });
 
-    it("lo pulsable baja al presionar, salvo con teclado; con 'reducir movimiento' no se escala", () => {
-      expect(plano).toContain(".pulsable:active:not(:focus-visible){scale:var(--escala-presion,.97)");
-      expect(bloquesReducir()).toMatch(/\.pulsable:active:not\(:focus-visible\)\{[^}]*scale:none/);
+    it("el botón baja al presionar, salvo con teclado; con 'reducir movimiento' no se escala", () => {
+      expect(plano).toContain(".boton:active:not(:focus-visible){transform:scale(.98)}");
+      expect(bloquesReducir()).toMatch(/\.boton:active:not\(:focus-visible\)[^{}]*\{[^}]*transform:none/);
     });
 
-    it(".pulsable y .tarjeta-pulsable animan solo propiedades baratas (ni box-shadow ni all)", () => {
-      for (const clase of ["pulsable", "tarjeta-pulsable"]) {
-        const listas = [...plano.matchAll(new RegExp(`\\.${clase}\\{transition-property:([^;}]*)`, "g"))].map((m) => m[1]);
-        expect(listas.length, clase).toBeGreaterThan(0);
-        for (const l of listas) {
-          expect(l, clase).not.toMatch(/box-shadow|\ball\b/);
-        }
+    it("no queda nada del sistema anterior (cinta, orbe, placas, hilo, recorrido animado)", () => {
+      for (const resto of [".boton-principal", ".cinta-", ".placa", ".orbe", ".hilo-", ".recorrido", ".pulsable", ".tarjeta-pulsable", ".iman-", ".glass", ".resplandor{", "animate-marquee", "animate-float"]) {
+        expect(plano, resto).not.toContain(resto);
       }
     });
 

@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { agendar } from "@/content/copy";
-import { FormularioContacto } from "@/components/sections/formulario";
+import { FormularioContacto } from "@/components/campo/formulario";
 import { irA } from "@/lib/agenda";
 
 vi.mock("next/link", () => import("../apoyo/link-simulado"));

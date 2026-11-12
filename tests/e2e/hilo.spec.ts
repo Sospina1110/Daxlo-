@@ -24,7 +24,7 @@ test.describe("/herramientas lleva a las dos líneas", () => {
     for (const [i, hacia] of (["coaching", "consultoria"] as const).entries()) {
       const t = tarjetas.nth(i);
       await expect(t).toHaveAttribute("href", rutas[hacia]);
-      await expect(t).toContainText(otraLinea[hacia].titulo);
+      await expect(t).toContainText(dosFormas[hacia].regla);
       await expect(t).toContainText(otraLinea[hacia].enlace);
     }
     // Entre la lista de herramientas y el cierre.
@@ -40,7 +40,7 @@ test.describe("/herramientas lleva a las dos líneas", () => {
   test("cada tarjeta abre su línea, arriba", async ({ page, isMobile }) => {
     for (const hacia of ["coaching", "consultoria"] as const) {
       await irA(page, rutas.herramientas);
-      const t = page.locator("main a.tarjeta-pulsable", { hasText: otraLinea[hacia].titulo });
+      const t = page.locator("main a.tarjeta-pulsable", { hasText: dosFormas[hacia].regla });
       await quieto(t);
       await tocar(t, isMobile);
       await expect(page).toHaveURL(rutas[hacia]);
@@ -117,11 +117,11 @@ test.describe("/nosotros presenta las dos formas", () => {
   test("el titular nombra las dos líneas y el último párrafo dice la regla de cada una antes de las tarjetas", async ({ page }) => {
     await irA(page, rutas.nosotros);
     await expect(page.locator("h1")).toHaveText(nosotros.titulo);
-    const parrafo = page.locator("main").getByText(nosotros.parrafos[2], { exact: true });
+    const parrafo = page.locator("main").getByText(nosotros.contraste.texto, { exact: true });
     await expect(parrafo).toBeVisible();
     // Las palabras de las puertas del inicio.
-    expect(nosotros.parrafos[2]).toContain(`Si ${dosFormas.coaching.regla.toLowerCase()}`);
-    expect(nosotros.parrafos[2]).toContain(`Si ${dosFormas.consultoria.regla.toLowerCase()}`);
+    expect(nosotros.contraste.texto).toContain(`Si ${dosFormas.coaching.regla.toLowerCase()}`);
+    expect(nosotros.contraste.texto).toContain(`Si ${dosFormas.consultoria.regla.toLowerCase()}`);
     const p = await parrafo.evaluate((e) => e.getBoundingClientRect().top + scrollY);
     const t = await page.locator("main a.tarjeta-pulsable").first().evaluate((e) => e.getBoundingClientRect().top + scrollY);
     expect(t).toBeGreaterThan(p);

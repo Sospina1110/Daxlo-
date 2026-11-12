@@ -36,11 +36,15 @@ describe("Migas de pan", () => {
     expect(screen.getByRole("navigation", { name: "Migas de pan" }).querySelector("ol")).not.toBeNull();
   });
 
-  it("centro=true centra la lista; por defecto va a la izquierda", () => {
-    const { rerender } = render(<Migas actual="Agendar" centro />);
-    const lista = () => screen.getByRole("navigation", { name: "Migas de pan" }).querySelector("ol") as HTMLOListElement;
-    expect(lista().className).toMatch(/\bjustify-center\b/);
+  // En las páginas de cada línea el titular ya empieza con el nombre de la
+  // página: a la vista quedan «Inicio /» y el rótulo del titular. La página
+  // actual sigue en el HTML, para lectores de pantalla y buscadores.
+  it("soloInicio deja la página actual solo para lectores, sin quitarla del HTML", () => {
+    const { rerender } = render(<Migas actual="Coaching de IA 1 a 1" soloInicio />);
+    const actual = () => screen.getByRole("navigation", { name: "Migas de pan" }).querySelector('[aria-current="page"]') as HTMLElement;
+    expect(actual().textContent).toBe("Coaching de IA 1 a 1");
+    expect(actual().className).toMatch(/\bsr-only\b/);
     rerender(<Migas actual="Agendar" />);
-    expect(lista().className).not.toMatch(/\bjustify-center\b/);
+    expect(actual().className).not.toMatch(/\bsr-only\b/);
   });
 });

@@ -80,9 +80,9 @@ describe("voz de marca", () => {
     expect(consultoria.paraQuien.respuesta).toMatch(/«ustedes lo manejan», ahí te decimos que no/);
     expect(consultoria.paraQuien.noEs.items.at(-1)).toMatch(/una sola persona/);
     expect(otraLinea.coaching.enlace).toMatch(/coaching/);
-    // Las 40 horas son referencia, no filtro, y si no da no se cotiza.
+    // Las 40 horas son referencia, no filtro, y si no da no se propone nada.
     const noDa = respuesta("¿Y si mi proceso no da para un proyecto?");
-    expect(noDa).toMatch(/te lo decimos en la primera conversación y no te cotizamos nada/i);
+    expect(noDa).toMatch(/te lo decimos en la primera conversación y no te proponemos un proyecto/i);
     expect(noDa).toMatch(/40 horas/);
     // Aliado (Santiago, 2026-11-03): el hero lo dice arriba y la portada de
     // consultoría lo cumple. Tu equipo opera cada proceso (sin dependencia) y
@@ -284,7 +284,10 @@ describe("listas que el sitio pinta con key de React", () => {
   unicas("inicio.equipo.filas (título)", inicio.equipo.filas.map((f) => f.titulo));
   unicas("inicio.sistema.capas (id)", inicio.sistema.capas.map((c) => c.id));
   unicas("las tres puertas (etiqueta)", [dosFormas.coaching.etiqueta, dosFormas.equipo.etiqueta, dosFormas.consultoria.etiqueta]);
-  unicas("nosotros.parrafos", nosotros.parrafos);
+  unicas("nosotros.reglas (título)", nosotros.reglas.lista.map((r) => r.titulo));
+  unicas("coaching.llevas (título)", coaching.llevas.lista.map((l) => l.titulo));
+  unicas("consultoria.despues (título)", consultoria.despues.lista.map((l) => l.titulo));
+  unicas("consultoria.recorrido.pasos (etapa)", consultoria.recorrido.pasos.map((p) => p.etapa));
   unicas("coaching.portada.nota", coaching.portada.nota);
   unicas("coaching.problema.escenas", coaching.problema.escenas);
   unicas("coaching.sesion.pasos (número)", coaching.sesion.pasos.map((p) => p.numero));
@@ -335,7 +338,31 @@ describe("coherencia entre bloques", () => {
     // Nadie más: ni "socios" ni "los dos" en lo que se lee.
     const todo = TODAS.map(([, t]) => t).join(" ");
     expect(todo).not.toMatch(/\bsocios?\b|estamos los dos/i);
-    expect(nosotros.parrafos[2]).toMatch(/Colombia/);
+    expect(nosotros.sub).toMatch(/Colombia/);
+  });
+
+  // Pedido de Santiago (2026-11-12), ahora en todo el sitio: ninguna página
+  // habla de cotizaciones, de facturas ni del informe del viernes, ni como
+  // ejemplo ni de pasada. Se revisa todo el texto de copy.ts; lo que sale en
+  // el HTML de cada página lo revisa tests/integracion/salida-build.test.ts.
+  it("ningún texto del sitio habla de cotizaciones, facturas ni del informe del viernes", () => {
+    const mal = TODAS.filter(([, t]) => /cotiz|factur|viernes/i.test(t)).map(([d, t]) => `${d}: ${t}`);
+    expect(mal).toEqual([]);
+    // Que la vigilancia vigile: las formas que se colaron antes.
+    for (const frase of ["las cotizaciones", "no te cotizamos nada", "facturas de proveedores", "El informe del viernes", "Facturación"]) {
+      expect(/cotiz|factur|viernes/i.test(frase), frase).toBe(true);
+    }
+  });
+
+  // Lo que falta que confirme Santiago no se publica: ni un dato marcado
+  // como faltante ni la frecuencia de trabajo con el equipo. «Cada semana»
+  // solo puede decir cómo es el proceso del cliente ("se repite igual cada
+  // semana"), nunca cada cuánto nos reunimos.
+  it("nada marcado como dato faltante, y sin frecuencia de trabajo sin confirmar", () => {
+    const todo = TODAS.map(([, t]) => t).join(" ");
+    expect(todo).not.toMatch(/DATO FALTANTE/i);
+    const semanas = todo.match(/.{0,22}cada semana/gi) ?? [];
+    expect(semanas.filter((s) => !/se repite igual cada semana$/i.test(s))).toEqual([]);
   });
 
   // El inicio «Campo» (2026-11-12): poco texto, sobre el armazón que eligió

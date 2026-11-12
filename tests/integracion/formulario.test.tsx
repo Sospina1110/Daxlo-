@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen, waitFor, within } from "@testing-librar
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { agendar, contacto, privacidad, rutas } from "@/content/copy";
-import { FormularioContacto } from "@/components/sections/formulario";
+import { FormularioContacto } from "@/components/campo/formulario";
 
 vi.mock("next/link", () => import("../apoyo/link-simulado"));
 // Este archivo prueba el formulario sin agenda de Cal.com, pase lo que pase en

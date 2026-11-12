@@ -59,8 +59,8 @@ test.describe("ergonomía en celular", () => {
   // el título de su grupo.
   const ENLACES_SUELTOS: { ruta: string; nombres: (string | RegExp)[] }[] = [
     { ruta: "/preguntas", nombres: [dosFormas.coaching.enlace, dosFormas.consultoria.enlace] },
-    { ruta: "/coaching", nombres: [coaching.portada.accion.enlace, otraLinea.consultoria.enlace, preguntasLinea.todas, cierre.whatsapp] },
-    { ruta: "/consultoria", nombres: [consultoria.portada.accion.enlace, otraLinea.coaching.enlace, preguntasLinea.todas, cierre.whatsapp] },
+    { ruta: "/coaching", nombres: [otraLinea.consultoria.enlace, preguntasLinea.todas, cierre.whatsapp] },
+    { ruta: "/consultoria", nombres: [otraLinea.coaching.enlace, preguntasLinea.todas, cierre.whatsapp] },
     { ruta: "/", nombres: [new RegExp(`^${dosFormas.coaching.enlace}\\b`), new RegExp(`^${dosFormas.consultoria.enlace}\\b`), cierre.whatsapp] },
   ];
   for (const { ruta, nombres } of ENLACES_SUELTOS) {

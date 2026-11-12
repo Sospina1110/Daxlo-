@@ -18,21 +18,20 @@ const prioridad: Record<keyof typeof rutas, number> = {
 
 // Último cambio del contenido de cada página (AAAA-MM-DD). Se actualiza a mano
 // cuando cambia el texto de esa página, y no con la fecha del build: Google
-// deja de creerle a un lastmod que cambia en cada publicación. El cierre es
-// compartido, así que un cambio ahí toca todas las páginas que lo muestran.
-// /herramientas, /nosotros, /agendar y /privacidad no cambian en la pasada del
-// 3 de noviembre de 2026: su único cambio es el texto de un enlace del pie
-// (mismo destino), que es compartido y no cuenta como contenido.
-// Si esta pasada se publica otro día, se pone aquí la fecha de publicación.
+// deja de creerle a un lastmod que cambia en cada publicación.
+// El 12 de noviembre de 2026 cambió el contenido de todas las páginas (el
+// sitio rehecho en el sistema «Campo»), salvo el texto de la política de
+// datos, que es del 11. Si esta pasada se publica otro día, se pone aquí la
+// fecha de publicación.
 const ultimoCambio: Record<keyof typeof rutas, string> = {
-  inicio: "2026-11-03",
-  coaching: "2026-11-03",
-  consultoria: "2026-11-03",
-  herramientas: "2026-10-30",
-  nosotros: "2026-10-30",
-  preguntas: "2026-11-03",
-  agendar: "2026-10-30",
-  privacidad: "2026-10-26",
+  inicio: "2026-11-12",
+  coaching: "2026-11-12",
+  consultoria: "2026-11-12",
+  herramientas: "2026-11-12",
+  nosotros: "2026-11-12",
+  preguntas: "2026-11-12",
+  agendar: "2026-11-12",
+  privacidad: "2026-11-11",
 };
 
 export default function sitemap(): MetadataRoute.Sitemap {

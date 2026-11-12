@@ -326,14 +326,17 @@
   .js:not(.forzar-visible) .cp-lista[data-fijada] .cp-lista-item::before { content: none; }
   .js:not(.forzar-visible) .cp-lista[data-fijada] .cp-lista-item[data-on] { opacity: 1; }
   .js:not(.forzar-visible) .cp-lista[data-fijada] .cp-lista-item h3 { grid-column: 2; }
+  /* La línea de apoyo solo se ve en la fila que toca: entra con un barrido de
+     izquierda a derecha. Las otras quedan recortadas, no transparentes: el
+     texto sigue ahí para lectores de pantalla. */
   .js:not(.forzar-visible) .cp-lista[data-fijada] .cp-lista-item p:last-child {
     grid-column: 4;
-    opacity: 0;
-    transition: opacity 500ms var(--ease-base);
+    clip-path: inset(-10% 100% -10% 0);
+    transition: clip-path 300ms var(--ease-base);
   }
   .js:not(.forzar-visible) .cp-lista[data-fijada] .cp-lista-item[data-on] p:last-child {
-    opacity: 1;
-    transition-delay: 250ms;
+    clip-path: inset(-10% -2% -10% 0);
+    transition: clip-path 1100ms var(--ease-larga) 250ms;
   }
   /* La regla del centro: una fila de marcas, con la del medio encendida. */
   .js:not(.forzar-visible) .cp-lista[data-fijada] .cp-lista-regla {
@@ -1284,7 +1287,7 @@
 .cp-opcion {
   display: flex;
   flex-direction: column;
-  min-height: 248px;
+  min-height: clamp(184px, 22vw, 248px);
   padding: 22px 24px 24px;
   border: 1px dashed rgb(255 255 255 / 0.3);
   border-radius: 8px;

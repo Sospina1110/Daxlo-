@@ -8,18 +8,17 @@ import { paginas } from "@/content/copy";
 import { ldOrganizacion, URL_SITIO } from "@/lib/sitio";
 import "./globals.css";
 
-// La letra del sitio: Geist, una sola familia para titulares y cuerpo, y
-// Geist Mono solo para datos, numerales y rótulos técnicos (skill
-// landing-page-design, B1). next/font las descarga al compilar y las sirve
-// desde el propio sitio: no hay petición a terceros en cada visita (la CSP no
-// la dejaría pasar).
+// La letra del sitio: Geist para el cuerpo y Geist Mono para los rótulos y
+// los numerales. next/font las descarga al compilar y las sirve desde el
+// propio sitio: no hay petición a terceros en cada visita (la CSP no la
+// dejaría pasar).
 //
-// Cambiar de familia es cambiar estas líneas: todo el sitio lee --font-sans y
-// --font-display (las dos apuntan a --fuente-marca) y --font-mono
-// (--fuente-mono), que arman globals.css y campo.css.
+// Cambiar de familia es cambiar estas líneas: todo el sitio lee --font-sans
+// (--fuente-marca) y --font-mono (--fuente-mono), que arman globals.css y
+// campo.css.
 //
-// Los titulares del inicio, la barra y el pie (sistema «Campo») van en
-// Ysabeau Office en peso fino: una sans humanista con un remate leve, la más
+// Los titulares de todo el sitio (sistema «Campo») van en Ysabeau Office en
+// peso fino: una sans humanista con un remate leve, la más
 // cercana al carácter de la referencia entre las de licencia abierta que se
 // compararon (Geist 300, Hanken Grotesk, Alegreya Sans, Newsreader, Fraunces).
 // La lee --font-titular (campo.css).
@@ -73,36 +72,25 @@ const SCRIPT_CABECERA = [
 // Sin IntersectionObserver (navegadores muy viejos) se quita .js y todo queda
 // visible. El MutationObserver cubre nodos que React cree después.
 //
-// Seis trabajos:
+// Cuatro trabajos:
 // 1. En iOS, Safari solo pinta :active si la página escucha touchstart, y
 //    React lo registra recién al hidratar: con un oyente vacío y pasivo, los
 //    botones bajan al presionar desde el HTML, también con red lenta.
-// 2. Con cada Tab marca [data-tab] en <html> y lo quita con el primer
-//    movimiento del puntero: así lo que pierde el foco del teclado también se
-//    apaga de una vez (globals.css), no solo lo que lo gana.
-// 3. Revela cada [data-revelar] al entrar en pantalla. En un grupo
+// 2. Revela cada [data-revelar] al entrar en pantalla. En un grupo
 //    (data-escalonar, e = 0,08 s por defecto) el hijo i espera
 //    e·(1 − 0,85^i)/0,15 s, con 3 decimales y nunca más de 0,32 s: cada
 //    intervalo es 15 % más corto que el anterior (0 / 0,08 / 0,148 / 0,206 /
 //    0,255 / 0,297 / 0,32 s). Se lee como una ola, no como una cola de
 //    metrónomo. El primer intervalo sigue siendo e.
-// 4. Respaldo para Safari: con frames lentos y scroll rápido, un bloque puede
+// 3. Respaldo para Safari: con frames lentos y scroll rápido, un bloque puede
 //    pasar de abajo a arriba de la pantalla entre dos frames sin contar nunca
 //    como visible, y se quedaba oculto. Al hacer scroll se revela todo lo que
 //    ya quedó por encima del borde inferior.
-// 5. Pausa las animaciones infinitas (.animate-*) fuera de pantalla: marca
-//    [data-pausa] y el CSS las detiene. Corriendo todas a la vez mantenían el
-//    celular trabajando aunque nadie tocara la página.
-// 6. En pantallas táctiles (sin hover) marca con [data-centro] cada
-//    [data-al-centro] que cruza el centro de la pantalla: las filas que con
-//    mouse se encienden al pasar el puntero (las puertas del inicio), aquí se
-//    encienden solas al pasar por el centro. Un observador que solo ve esa
-//    franja: no se escucha el scroll.
+// 4. Pausa las animaciones infinitas (.animate-*) fuera de pantalla: marca
+//    [data-pausa] y el CSS las detiene.
 const SCRIPT_APARICIONES = `(function(){
 var d=document.documentElement;
 document.addEventListener('touchstart',function(){},{passive:true});
-addEventListener('keydown',function(e){if(e.key==='Tab')d.setAttribute('data-tab','')},true);
-addEventListener('pointermove',function(){if(d.hasAttribute('data-tab'))d.removeAttribute('data-tab')},{capture:true,passive:true});
 if(!('IntersectionObserver' in window)){d.classList.remove('js');return;}
 function revelar(el){
 var p=el.parentElement;
@@ -122,19 +110,14 @@ var A='.animate-pulso,.animate-orbita';
 var ia=new IntersectionObserver(function(es){es.forEach(function(e){
 if(e.isIntersecting)e.target.removeAttribute('data-pausa');else e.target.setAttribute('data-pausa','');
 });},{rootMargin:'100px'});
-var ic=matchMedia('(hover: none)').matches?new IntersectionObserver(function(es){es.forEach(function(e){
-if(e.isIntersecting)e.target.setAttribute('data-centro','');else e.target.removeAttribute('data-centro');
-});},{rootMargin:'-45% 0px -45% 0px'}):null;
 function observar(r){
 [].forEach.call(r.querySelectorAll('[data-revelar]:not([data-visible])'),function(el){io.observe(el)});
-[].forEach.call(r.querySelectorAll(A),function(el){ia.observe(el)});
-if(ic)[].forEach.call(r.querySelectorAll('[data-al-centro]'),function(el){ic.observe(el)});}
+[].forEach.call(r.querySelectorAll(A),function(el){ia.observe(el)});}
 observar(document);
 new MutationObserver(function(ms){ms.forEach(function(m){[].forEach.call(m.addedNodes,function(n){
 if(n.nodeType!==1)return;
 if(n.hasAttribute('data-revelar')&&!n.hasAttribute('data-visible'))io.observe(n);
 if(n.matches(A))ia.observe(n);
-if(ic&&n.hasAttribute('data-al-centro'))ic.observe(n);
 observar(n);});});}).observe(document.body,{childList:true,subtree:true});
 })();`;
 
