@@ -25,7 +25,7 @@ export function TramaHero() {
     if (!lienzo || !caja || !seccion || !foto) return;
 
     const entorno = leerEntorno();
-    const trama = crearTrama(lienzo, { celda: entorno.movil ? 10 : 12, color: COLOR, semilla: 5 });
+    const trama = crearTrama(lienzo, { celda: entorno.movil ? 10 : 11, color: COLOR, semilla: 5 });
     let luz: Float32Array | null = null;
     let ultimaMuestra = -1;
     // El puntero, suavizado: a dónde va y dónde está.

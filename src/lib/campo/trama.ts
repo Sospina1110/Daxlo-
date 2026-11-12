@@ -255,7 +255,7 @@ export function crearTrama(lienzo: HTMLCanvasElement, o: { celda: number; color:
           const i = k % cols;
           const j = (k - i) / cols;
           const luz = a[k];
-          const s = Math.max(1, (1 + 1.7 * luz) * esc);
+          const s = Math.max(1, (1.1 + 2.3 * luz) * esc);
           ctx.rect(Math.round((i + 0.5) * paso - s / 2), Math.round((j + 0.5) * paso - s / 2), s, s);
         }
         ctx.fill();

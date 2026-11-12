@@ -21,13 +21,16 @@ type Props = {
   vertical?: boolean;
   // La del hero: se pide de primera y sin espera.
   prioridad?: boolean;
+  // Se pide con la página aunque esté lejos (las tarjetas del carrusel que
+  // arrancan fuera de la pantalla, hacia un lado).
+  temprana?: boolean;
   className?: string;
 };
 
 // La misma condición decide el póster y el video (fondo-video.tsx).
 export const PANTALLA_VERTICAL = "(max-aspect-ratio: 1/1)";
 
-export function Foto({ nombre, ancho, alto, vertical = false, prioridad = false, className }: Props) {
+export function Foto({ nombre, ancho, alto, vertical = false, prioridad = false, temprana = false, className }: Props) {
   return (
     <picture>
       {vertical && <source media={PANTALLA_VERTICAL} type="image/avif" srcSet={`${BASE}/${nombre}-v.avif`} />}
@@ -39,9 +42,9 @@ export function Foto({ nombre, ancho, alto, vertical = false, prioridad = false,
         alt=""
         width={ancho}
         height={alto}
-        loading={prioridad ? "eager" : "lazy"}
+        loading={prioridad || temprana ? "eager" : "lazy"}
         decoding="async"
-        fetchPriority={prioridad ? "high" : undefined}
+        fetchPriority={prioridad ? "high" : temprana ? "low" : undefined}
         draggable={false}
         className={cn("cm-foto", className)}
       />

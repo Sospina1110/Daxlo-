@@ -82,8 +82,8 @@ export function Tiempos({ videos = {} }: { videos?: VideosEscena }) {
     if (entorno.reducido) return;
 
     const cajas = [...sec.querySelectorAll<HTMLElement>(".cm-tiempo-foto")];
-    const trama = crearTrama(lz, { celda: entorno.movil ? 10 : 12, color: COLOR_TRAMA, semilla: 9 });
-    const particulas = crearParticulas(entorno.movil ? 750 : 1500);
+    const trama = crearTrama(lz, { celda: entorno.movil ? 10 : 11, color: COLOR_TRAMA, semilla: 9 });
+    const particulas = crearParticulas(entorno.movil ? 1100 : 2400);
     let luces: (Float32Array | null)[] = [null, null, null];
     let sembrado = false;
     let ancho = 0;

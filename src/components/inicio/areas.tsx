@@ -191,7 +191,7 @@ export function Areas() {
                   <div data-tono={fondo.tono} data-activa={i === activa || undefined} className="cm-tarjeta">
                     {"foto" in fondo && (
                       <span aria-hidden="true" className="cm-tarjeta-foto">
-                        <Foto nombre={fondo.foto} ancho={560} alto={700} />
+                        <Foto nombre={fondo.foto} ancho={560} alto={700} temprana />
                       </span>
                     )}
                     <p className="cm-mono cm-tarjeta-cabeza">

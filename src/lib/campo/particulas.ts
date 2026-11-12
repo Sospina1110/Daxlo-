@@ -95,8 +95,8 @@ export function crearParticulas(n: number, semilla = 11): Particulas {
         const a = pts[i];
         const b = pts[(i + 1) % pts.length];
         const f = d / lados[i];
-        x = a[0] + (b[0] - a[0]) * f + normal() * 3.2;
-        y = a[1] + (b[1] - a[1]) * f + normal() * 3.2;
+        x = a[0] + (b[0] - a[0]) * f + normal() * 4.6;
+        y = a[1] + (b[1] - a[1]) * f + normal() * 4.6;
       } else {
         for (let intento = 0; intento < 30; intento++) {
           x = minX + azar() * (maxX - minX);
@@ -113,8 +113,8 @@ export function crearParticulas(n: number, semilla = 11): Particulas {
       p.fase[k] = azar() * Math.PI * 2;
       p.peso[k] = enBorde ? 0.62 + azar() * 0.38 : 0.2 + azar() * 0.4;
       const tam = azar();
-      p.lado[k] = tam < 0.72 ? 2 : tam < 0.94 ? 3 : 4;
-      p.tipo[k] = azar() < 0.24 ? Math.floor(azar() * SIGNOS.length) : 4;
+      p.lado[k] = tam < 0.56 ? 2 : tam < 0.86 ? 3 : tam < 0.97 ? 4 : 5;
+      p.tipo[k] = azar() < 0.28 ? Math.floor(azar() * SIGNOS.length) : 4;
       p.azul[k] = pieza.azul ? 1 : 0;
     }
   });
