@@ -84,9 +84,9 @@ describe("la configuración publicada de Cal.com", () => {
 
   it("coaching va al diagnóstico y empresas (o 'todavía no sé') a la conversación de alcance", () => {
     expect(calcom.enlaces).toEqual({
-      coaching: "https://cal.com/daxlo/diagnostico-gratuito",
-      consultoria: "https://cal.com/daxlo/conversacion-de-alcance",
-      no_se: "https://cal.com/daxlo/conversacion-de-alcance",
+      coaching: "https://cal.com/team-daxlo-jif1cv/diagnostico-gratuito",
+      consultoria: "https://cal.com/team-daxlo-jif1cv/conversacion-de-alcance",
+      no_se: "https://cal.com/team-daxlo-jif1cv/conversacion-de-alcance",
     });
   });
 });

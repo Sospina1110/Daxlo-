@@ -761,10 +761,13 @@ export const cierre = {
 
 // ------------------------------------------------------------- AGENDA
 
-// La agenda de Cal.com (cuenta de Team Daxlo, usuario «daxlo»). Al enviar el
-// formulario, la persona pasa a elegir el día y la hora con su nombre, su
-// correo y la línea ya escritos; la cita entra sola al OS de Daxlo por su
-// webhook (backend/app/rutas/agenda.py).
+// La agenda de Cal.com (cuenta de Team Daxlo, usuario «team-daxlo-jif1cv»,
+// desde el 2026-11-13: es la que guarda las citas en el calendario de
+// santiago.ospina@daxlo.co; la anterior, usuario «daxlo», las guardaba en un
+// calendario personal). Al enviar el formulario, la persona pasa a elegir el
+// día y la hora con su nombre, su correo y la línea ya escritos. Para que la
+// cita entre sola al OS de Daxlo falta crear en esta cuenta el webhook a
+// backend/app/rutas/agenda.py (no existía tampoco en la cuenta anterior).
 // En los dos tipos de evento tiene que seguir así:
 //   · la pregunta del correo con «Disable input if the URL identifier is
 //     prefilled»: si la persona lo cambiara allá, el OS abriría dos fichas;
@@ -773,9 +776,9 @@ export const cierre = {
 // Si se vacían los enlaces, el formulario vuelve al mensaje de WhatsApp.
 export const calcom = {
   enlaces: {
-    coaching: "https://cal.com/daxlo/diagnostico-gratuito",
-    consultoria: "https://cal.com/daxlo/conversacion-de-alcance",
-    no_se: "https://cal.com/daxlo/conversacion-de-alcance",
+    coaching: "https://cal.com/team-daxlo-jif1cv/diagnostico-gratuito",
+    consultoria: "https://cal.com/team-daxlo-jif1cv/conversacion-de-alcance",
+    no_se: "https://cal.com/team-daxlo-jif1cv/conversacion-de-alcance",
   } as Record<string, string>,
   // Los valores exactos de la pregunta «linea» de Cal.com que entiende el OS.
   lineas: { coaching: "Coaching 1 a 1", consultoria: "Consultoría de implementación", no_se: "Todavía no sé" } as Record<string, string>,
